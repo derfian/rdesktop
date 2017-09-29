@@ -45,7 +45,8 @@ typedef enum log_subject_t
 	Graphics,
 	Core,
 	SmartCard,
-	Disk
+	Disk,
+	Licence
 } log_subject_t;
 
 void logger(log_subject_t c, log_level_t lvl, char *format, ...);
