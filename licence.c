@@ -310,40 +310,67 @@ licence_process_error_alert(STREAM s)
 {
 	uint32 error_code;
 	uint32 state_transition;
-	uint32 error_info;
+	uint16 blobtype;
+	uint16 bloblen;
+
 	in_uint32(s, error_code);
 	in_uint32(s, state_transition);
-	in_uint32(s, error_info);
+
+	logger(Licence, Debug,
+	       "licence_process_error_alert(error_code=0x%x, state_transition=0x%x, ...)",
+	       error_code, state_transition);
+
+	in_uint16(s, blobtype);
+	in_uint16(s, bloblen);
 
 	/* There is a special case in the error alert handling, when licensing is all good
 	   and the server is not sending a license to client, a "Server License Error PDU -
 	   Valid Client" packet is sent which means, every thing is ok.
 
-	   Therefor we should flag that everything is ok with license here.
+	   Therefore we should flag that everything is ok with license here.
 	 */
-	if (error_code == 0x07)
+	if (error_code == STATUS_VALID_CLIENT)
 	{
 		g_licence_issued = True;
 		return;
 	}
 
-	/* handle error codes, for now, jsut report them */
+	logger(Licence, Debug, "license_process_error_alert(), blobtype=0x%x, bloblen=%d",
+	       blobtype, bloblen);
+
+	/* FIXME: look at state_transition to determine the next action. */
+
+	/* handle error codes, for now, just report them */
 	switch (error_code)
 	{
-		case 0x6:	// ERR_NO_LICENSE_SERVER
-			logger(Core, Notice, "License error alert from server: No license server");
+		case ERR_NO_LICENSE_SERVER:
+			logger(Licence, Notice,
+			       "License error alert from server: No license server");
 			break;
 
-		case 0x8:	// ERR_INVALID_CLIENT
-			logger(Core, Notice, "License error alert from server: Invalid client");
+		case ERR_INVALID_CLIENT:
+			logger(Licence, Notice,
+			       "License error alert from server: Invalid client");
 			break;
 
-		case 0x4:	// ERR_INVALID_SCOPE
-		case 0xb:	// ERR_INVALID_PRODUCTID
-		case 0xc:	// ERR_INVALID_MESSAGE_LENGTH
+		case ERR_INVALID_SCOPE:
+			logger(Licence, Notice,
+			       "License error alert from server: Invalid scope");
+			break;
+
+		case ERR_INVALID_PRODUCTID:
+			logger(Licence, Notice,
+			       "License error alert from server: Invalid product ID");
+			break;
+
+		case ERR_INVALID_MESSAGE_LEN:
+			logger(Licence, Notice,
+			       "License error alert from server: Invalid message length");
+			break;
+
 		default:
-			logger(Core, Notice,
-			       "License error alert from server: code %u, state transition %u",
+			logger(Licence, Notice,
+			       "License error alert from server: unknown code %u, state transition %u",
 			       error_code, state_transition);
 			break;
 	}
@@ -388,6 +415,7 @@ licence_process_pdu(STREAM s)
 
 		default:
 			logger(Protocol, Warning,
-			       "licence_process_pdu(), unhandled license PDU msgtype 0x%02", msgtype);
+			       "licence_process_pdu(), unhandled license PDU msgtype 0x%02",
+			       msgtype);
 	}
 }
