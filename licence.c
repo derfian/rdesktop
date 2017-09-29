@@ -142,7 +142,7 @@ licence_send_new_licence_request(uint8 * client_random, uint8 * rsa_data, char *
 
 /* Process a licence request packet */
 static void
-licence_process_request(STREAM s)
+licence_process_server_licence_request(STREAM s)
 {
 	uint8 null_data[SEC_MODULUS_SIZE];
 	uint8 *server_random;
@@ -369,7 +369,7 @@ licence_process_pdu(STREAM s)
 	switch (msgtype)
 	{
 		case LICENCE_TAG_REQUEST:
-			licence_process_request(s);
+			licence_process_server_licence_request(s);
 			break;
 
 		case LICENCE_TAG_PLATFORM_CHALLENGE:
