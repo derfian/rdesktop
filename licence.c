@@ -172,7 +172,7 @@ licence_process_request(STREAM s)
 		rdssl_rc4_crypt(&crypt_key, hwid, hwid, sizeof(hwid));
 
 		logger(Protocol, Debug,
-		       "license_process_request(), sending licensing PDU (message type 0x%02x)",
+		       "licence_process_request(), sending licensing PDU (message type 0x%02x)",
 		       LICENCE_TAG_LICENCE_INFO);
 
 		licence_info(null_data, null_data, licence_data, licence_size, hwid, signature);
@@ -182,7 +182,7 @@ licence_process_request(STREAM s)
 	}
 
 	logger(Protocol, Debug,
-	       "license_process_request(), sending licensing PDU (message type 0x%02x)",
+	       "licence_process_request(), sending licensing PDU (message type 0x%02x)",
 	       LICENCE_TAG_NEW_LICENCE_REQUEST);
 
 	licence_send_new_licence_request(null_data, null_data, g_username, g_hostname);
@@ -361,7 +361,7 @@ licence_process(STREAM s)
 	in_uint8(s, tag);
 	in_uint8s(s, 3);	/* version, length */
 
-	logger(Protocol, Debug, "license_process(), processing licensing PDU (message type 0x%02x)",
+	logger(Protocol, Debug, "licence_process(), processing licensing PDU (message type 0x%02x)",
 	       tag);
 
 	switch (tag)
@@ -386,6 +386,6 @@ licence_process(STREAM s)
 
 		default:
 			logger(Protocol, Warning,
-			       "license_process(), unhandled license PDU tag 0x%02", tag);
+			       "licence_process(), unhandled license PDU tag 0x%02", tag);
 	}
 }
