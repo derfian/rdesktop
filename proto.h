@@ -89,7 +89,7 @@ void iso_reset_state(void);
 /* cssp.c */
 RD_BOOL cssp_connect(char *server, char *user, char *domain, char *password, STREAM s);
 /* licence.c */
-void licence_process(STREAM s);
+void licence_process_pdu(STREAM s);
 /* mcs.c */
 STREAM mcs_init(int length);
 void mcs_send_to_channel(STREAM s, uint16 channel);

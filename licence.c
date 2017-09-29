@@ -354,17 +354,19 @@ licence_process_error_alert(STREAM s)
 
 /* Process a licence packet */
 void
-licence_process(STREAM s)
+licence_process_pdu(STREAM s)
 {
-	uint8 tag;
+	uint8 msgtype, flags;
+	uint16 size;
 
-	in_uint8(s, tag);
-	in_uint8s(s, 3);	/* version, length */
+	in_uint8(s, msgtype);
+	in_uint8(s, flags);
+	in_uint16(s, size);
 
-	logger(Protocol, Debug, "licence_process(), processing licensing PDU (message type 0x%02x)",
-	       tag);
+	logger(Protocol, Debug, "licence_process_pdu(), msgtype=0x%02x, flags=0x%x, size=%d",
+	       msgtype, flags, size);
 
-	switch (tag)
+	switch (msgtype)
 	{
 		case LICENCE_TAG_REQUEST:
 			licence_process_request(s);
@@ -386,6 +388,6 @@ licence_process(STREAM s)
 
 		default:
 			logger(Protocol, Warning,
-			       "licence_process(), unhandled license PDU tag 0x%02", tag);
+			       "licence_process_pdu(), unhandled license PDU msgtype 0x%02", msgtype);
 	}
 }

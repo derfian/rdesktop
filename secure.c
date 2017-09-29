@@ -849,7 +849,7 @@ sec_recv(uint8 * rdpver)
 
 				if (sec_flags & SEC_LICENSE_PKT)
 				{
-					licence_process(s);
+					licence_process_pdu(s);
 					continue;
 				}
 
@@ -887,7 +887,7 @@ sec_recv(uint8 * rdpver)
 			{
 				if (sec_flags & SEC_LICENSE_PKT)
 				{
-					licence_process(s);
+					licence_process_pdu(s);
 					continue;
 				}
 				s->p -= 4;
