@@ -587,17 +587,13 @@ sw_wait_configurenotify(Window wnd, unsigned long serial)
 {
 	XEvent xevent;
 	sw_configurenotify_context context;
-	struct timeval now;
-	struct timeval future;
+	int n;
 	RD_BOOL got = False;
 
 	context.window = wnd;
 	context.serial = serial;
 
-	gettimeofday(&future, NULL);
-	future.tv_usec += 500000;
-
-	do
+	for (n = 0; n < 5; n++)
 	{
 		if (XCheckIfEvent(g_display, &xevent, sw_configurenotify_p, (XPointer) & context))
 		{
@@ -605,9 +601,7 @@ sw_wait_configurenotify(Window wnd, unsigned long serial)
 			break;
 		}
 		usleep(100000);
-		gettimeofday(&now, NULL);
 	}
-	while (timercmp(&now, &future, <));
 
 	if (!got)
 	{
