@@ -300,10 +300,10 @@ rdp_in_unistr(STREAM s, int in_len, char **string, uint32 * str_size)
 }
 
 
-/* Parse a logon info packet */
+/* Send a Client Info PDU */
 static void
-rdp_send_logon_info(uint32 flags, char *domain, char *user,
-		    char *password, char *program, char *directory)
+rdp_send_client_info_pdu(uint32 flags, char *domain, char *user,
+			 char *password, char *program, char *directory)
 {
 	char *ipaddr = tcp_get_address();
 	/* length of string in TS_INFO_PACKET excludes null terminator */
@@ -326,7 +326,7 @@ rdp_send_logon_info(uint32 flags, char *domain, char *user,
 
 	if (g_rdp_version == RDP_V4 || 1 == g_server_rdp_version)
 	{
-		logger(Protocol, Debug, "rdp_send_logon_info(), sending RDP4-style Logon packet");
+		logger(Protocol, Debug, "rdp_send_client_info_pdu(), sending RDP4-style Logon packet");
 
 		s = sec_init(sec_flags, 18 + len_domain + len_user + len_password
 			     + len_program + len_directory + 10);
@@ -348,7 +348,7 @@ rdp_send_logon_info(uint32 flags, char *domain, char *user,
 	else
 	{
 
-		logger(Protocol, Debug, "rdp_send_logon_info(), sending RDP5-style Logon packet");
+		logger(Protocol, Debug, "rdp_send_client_info_pdu(), sending RDP5-style Logon packet");
 
 		if (g_redirect == True && g_redirect_cookie_len > 0)
 		{
@@ -356,7 +356,7 @@ rdp_send_logon_info(uint32 flags, char *domain, char *user,
 			len_password = g_redirect_cookie_len;
 			len_password -= 2;	/* substract 2 bytes which is added below */
 			logger(Protocol, Debug,
-			       "rdp_send_logon_info(), Using %d bytes redirect cookie as password",
+			       "rdp_send_client_info_pdu(), Using %d bytes redirect cookie as password",
 			       g_redirect_cookie_len);
 		}
 
@@ -397,7 +397,7 @@ rdp_send_logon_info(uint32 flags, char *domain, char *user,
 
 		s = sec_init(sec_flags, packetlen);
 
-		logger(Protocol, Debug, "rdp_send_logon_info(), called sec_init with packetlen %d",
+		logger(Protocol, Debug, "rdp_send_client_info_pdu(), called sec_init with packetlen %d",
 		       packetlen);
 
 		/* TS_INFO_PACKET */
@@ -1843,7 +1843,7 @@ rdp_connect(char *server, uint32 flags, char *domain, char *password,
 	if (!sec_connect(server, g_username, domain, password, reconnect))
 		return False;
 
-	rdp_send_logon_info(flags, domain, g_username, password, command, directory);
+	rdp_send_client_info_pdu(flags, domain, g_username, password, command, directory);
 
 	/* run RDP loop until first licence demand active PDU */
 	while (!g_rdp_shareid)
