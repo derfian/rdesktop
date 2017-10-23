@@ -416,6 +416,10 @@ enum RDP_INPUT_DEVICE
 #define PACKET_COMPR_TYPE_RDP6		0x00000400	/* RDP 6.0 bulk compression */
 #define PACKET_COMPR_TYPE_RDP61		0x00000800	/* RDP 6.1 bulk compression */
 
+/* [MS-RDPBCGR] TS_EXTENDED_INFO_PACKET clientAddressFamily */
+#define RDP_AF_INET	0x0002
+#define RDP_AF_INET6	0x0017
+
 /* [MS-RDPBCGR] TS_EXTENDED_INFO_PACKET performanceFlags */
 #define PERF_DISABLE_WALLPAPER	        0x01
 #define PERF_DISABLE_FULLWINDOWDRAG	0x02

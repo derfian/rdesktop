@@ -438,7 +438,7 @@ rdp_send_client_info_pdu(uint32 flags, char *domain, char *user,
 		out_utf16s(s, directory);	/* WorkingDir */
 
 		/* TS_EXTENDED_INFO_PACKET */
-		out_uint16_le(s, 2);	/* clientAddressFamily = AF_INET */
+		out_uint16_le(s, RDP_AF_INET);	/* clientAddressFamily */
 		out_uint16_le(s, len_ip);	/* cbClientAddress */
 		out_utf16s(s, ipaddr);		/* clientAddress */
 		out_uint16_le(s, len_dll);	/* cbClientDir */
