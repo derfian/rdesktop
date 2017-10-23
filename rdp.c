@@ -352,7 +352,7 @@ rdp_send_client_info_pdu(uint32 flags, char *domain, char *user,
 
 		if (g_redirect == True && g_redirect_cookie_len > 0)
 		{
-			flags |= RDP_INFO_AUTOLOGON;
+			flags |= INFO_AUTOLOGON;
 			len_password = g_redirect_cookie_len;
 			len_password -= 2;	/* substract 2 bytes which is added below */
 			logger(Protocol, Debug,

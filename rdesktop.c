@@ -628,8 +628,8 @@ main(int argc, char *argv[])
 	sigaction(SIGPIPE, &act, NULL);
 
 	/* setup default flags for TS_INFO_PACKET */
-	flags = RDP_INFO_MOUSE | RDP_INFO_DISABLECTRLALTDEL
-		| RDP_INFO_UNICODE | RDP_INFO_MAXIMIZESHELL | RDP_INFO_ENABLEWINDOWSKEY;
+	flags = INFO_MOUSE | INFO_DISABLECTRLALTDEL | INFO_UNICODE |
+		INFO_MAXIMIZESHELL | INFO_ENABLEWINDOWSKEY;
 
 	g_seamless_spawn_cmd[0] = domain[0] = g_password[0] = shell[0] = directory[0] = 0;
 	g_embed_wnd = 0;
@@ -673,7 +673,7 @@ main(int argc, char *argv[])
 				if ((optarg[0] != '-') && (optarg[1] != 0))
 				{
 					STRNCPY(g_password, optarg, sizeof(g_password));
-					flags |= RDP_INFO_AUTOLOGON;
+					flags |= INFO_AUTOLOGON;
 
 					/* try to overwrite argument so it won't appear in ps */
 					p = optarg;
@@ -683,7 +683,7 @@ main(int argc, char *argv[])
 				break;
 #ifdef WITH_SCARD
 			case 'i':
-				flags |= RDP_INFO_PASSWORD_IS_SC_PIN;
+				flags |= INFO_PASSWORD_IS_SC_PIN;
 				g_use_password_as_pin = True;
 				break;
 #endif
@@ -833,7 +833,7 @@ main(int argc, char *argv[])
 
 			case 'z':
 				logger(Core, Debug, "rdp compression enabled");
-				flags |= (RDP_INFO_COMPRESSION | RDP_INFO_COMPRESSION2);
+				flags |= (INFO_COMPRESSION | PACKET_COMPR_TYPE_64K);
 				break;
 
 			case 'x':
@@ -876,7 +876,7 @@ main(int argc, char *argv[])
 						while ((p = next_arg(optarg, ',')))
 						{
 							if (str_startswith(optarg, "remote"))
-								flags |= RDP_INFO_REMOTE_CONSOLE_AUDIO;
+								flags |= INFO_REMOTE_CONSOLE_AUDIO;
 
 							if (str_startswith(optarg, "local"))
 #ifdef WITH_RDPSND
@@ -1137,7 +1137,7 @@ main(int argc, char *argv[])
 	{
 		if (read_password(g_password, sizeof(g_password)))
 		{
-			flags |= RDP_INFO_AUTOLOGON;
+			flags |= INFO_AUTOLOGON;
 		}
 		else
 		{
@@ -1198,7 +1198,7 @@ main(int argc, char *argv[])
 			g_username = (char *) xmalloc(strlen(g_redirect_username) + 1);
 			STRNCPY(g_username, g_redirect_username, strlen(g_redirect_username) + 1);
 			STRNCPY(server, g_redirect_server, sizeof(server));
-			flags |= RDP_INFO_AUTOLOGON;
+			flags |= INFO_AUTOLOGON;
 
 			logger(Core, Notice, "Redirected to %s@%s session %d.",
 			       g_redirect_username, g_redirect_server, g_redirect_session_id);
