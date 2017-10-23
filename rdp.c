@@ -299,6 +299,20 @@ rdp_in_unistr(STREAM s, int in_len, char **string, uint32 * str_size)
 		*str_size = pout - *string;
 }
 
+/* Output a TS_SYSTEMTIME structure on stream s */
+static void
+out_ts_systemtime(STREAM s, uint16 month, uint16 dayofweek, uint16 day,
+		  uint16 hour, uint16 minute, uint16 second, uint16 millisecond)
+{
+	out_uint16_le(s, 0);		/* wYear (must be zero) */
+	out_uint16_le(s, month);	/* wMonth */
+	out_uint16_le(s, dayofweek);	/* wDayOfWeek */
+	out_uint16_le(s, day);		/* wDay */
+	out_uint16_le(s, hour);		/* wHour */
+	out_uint16_le(s, minute);	/* wMinute */
+	out_uint16_le(s, second);	/* wSecond */
+	out_uint16_le(s, millisecond);	/* wMillisecond */
+}
 
 /* Send a Client Info PDU */
 static void
@@ -432,21 +446,16 @@ rdp_send_client_info_pdu(uint32 flags, char *domain, char *user,
 
 		/* TS_TIME_ZONE_INFORMATION */
 		tzone = (mktime(gmtime(&t)) - mktime(localtime(&t))) / 60;
-		out_uint32_le(s, tzone);
-		rdp_out_unistr(s, "GTB, normaltid", 2 * strlen("GTB, normaltid"));
-		out_uint8s(s, 62 - 2 * strlen("GTB, normaltid"));
-		out_uint32_le(s, 0x0a0000);
-		out_uint32_le(s, 0x050000);
-		out_uint32_le(s, 3);
-		out_uint32_le(s, 0);
-		out_uint32_le(s, 0);
-		rdp_out_unistr(s, "GTB, sommartid", 2 * strlen("GTB, sommartid"));
-		out_uint8s(s, 62 - 2 * strlen("GTB, sommartid"));
-		out_uint32_le(s, 0x30000);
-		out_uint32_le(s, 0x050000);
-		out_uint32_le(s, 2);
-		out_uint32(s, 0);
-		out_uint32_le(s, 0xffffffc4);	/* DaylightBias */
+
+		out_uint32_le(s, tzone);	/* Bias */
+
+		out_utf16s_padded(s, "GTB, normaltid", 64, 0);	/* StandardName */
+		out_ts_systemtime(s, 10, 0, 5, 3, 0, 0, 0);	/* StandardDate */
+		out_uint32_le(s, 0);				/* StandardBias */
+
+		out_utf16s_padded(s, "GTB, sommartid", 64, 0);	/* DaylightName */
+		out_ts_systemtime(s, 3, 0, 5, 2, 0, 0, 0);	/* DaylightDate */
+		out_uint32_le(s, 0xffffffc4);			/* DaylightBias */
 
 		/* Rest of TS_EXTENDED_INFO_PACKET */
 		out_uint32_le(s, 0);	/* clientSessionId (Ignored by server MUST be 0) */
