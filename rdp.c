@@ -400,17 +400,16 @@ rdp_send_client_info_pdu(uint32 flags, char *domain, char *user,
 		logger(Protocol, Debug, "rdp_send_client_info_pdu(), called sec_init with packetlen %d",
 		       packetlen);
 
-		/* TS_INFO_PACKET */
-		out_uint32(s, 0);	/* Code Page */
-		out_uint32_le(s, flags);
-		out_uint16_le(s, len_domain);
-		out_uint16_le(s, len_user);
-		out_uint16_le(s, len_password);
-		out_uint16_le(s, len_program);
-		out_uint16_le(s, len_directory);
-
-		rdp_out_unistr_mandatory_null(s, domain, len_domain);
-		rdp_out_unistr_mandatory_null(s, user, len_user);
+		/* TS_INFO_PACKET - we assume that flags include INFO_UNICODE. */
+		out_uint32(s, 0);			/* CodePage */
+		out_uint32_le(s, flags);		/* flags */
+		out_uint16_le(s, len_domain);		/* cbDomain */
+		out_uint16_le(s, len_user);		/* cbUserName */
+		out_uint16_le(s, len_password);		/* cbPassword */
+		out_uint16_le(s, len_program);		/* cbAlternateShell */
+		out_uint16_le(s, len_directory);	/* cbWorkingDir */
+		out_utf16s(s, domain);			/* Domain (including trailing null) */
+		out_utf16s(s, user);			/* UserName (including trailing null) */
 
 		if (g_redirect == True && 0 < g_redirect_cookie_len)
 		{
@@ -418,19 +417,18 @@ rdp_send_client_info_pdu(uint32 flags, char *domain, char *user,
 		}
 		else
 		{
-			rdp_out_unistr_mandatory_null(s, password, len_password);
+			out_utf16s(s, password);
 		}
 
-
-		rdp_out_unistr_mandatory_null(s, program, len_program);
-		rdp_out_unistr_mandatory_null(s, directory, len_directory);
+		out_utf16s(s, program);		/* AlternateShell */
+		out_utf16s(s, directory);	/* WorkingDir */
 
 		/* TS_EXTENDED_INFO_PACKET */
 		out_uint16_le(s, 2);	/* clientAddressFamily = AF_INET */
 		out_uint16_le(s, len_ip);	/* cbClientAddress */
-		rdp_out_unistr_mandatory_null(s, ipaddr, len_ip - 2);	/* clientAddress */
+		out_utf16s(s, ipaddr);		/* clientAddress */
 		out_uint16_le(s, len_dll);	/* cbClientDir */
-		rdp_out_unistr_mandatory_null(s, "C:\\WINNT\\System32\\mstscax.dll", len_dll - 2);	/* clientDir */
+		out_utf16s(s, "C:\\WINNT\\System32\\mstscax.dll"); /* clientDir */
 
 		/* TS_TIME_ZONE_INFORMATION */
 		tzone = (mktime(gmtime(&t)) - mktime(localtime(&t))) / 60;
