@@ -148,24 +148,26 @@ rdp_init_data(int maxlen)
 
 /* Send an RDP data packet */
 static void
-rdp_send_data(STREAM s, uint8 data_pdu_type)
+rdp_send_data_pdu(STREAM s, uint8 data_pdu_type)
 {
 	uint16 length;
 
 	s_pop_layer(s, rdp_hdr);
 	length = s->end - s->p;
 
-	out_uint16_le(s, length);
-	out_uint16_le(s, (RDP_PDU_DATA | 0x10));
-	out_uint16_le(s, (g_mcs_userid + 1001));
+	/* TS_SHAREDATAHEADER */
+	out_uint16_le(s, length);		/* totalLength */
+						/* pduType */
+	out_uint16_le(s, PDUTYPE_DATAPDU | (TS_PROTOCOL_VERSION << 4));
+	out_uint16_le(s, g_mcs_userid + 1001);	/* pduSource */
 
-	out_uint32_le(s, g_rdp_shareid);
-	out_uint8(s, 0);	/* pad */
-	out_uint8(s, 1);	/* streamid */
-	out_uint16_le(s, (length - 14));
-	out_uint8(s, data_pdu_type);
-	out_uint8(s, 0);	/* compress_type */
-	out_uint16(s, 0);	/* compress_len */
+	out_uint32_le(s, g_rdp_shareid);	/* shareId */
+	out_uint8(s, 0);			/* pad1 */
+	out_uint8(s, STREAM_LOW);		/* streamId */
+	out_uint16_le(s, (length - 14));	/* uncompressedLength */
+	out_uint8(s, data_pdu_type);		/* pduType2 */
+	out_uint8(s, 0);			/* compressedType */
+	out_uint16(s, 0);			/* compressedLength */
 
 	sec_send(s, g_encryption ? SEC_ENCRYPT : 0);
 }
@@ -500,7 +502,7 @@ rdp_send_control(uint16 action)
 	out_uint32(s, 0);	/* control id */
 
 	s_mark_end(s);
-	rdp_send_data(s, RDP_DATA_PDU_CONTROL);
+	rdp_send_data_pdu(s, PDUTYPE2_CONTROL);
 }
 
 /* Send a synchronisation PDU */
@@ -515,7 +517,7 @@ rdp_send_synchronise(void)
 	out_uint16_le(s, 1002);
 
 	s_mark_end(s);
-	rdp_send_data(s, RDP_DATA_PDU_SYNCHRONISE);
+	rdp_send_data_pdu(s, PDUTYPE2_SYNCHRONIZE);
 }
 
 /* Send a single input event */
@@ -536,7 +538,7 @@ rdp_send_input(uint32 time, uint16 message_type, uint16 device_flags, uint16 par
 	out_uint16_le(s, param2);
 
 	s_mark_end(s);
-	rdp_send_data(s, RDP_DATA_PDU_INPUT);
+	rdp_send_data_pdu(s, PDUTYPE2_INPUT);
 }
 
 /* Send a client window information PDU */
@@ -566,7 +568,7 @@ rdp_send_client_window_status(int status)
 	}
 
 	s_mark_end(s);
-	rdp_send_data(s, RDP_DATA_PDU_CLIENT_WINDOW_STATUS);
+	rdp_send_data_pdu(s, PDUTYPE2_SUPPRESS_OUTPUT);
 	current_status = status;
 }
 
@@ -608,7 +610,7 @@ rdp_enum_bmpcache2(void)
 		out_uint8a(s, keylist[offset], count * sizeof(HASH_KEY));
 
 		s_mark_end(s);
-		rdp_send_data(s, 0x2b);
+		rdp_send_data_pdu(s, PDUTYPE2_BITMAPCACHE_PERSISTENT_LIST);
 
 		offset += 169;
 	}
@@ -628,7 +630,7 @@ rdp_send_fonts(uint16 seq)
 	out_uint16_le(s, 0x32);	/* entry size */
 
 	s_mark_end(s);
-	rdp_send_data(s, RDP_DATA_PDU_FONT2);
+	rdp_send_data_pdu(s, PDUTYPE2_FONTLIST);
 }
 
 /* Output general capability set (TS_GENERAL_CAPABILITYSET) */
@@ -996,7 +998,7 @@ rdp_send_confirm_active(void)
 	s = sec_init(sec_flags, 6 + 14 + caplen + sizeof(RDP_SOURCE));
 
 	out_uint16_le(s, 2 + 14 + caplen + sizeof(RDP_SOURCE));
-	out_uint16_le(s, (RDP_PDU_CONFIRM_ACTIVE | 0x10));	/* Version 1 */
+	out_uint16_le(s, (PDUTYPE_CONFIRMACTIVEPDU | (TS_PROTOCOL_VERSION << 4)));
 	out_uint16_le(s, (g_mcs_userid + 1001));
 
 	out_uint32_le(s, g_rdp_shareid);
@@ -1545,33 +1547,33 @@ process_data_pdu(STREAM s, uint32 * ext_disc_reason)
 
 	switch (data_pdu_type)
 	{
-		case RDP_DATA_PDU_UPDATE:
+		case PDUTYPE2_UPDATE:
 			process_update_pdu(s);
 			break;
 
-		case RDP_DATA_PDU_CONTROL:
+		case PDUTYPE2_CONTROL:
 			logger(Protocol, Debug, "process_data_pdu(), received Control PDU");
 			break;
 
-		case RDP_DATA_PDU_SYNCHRONISE:
+		case PDUTYPE2_SYNCHRONIZE:
 			logger(Protocol, Debug, "process_data_pdu(), received Sync PDU");
 			break;
 
-		case RDP_DATA_PDU_POINTER:
+		case PDUTYPE2_POINTER:
 			process_pointer_pdu(s);
 			break;
 
-		case RDP_DATA_PDU_BELL:
+		case PDUTYPE2_PLAY_SOUND:
 			ui_bell();
 			break;
 
-		case RDP_DATA_PDU_LOGON:
+		case PDUTYPE2_SAVE_SESSION_INFO:
 			logger(Protocol, Debug, "process_data_pdu(), received Logon PDU");
 			/* User logged on */
 			process_pdu_logon(s);
 			break;
 
-		case RDP_DATA_PDU_DISCONNECT:
+		case PDUTYPE2_SET_ERROR_INFO_PDU:
 			process_disconnect_pdu(s, ext_disc_reason);
 
 			/* We used to return true and disconnect immediately here, but
@@ -1581,13 +1583,13 @@ process_data_pdu(STREAM s, uint32 * ext_disc_reason)
 			 */
 			break;
 
-		case RDP_DATA_PDU_AUTORECONNECT_STATUS:
+		case PDUTYPE2_ARC_STATUS_PDU:
 			logger(Protocol, Warning,
 			       "process_data_pdu(), automatic reconnect using cookie, failed");
 			break;
 
 		default:
-			logger(Protocol, Warning, "process_data_pdu(), unhandled data PDU type %d",
+			logger(Protocol, Warning, "process_data_pdu(), unhandled data PDU type 0x%x",
 			       data_pdu_type);
 	}
 	return False;
@@ -1805,11 +1807,11 @@ rdp_loop(RD_BOOL * deactivated, uint32 * ext_disc_reason)
 			return False;
 		switch (type)
 		{
-			case RDP_PDU_DEMAND_ACTIVE:
+			case PDUTYPE_DEMANDACTIVEPDU:
 				process_demand_active(s);
 				*deactivated = False;
 				break;
-			case RDP_PDU_DEACTIVATE:
+			case PDUTYPE_DEACTIVATEALLPDU:
 				logger(Protocol, Debug,
 				       "rdp_loop(), RDP_PDU_DEACTIVATE packet received");
 				*deactivated = True;
@@ -1817,10 +1819,10 @@ rdp_loop(RD_BOOL * deactivated, uint32 * ext_disc_reason)
 			case RDP_PDU_REDIRECT:
 				return process_redirect_pdu(s, False);
 				break;
-			case RDP_PDU_ENHANCED_REDIRECT:
+			case PDUTYPE_SERVER_REDIR_PKT:
 				return process_redirect_pdu(s, True);
 				break;
-			case RDP_PDU_DATA:
+			case PDUTYPE_DATAPDU:
 				/* If we got a data PDU, we don't need to keep the password in memory
 				   anymore and therefor we should clear it for security reasons. */
 				if (g_password[0] != '\0')
