@@ -1445,7 +1445,7 @@ process_update_pdu(STREAM s)
 
 /* Process a Save Session Info PDU */
 void
-process_pdu_logon(STREAM s)
+process_save_session_info_pdu(STREAM s)
 {
 	uint32 infotype;
 	in_uint32_le(s, infotype);
@@ -1468,7 +1468,7 @@ process_pdu_logon(STREAM s)
 			if (len != 28)
 			{
 				logger(Protocol, Error,
-				       "process_pdu_logon(), invalid length in Auto-Reconnect packet");
+				       "process_save_session_info_pdu(), invalid length in Auto-Reconnect packet");
 				return;
 			}
 
@@ -1476,7 +1476,7 @@ process_pdu_logon(STREAM s)
 			if (version != 1)
 			{
 				logger(Protocol, Error,
-				       "process_pdu_logon(), unsupported version of Auto-Reconnect packet");
+				       "process_save_session_info_pdu(), unsupported version of Auto-Reconnect packet");
 				return;
 			}
 
@@ -1485,7 +1485,7 @@ process_pdu_logon(STREAM s)
 			g_has_reconnect_random = True;
 			g_reconnect_random_ts = time(NULL);
 			logger(Protocol, Debug,
-			       "process_pdu_logon(), saving Auto-Reconnect cookie, id=%u",
+			       "process_save_session_info_pdu(), saving Auto-Reconnect cookie, id=%u",
 			       g_reconnect_logonid);
 		}
 	}
@@ -1570,7 +1570,7 @@ process_data_pdu(STREAM s, uint32 * ext_disc_reason)
 		case PDUTYPE2_SAVE_SESSION_INFO:
 			logger(Protocol, Debug, "process_data_pdu(), received Logon PDU");
 			/* User logged on */
-			process_pdu_logon(s);
+			process_save_session_info_pdu(s);
 			break;
 
 		case PDUTYPE2_SET_ERROR_INFO_PDU:
