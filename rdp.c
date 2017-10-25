@@ -1449,7 +1449,7 @@ process_save_session_info_pdu(STREAM s)
 {
 	uint32 infotype;
 	in_uint32_le(s, infotype);
-	if (infotype == INFOTYPE_LOGON_EXTENDED_INF)
+	if (infotype == INFOTYPE_LOGON_EXTENDED_INFO)
 	{
 		uint32 fieldspresent;
 
