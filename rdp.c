@@ -1510,13 +1510,13 @@ process_save_session_info_pdu(STREAM s)
 }
 
 
-/* Process a disconnect PDU */
+/* Process a Set Error Info PDU (TS_SET_ERROR_INFO_PDU) */
 void
-process_disconnect_pdu(STREAM s, uint32 * ext_disc_reason)
+process_set_error_info_pdu(STREAM s, uint32 * ext_disc_reason)
 {
 	in_uint32_le(s, *ext_disc_reason);
 
-	logger(Protocol, Debug, "process_disconnect_pdu(), reason = %d", ext_disc_reason);
+	logger(Protocol, Debug, "process_set_error_info_pdu(), received error code=0x%x", *ext_disc_reason);
 }
 
 /* Process data PDU */
@@ -1592,7 +1592,10 @@ process_data_pdu(STREAM s, uint32 * ext_disc_reason)
 			break;
 
 		case PDUTYPE2_SET_ERROR_INFO_PDU:
-			process_disconnect_pdu(s, ext_disc_reason);
+			logger(Protocol, Error, "Handling PDUTYPE2_SET_ERROR_INFO");
+			process_set_error_info_pdu(s, ext_disc_reason);
+			break;
+
 
 			/* We used to return true and disconnect immediately here, but
 			 * Windows Vista sends a disconnect PDU with reason 0 when
