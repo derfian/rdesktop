@@ -1497,6 +1497,10 @@ process_save_session_info_pdu(STREAM s)
 
 	switch (infotype)
 	{
+		case INFOTYPE_LOGON_PLAINNOTIFY:
+			/* The user is logged on. The rest of the packet is padding. There is
+			   nothing to handle from here on. */
+			break;
 		case INFOTYPE_LOGON_EXTENDED_INFO:
 			process_logon_info_extended(s);
 			break;
