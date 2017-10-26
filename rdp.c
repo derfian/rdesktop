@@ -1578,7 +1578,8 @@ process_data_pdu(STREAM s, uint32 * ext_disc_reason)
 			break;
 
 		case PDUTYPE2_SYNCHRONIZE:
-			logger(Protocol, Debug, "process_data_pdu(), received Sync PDU");
+			/* Quoting from [MS-RDPBCGR]: The TS_UPDATE_SYNC structure is an artifact of
+			   the T.128 protocol ([T128] section 8.6.2) and SHOULD be ignored. */
 			break;
 
 		case PDUTYPE2_POINTER:
