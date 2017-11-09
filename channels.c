@@ -43,7 +43,7 @@ unsigned int g_num_channels;
 */
 
 VCHANNEL *
-channel_register(char *name, uint32 flags, void (*callback) (STREAM))
+channel_register(char *name, uint32_t flags, void (*callback) (STREAM))
 {
 	VCHANNEL *channel;
 
@@ -67,7 +67,7 @@ channel_register(char *name, uint32 flags, void (*callback) (STREAM))
 }
 
 STREAM
-channel_init(VCHANNEL * channel, uint32 length)
+channel_init(VCHANNEL * channel, uint32_t length)
 {
 	UNUSED(channel);
 	STREAM s;
@@ -80,9 +80,9 @@ channel_init(VCHANNEL * channel, uint32 length)
 void
 channel_send(STREAM s, VCHANNEL * channel)
 {
-	uint32 length, flags;
-	uint32 thislength, remaining;
-	uint8 *data;
+	uint32_t length, flags;
+	uint32_t thislength, remaining;
+	uint8_t *data;
 
 #ifdef WITH_SCARD
 	scard_lock(SCARD_LOCK_CHANNEL);
@@ -138,10 +138,10 @@ channel_send(STREAM s, VCHANNEL * channel)
 }
 
 void
-channel_process(STREAM s, uint16 mcs_channel)
+channel_process(STREAM s, uint16_t mcs_channel)
 {
-	uint32 length, flags;
-	uint32 thislength;
+	uint32_t length, flags;
+	uint32_t thislength;
 	VCHANNEL *channel = NULL;
 	unsigned int i;
 	STREAM in;
@@ -171,7 +171,7 @@ channel_process(STREAM s, uint16 mcs_channel)
 		{
 			if (length > in->size)
 			{
-				in->data = (uint8 *) xrealloc(in->data, length);
+				in->data = (uint8_t *) xrealloc(in->data, length);
 				in->size = length;
 			}
 			in->p = in->data;

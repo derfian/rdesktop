@@ -131,17 +131,17 @@ get_current_desktop(void)
  */
 
 int
-get_current_workarea(uint32 * x, uint32 * y, uint32 * width, uint32 * height)
+get_current_workarea(uint32_t * x, uint32_t * y, uint32_t * width, uint32_t * height)
 {
 	int current_desktop;
 	unsigned long nitems_return;
 	unsigned char *prop_return;
 	long *return_words;
-	const uint32 net_workarea_x_offset = 0;
-	const uint32 net_workarea_y_offset = 1;
-	const uint32 net_workarea_width_offset = 2;
-	const uint32 net_workarea_height_offset = 3;
-	const uint32 max_prop_length = 32 * 4;	/* Max 32 desktops */
+	const uint32_t net_workarea_x_offset = 0;
+	const uint32_t net_workarea_y_offset = 1;
+	const uint32_t net_workarea_width_offset = 2;
+	const uint32_t net_workarea_height_offset = 3;
+	const uint32_t max_prop_length = 32 * 4;	/* Max 32 desktops */
 
 	if (get_property_value
 	    (DefaultRootWindow(g_display), "_NET_WORKAREA", max_prop_length, &nitems_return,
@@ -248,7 +248,7 @@ ewmh_modify_state(Window wnd, int add, Atom atom1, Atom atom2)
 	int result;
 	unsigned long i, nitems;
 	unsigned char *props;
-	uint32 state = WithdrawnState;
+	uint32_t state = WithdrawnState;
 
 	/* The spec states that the window manager must respect any
 	   _NET_WM_STATE attributes on a withdrawn window. In order words, we
@@ -257,7 +257,7 @@ ewmh_modify_state(Window wnd, int add, Atom atom1, Atom atom2)
 	result = get_property_value(wnd, "WM_STATE", 64, &nitems, &props, 1);
 	if ((result >= 0) && nitems)
 	{
-		state = *(uint32 *) props;
+		state = *(uint32_t *) props;
 		XFree(props);
 	}
 
@@ -437,7 +437,7 @@ ewmh_set_window_modal(Window wnd)
 }
 
 void
-ewmh_set_icon(Window wnd, uint32 width, uint32 height, const char *rgba_data)
+ewmh_set_icon(Window wnd, uint32_t width, uint32_t height, const char *rgba_data)
 {
 	unsigned long nitems, i;
 	unsigned char *props;
@@ -499,7 +499,7 @@ ewmh_set_icon(Window wnd, uint32 width, uint32 height, const char *rgba_data)
 }
 
 void
-ewmh_del_icon(Window wnd, uint32 width, uint32 height)
+ewmh_del_icon(Window wnd, uint32_t width, uint32_t height)
 {
 	unsigned long nitems, i, icon_size;
 	unsigned char *props;

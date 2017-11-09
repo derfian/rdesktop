@@ -60,10 +60,10 @@ size_t in_ansi_string(STREAM s, char *string, size_t len);
 #define s_left(s)               ((s)->size - ((s)->p - (s)->data))
 
 #if defined(L_ENDIAN) && !defined(NEED_ALIGN)
-#define in_uint16_le(s,v)	{ v = *(uint16 *)((s)->p); (s)->p += 2; }
-#define in_uint32_le(s,v)	{ v = *(uint32 *)((s)->p); (s)->p += 4; }
-#define out_uint16_le(s,v)	{ *(uint16 *)((s)->p) = v; (s)->p += 2; }
-#define out_uint32_le(s,v)	{ *(uint32 *)((s)->p) = v; (s)->p += 4; }
+#define in_uint16_le(s,v)	{ v = *(uint16_t *)((s)->p); (s)->p += 2; }
+#define in_uint32_le(s,v)	{ v = *(uint32_t *)((s)->p); (s)->p += 4; }
+#define out_uint16_le(s,v)	{ *(uint16_t *)((s)->p) = v; (s)->p += 2; }
+#define out_uint32_le(s,v)	{ *(uint32_t *)((s)->p) = v; (s)->p += 4; }
 
 #else
 #define in_uint16_le(s,v)	{ v = *((s)->p++); v += *((s)->p++) << 8; }
@@ -74,10 +74,10 @@ size_t in_ansi_string(STREAM s, char *string, size_t len);
 #endif
 
 #if defined(B_ENDIAN) && !defined(NEED_ALIGN)
-#define in_uint16_be(s,v)	{ v = *(uint16 *)((s)->p); (s)->p += 2; }
-#define in_uint32_be(s,v)	{ v = *(uint32 *)((s)->p); (s)->p += 4; }
-#define out_uint16_be(s,v)	{ *(uint16 *)((s)->p) = v; (s)->p += 2; }
-#define out_uint32_be(s,v)	{ *(uint32 *)((s)->p) = v; (s)->p += 4; }
+#define in_uint16_be(s,v)	{ v = *(uint16_t *)((s)->p); (s)->p += 2; }
+#define in_uint32_be(s,v)	{ v = *(uint32_t *)((s)->p); (s)->p += 4; }
+#define out_uint16_be(s,v)	{ *(uint16_t *)((s)->p) = v; (s)->p += 2; }
+#define out_uint32_be(s,v)	{ *(uint32_t *)((s)->p) = v; (s)->p += 4; }
 
 #define B_ENDIAN_PREFERRED
 #define in_uint16(s,v)		in_uint16_be(s,v)

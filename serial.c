@@ -507,7 +507,7 @@ set_termios(SERIAL_DEVICE * pser_inf, RD_NTHANDLE serial_fd)
 /* when it arrives to this function.              */
 /* :com1=/dev/ttyS0,com2=/dev/ttyS1 */
 int
-serial_enum_devices(uint32 * id, char *optarg)
+serial_enum_devices(uint32_t * id, char *optarg)
 {
 	SERIAL_DEVICE *pser_inf;
 
@@ -549,8 +549,8 @@ serial_enum_devices(uint32 * id, char *optarg)
 }
 
 static RD_NTSTATUS
-serial_create(uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition,
-	      uint32 flags_and_attributes, char *filename, RD_NTHANDLE * handle)
+serial_create(uint32_t device_id, uint32_t access, uint32_t share_mode, uint32_t disposition,
+	      uint32_t flags_and_attributes, char *filename, RD_NTHANDLE * handle)
 {
 	UNUSED(access);
 	UNUSED(share_mode);
@@ -628,7 +628,7 @@ serial_close(RD_NTHANDLE handle)
 }
 
 static RD_NTSTATUS
-serial_read(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+serial_read(RD_NTHANDLE handle, uint8_t * data, uint32_t length, uint32_t offset, uint32_t * result)
 {
 	UNUSED(offset);
 	long timeout;
@@ -684,7 +684,7 @@ serial_read(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint
 }
 
 static RD_NTSTATUS
-serial_write(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+serial_write(RD_NTHANDLE handle, uint8_t * data, uint32_t length, uint32_t offset, uint32_t * result)
 {
 	UNUSED(offset);
 	SERIAL_DEVICE *pser_inf;
@@ -704,11 +704,11 @@ serial_write(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uin
 }
 
 static RD_NTSTATUS
-serial_device_control(RD_NTHANDLE handle, uint32 request, STREAM in, STREAM out)
+serial_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out)
 {
 	int purge_mask;
-	uint32 result, modemstate;
-	uint8 immediate;
+	uint32_t result, modemstate;
+	uint8_t immediate;
 	SERIAL_DEVICE *pser_inf;
 
 	if ((request >> 16) != FILE_DEVICE_SERIAL_PORT)
@@ -959,7 +959,7 @@ serial_device_control(RD_NTHANDLE handle, uint32 request, STREAM in, STREAM out)
 }
 
 RD_BOOL
-serial_get_event(RD_NTHANDLE handle, uint32 * result)
+serial_get_event(RD_NTHANDLE handle, uint32_t * result)
 {
 	int index;
 	SERIAL_DEVICE *pser_inf;
@@ -1059,7 +1059,7 @@ serial_get_event(RD_NTHANDLE handle, uint32 * result)
 
 /* Read timeout for a given file descriptor (device) when adding FDs to select() */
 RD_BOOL
-serial_get_timeout(RD_NTHANDLE handle, uint32 length, uint32 * timeout, uint32 * itv_timeout)
+serial_get_timeout(RD_NTHANDLE handle, uint32_t length, uint32_t * timeout, uint32_t * itv_timeout)
 {
 	int index;
 	SERIAL_DEVICE *pser_inf;

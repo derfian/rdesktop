@@ -21,15 +21,15 @@
 
 #include "rdesktop.h"
 
-extern uint8 *g_next_packet;
+extern uint8_t *g_next_packet;
 
 extern RDPCOMP g_mppc_dict;
 
 
 static void
-process_ts_fp_update_by_code(STREAM s, uint8 code)
+process_ts_fp_update_by_code(STREAM s, uint8_t code)
 {
-	uint16 count, x, y;
+	uint16_t count, x, y;
 
 	switch (code)
 	{
@@ -42,7 +42,7 @@ process_ts_fp_update_by_code(STREAM s, uint8 code)
 			process_bitmap_updates(s);
 			break;
 		case FASTPATH_UPDATETYPE_PALETTE:
-			in_uint8s(s, 2);	/* uint16 = 2 */
+			in_uint8s(s, 2);	/* uint16_t = 2 */
 			process_palette(s);
 			break;
 		case FASTPATH_UPDATETYPE_SYNCHRONIZE:
@@ -77,11 +77,11 @@ process_ts_fp_update_by_code(STREAM s, uint8 code)
 void
 process_ts_fp_updates(STREAM s)
 {
-	uint16 length;
-	uint8 hdr, code, frag, comp, ctype = 0;
-	uint8 *next;
+	uint16_t length;
+	uint8_t hdr, code, frag, comp, ctype = 0;
+	uint8_t *next;
 
-	uint32 roff, rlen;
+	uint32_t roff, rlen;
 	struct stream *ns = &(g_mppc_dict.ns);
 	struct stream *ts;
 
@@ -110,7 +110,7 @@ process_ts_fp_updates(STREAM s)
 				       "process_ts_fp_update_pdu(), error while decompressing packet");
 
 			/* allocate memory and copy the uncompressed data into the temporary stream */
-			ns->data = (uint8 *) xrealloc(ns->data, rlen);
+			ns->data = (uint8_t *) xrealloc(ns->data, rlen);
 
 			memcpy((ns->data), (unsigned char *) (g_mppc_dict.hist + roff), rlen);
 

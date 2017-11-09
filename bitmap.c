@@ -34,7 +34,7 @@
 #define CVAL2(p, v) { v = (*(p++)) << 8; v |= (*(p++)); }
 #endif /* L_ENDIAN */
 #else
-#define CVAL2(p, v) { v = (*((uint16*)p)); p += 2; }
+#define CVAL2(p, v) { v = (*((uint16_t*)p)); p += 2; }
 #endif /* NEED_ALIGN */
 
 #define UNROLL8(exp) { exp exp exp exp exp exp exp exp }
@@ -64,16 +64,16 @@
 
 /* 1 byte bitmap decompress */
 static RD_BOOL
-bitmap_decompress1(uint8 * output, int width, int height, uint8 * input, int size)
+bitmap_decompress1(uint8_t * output, int width, int height, uint8_t * input, int size)
 {
-	uint8 *end = input + size;
-	uint8 *prevline = NULL, *line = NULL;
+	uint8_t *end = input + size;
+	uint8_t *prevline = NULL, *line = NULL;
 	int opcode, count, offset, isfillormix, x = width;
 	int lastopcode = -1, insertmix = False, bicolour = False;
-	uint8 code;
-	uint8 colour1 = 0, colour2 = 0;
-	uint8 mixmask, mask = 0;
-	uint8 mix = 0xff;
+	uint8_t code;
+	uint8_t colour1 = 0, colour2 = 0;
+	uint8_t mixmask, mask = 0;
+	uint8_t mix = 0xff;
 	int fom_mask = 0;
 
 	while (input < end)
@@ -262,16 +262,16 @@ bitmap_decompress1(uint8 * output, int width, int height, uint8 * input, int siz
 
 /* 2 byte bitmap decompress */
 static RD_BOOL
-bitmap_decompress2(uint8 * output, int width, int height, uint8 * input, int size)
+bitmap_decompress2(uint8_t * output, int width, int height, uint8_t * input, int size)
 {
-	uint8 *end = input + size;
-	uint16 *prevline = NULL, *line = NULL;
+	uint8_t *end = input + size;
+	uint16_t *prevline = NULL, *line = NULL;
 	int opcode, count, offset, isfillormix, x = width;
 	int lastopcode = -1, insertmix = False, bicolour = False;
-	uint8 code;
-	uint16 colour1 = 0, colour2 = 0;
-	uint8 mixmask, mask = 0;
-	uint16 mix = 0xffff;
+	uint8_t code;
+	uint16_t colour1 = 0, colour2 = 0;
+	uint8_t mixmask, mask = 0;
+	uint16_t mix = 0xffff;
 	int fom_mask = 0;
 
 	while (input < end)
@@ -364,7 +364,7 @@ bitmap_decompress2(uint8 * output, int width, int height, uint8 * input, int siz
 				x = 0;
 				height--;
 				prevline = line;
-				line = ((uint16 *) output) + height * width;
+				line = ((uint16_t *) output) + height * width;
 			}
 			switch (opcode)
 			{
@@ -461,16 +461,16 @@ bitmap_decompress2(uint8 * output, int width, int height, uint8 * input, int siz
 
 /* 3 byte bitmap decompress */
 static RD_BOOL
-bitmap_decompress3(uint8 * output, int width, int height, uint8 * input, int size)
+bitmap_decompress3(uint8_t * output, int width, int height, uint8_t * input, int size)
 {
-	uint8 *end = input + size;
-	uint8 *prevline = NULL, *line = NULL;
+	uint8_t *end = input + size;
+	uint8_t *prevline = NULL, *line = NULL;
 	int opcode, count, offset, isfillormix, x = width;
 	int lastopcode = -1, insertmix = False, bicolour = False;
-	uint8 code;
-	uint8 colour1[3] = {0, 0, 0}, colour2[3] = {0, 0, 0};
-	uint8 mixmask, mask = 0;
-	uint8 mix[3] = {0xff, 0xff, 0xff};
+	uint8_t code;
+	uint8_t colour1[3] = {0, 0, 0}, colour2[3] = {0, 0, 0};
+	uint8_t mixmask, mask = 0;
+	uint8_t mix[3] = {0xff, 0xff, 0xff};
 	int fom_mask = 0;
 
 	while (input < end)
@@ -747,7 +747,7 @@ bitmap_decompress3(uint8 * output, int width, int height, uint8 * input, int siz
 
 /* decompress a colour plane */
 static int
-process_plane(uint8 * in, int width, int height, uint8 * out, int size)
+process_plane(uint8_t * in, int width, int height, uint8_t * out, int size)
 {
 	UNUSED(size);
 	int indexw;
@@ -758,10 +758,10 @@ process_plane(uint8 * in, int width, int height, uint8 * out, int size)
 	int color;
 	int x;
 	int revcode;
-	uint8 * last_line;
-	uint8 * this_line;
-	uint8 * org_in;
-	uint8 * org_out;
+	uint8_t * last_line;
+	uint8_t * this_line;
+	uint8_t * org_in;
+	uint8_t * org_out;
 
 	org_in = in;
 	org_out = out;
@@ -854,7 +854,7 @@ process_plane(uint8 * in, int width, int height, uint8 * out, int size)
 
 /* 4 byte bitmap decompress */
 static RD_BOOL
-bitmap_decompress4(uint8 * output, int width, int height, uint8 * input, int size)
+bitmap_decompress4(uint8_t * output, int width, int height, uint8_t * input, int size)
 {
 	int code;
 	int bytes_pro;
@@ -882,7 +882,7 @@ bitmap_decompress4(uint8 * output, int width, int height, uint8 * input, int siz
 
 /* main decompress function */
 RD_BOOL
-bitmap_decompress(uint8 * output, int width, int height, uint8 * input, int size, int Bpp)
+bitmap_decompress(uint8_t * output, int width, int height, uint8_t * input, int size, int Bpp)
 {
 	RD_BOOL rv = False;
 

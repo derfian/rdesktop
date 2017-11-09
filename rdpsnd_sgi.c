@@ -212,7 +212,7 @@ sgi_set_format(RD_WAVEFORMATEX * pwfx)
 }
 
 void
-sgi_volume(uint16 left, uint16 right)
+sgi_volume(uint16_t left, uint16_t right)
 {
 	double gainleft, gainright;
 	ALpv pv[1];

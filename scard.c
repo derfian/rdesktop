@@ -64,7 +64,7 @@
 
 static pthread_mutex_t **scard_mutex = NULL;
 
-static uint32 curEpoch = 0, curDevice = 0, curId = 0, curBytesOut = 0;
+static uint32_t curEpoch = 0, curDevice = 0, curId = 0, curBytesOut = 0;
 static PSCNameMapRec nameMapList = NULL;
 static int nameMapCount = 0;
 
@@ -87,7 +87,7 @@ static void *queue_handler_function(void *data);
 /* code segment */
 
 void
-scardSetInfo(uint32 epoch, uint32 device, uint32 id, uint32 bytes_out)
+scardSetInfo(uint32_t epoch, uint32_t device, uint32_t id, uint32_t bytes_out)
 {
 	curDevice = device;
 	curId = id;
@@ -96,8 +96,8 @@ scardSetInfo(uint32 epoch, uint32 device, uint32 id, uint32 bytes_out)
 }
 
 static RD_NTSTATUS
-scard_create(uint32 device_id, uint32 accessmask, uint32 sharemode, uint32 create_disposition,
-	     uint32 flags_and_attributes, char *filename, RD_NTHANDLE * phandle)
+scard_create(uint32_t device_id, uint32_t accessmask, uint32_t sharemode, uint32_t create_disposition,
+	     uint32_t flags_and_attributes, char *filename, RD_NTHANDLE * phandle)
 {
     UNUSED(device_id);
     UNUSED(accessmask);
@@ -118,7 +118,7 @@ scard_close(RD_NTHANDLE handle)
 }
 
 static RD_NTSTATUS
-scard_read(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+scard_read(RD_NTHANDLE handle, uint8_t * data, uint32_t length, uint32_t offset, uint32_t * result)
 {
 	UNUSED(handle);
 	UNUSED(data);
@@ -129,7 +129,7 @@ scard_read(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint3
 }
 
 static RD_NTSTATUS
-scard_write(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+scard_write(RD_NTHANDLE handle, uint8_t * data, uint32_t length, uint32_t offset, uint32_t * result)
 {
 	UNUSED(handle);
 	UNUSED(data);
@@ -145,7 +145,7 @@ scard_write(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint
 /* when it arrives to this function.             */
 
 int
-scard_enum_devices(uint32 * id, char *optarg)
+scard_enum_devices(uint32_t * id, char *optarg)
 {
 	char *name = optarg + 1;
 	char *alias;
@@ -2279,7 +2279,7 @@ TS_SCardAccessStartedEvent(STREAM in, STREAM out)
 
 
 static RD_NTSTATUS
-scard_device_control(RD_NTHANDLE handle, uint32 request, STREAM in, STREAM out)
+scard_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out)
 {
 	UNUSED(handle);
 	SERVER_DWORD Result = 0x00000000;
@@ -2452,7 +2452,7 @@ scard_device_control(RD_NTHANDLE handle, uint32 request, STREAM in, STREAM out)
 /* Thread functions */
 
 static STREAM
-duplicateStream(PMEM_HANDLE * handle, STREAM s, uint32 buffer_size, RD_BOOL isInputStream)
+duplicateStream(PMEM_HANDLE * handle, STREAM s, uint32_t buffer_size, RD_BOOL isInputStream)
 {
 	STREAM d = SC_xmalloc(handle, sizeof(struct stream));
 	if (d != NULL)
@@ -2504,7 +2504,7 @@ freeStream(PMEM_HANDLE * handle, STREAM s)
 #endif
 
 static PSCThreadData
-SC_addToQueue(RD_NTHANDLE handle, uint32 request, STREAM in, STREAM out)
+SC_addToQueue(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out)
 {
 	PMEM_HANDLE lcHandle = NULL;
 	PSCThreadData data = SC_xmalloc(&lcHandle, sizeof(TSCThreadData));
@@ -2694,7 +2694,7 @@ queue_handler_function(void *data)
 }
 
 static RD_NTSTATUS
-thread_wrapper(RD_NTHANDLE handle, uint32 request, STREAM in, STREAM out)
+thread_wrapper(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out)
 {
 	if (SC_addToQueue(handle, request, in, out))
 		return RD_STATUS_PENDING | 0xC0000000;

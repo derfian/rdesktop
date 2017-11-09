@@ -43,25 +43,25 @@
 #define RDSSL_RKEY RSA
 
 void rdssl_sha1_init(RDSSL_SHA1 * sha1);
-void rdssl_sha1_update(RDSSL_SHA1 * sha1, uint8 * data, uint32 len);
-void rdssl_sha1_final(RDSSL_SHA1 * sha1, uint8 * out_data);
+void rdssl_sha1_update(RDSSL_SHA1 * sha1, uint8_t * data, uint32_t len);
+void rdssl_sha1_final(RDSSL_SHA1 * sha1, uint8_t * out_data);
 void rdssl_md5_init(RDSSL_MD5 * md5);
-void rdssl_md5_update(RDSSL_MD5 * md5, uint8 * data, uint32 len);
-void rdssl_md5_final(RDSSL_MD5 * md5, uint8 * out_data);
-void rdssl_rc4_set_key(RDSSL_RC4 * rc4, uint8 * key, uint32 len);
-void rdssl_rc4_crypt(RDSSL_RC4 * rc4, uint8 * in_data, uint8 * out_data, uint32 len);
-void rdssl_rsa_encrypt(uint8 * out, uint8 * in, int len, uint32 modulus_size, uint8 * modulus,
-		       uint8 * exponent);
-RDSSL_CERT *rdssl_cert_read(uint8 * data, uint32 len);
+void rdssl_md5_update(RDSSL_MD5 * md5, uint8_t * data, uint32_t len);
+void rdssl_md5_final(RDSSL_MD5 * md5, uint8_t * out_data);
+void rdssl_rc4_set_key(RDSSL_RC4 * rc4, uint8_t * key, uint32_t len);
+void rdssl_rc4_crypt(RDSSL_RC4 * rc4, uint8_t * in_data, uint8_t * out_data, uint32_t len);
+void rdssl_rsa_encrypt(uint8_t * out, uint8_t * in, int len, uint32_t modulus_size, uint8_t * modulus,
+		       uint8_t * exponent);
+RDSSL_CERT *rdssl_cert_read(uint8_t * data, uint32_t len);
 void rdssl_cert_free(RDSSL_CERT * cert);
-RDSSL_RKEY *rdssl_cert_to_rkey(RDSSL_CERT * cert, uint32 * key_len);
+RDSSL_RKEY *rdssl_cert_to_rkey(RDSSL_CERT * cert, uint32_t * key_len);
 RD_BOOL rdssl_certs_ok(RDSSL_CERT * server_cert, RDSSL_CERT * cacert);
 int rdssl_cert_print_fp(FILE * fp, RDSSL_CERT * cert);
 void rdssl_rkey_free(RDSSL_RKEY * rkey);
-int rdssl_rkey_get_exp_mod(RDSSL_RKEY * rkey, uint8 * exponent, uint32 max_exp_len, uint8 * modulus,
-			   uint32 max_mod_len);
-RD_BOOL rdssl_sig_ok(uint8 * exponent, uint32 exp_len, uint8 * modulus, uint32 mod_len,
-		     uint8 * signature, uint32 sig_len);
+int rdssl_rkey_get_exp_mod(RDSSL_RKEY * rkey, uint8_t * exponent, uint32_t max_exp_len, uint8_t * modulus,
+			   uint32_t max_mod_len);
+RD_BOOL rdssl_sig_ok(uint8_t * exponent, uint32_t exp_len, uint8_t * modulus, uint32_t mod_len,
+		     uint8_t * signature, uint32_t sig_len);
 
 void rdssl_hmac_md5(const void *key, int key_len,
 		    const unsigned char *msg, int msg_len, unsigned char *md);

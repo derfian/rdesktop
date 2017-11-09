@@ -39,7 +39,7 @@ extern RDPDR_DEVICE g_rdpdr_device[];
 /* optarg looks like ':LPT1=/dev/lp0'            */
 /* when it arrives to this function.             */
 int
-parallel_enum_devices(uint32 * id, char *optarg)
+parallel_enum_devices(uint32_t * id, char *optarg)
 {
 	PARALLEL_DEVICE *ppar_info;
 
@@ -75,8 +75,8 @@ parallel_enum_devices(uint32 * id, char *optarg)
 }
 
 static RD_NTSTATUS
-parallel_create(uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition,
-		uint32 flags, char *filename, RD_NTHANDLE * handle)
+parallel_create(uint32_t device_id, uint32_t access, uint32_t share_mode, uint32_t disposition,
+		uint32_t flags, char *filename, RD_NTHANDLE * handle)
 {
 	UNUSED(access);
 	UNUSED(share_mode);
@@ -119,7 +119,7 @@ parallel_close(RD_NTHANDLE handle)
 }
 
 static RD_NTSTATUS
-parallel_read(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+parallel_read(RD_NTHANDLE handle, uint8_t * data, uint32_t length, uint32_t offset, uint32_t * result)
 {
 	UNUSED(offset);
 	*result = read(handle, data, length);
@@ -127,7 +127,7 @@ parallel_read(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, ui
 }
 
 static RD_NTSTATUS
-parallel_write(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+parallel_write(RD_NTHANDLE handle, uint8_t * data, uint32_t length, uint32_t offset, uint32_t * result)
 {
 	UNUSED(offset);
 	int rc = RD_STATUS_SUCCESS;
@@ -163,7 +163,7 @@ parallel_write(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, u
 }
 
 static RD_NTSTATUS
-parallel_device_control(RD_NTHANDLE handle, uint32 request, STREAM in, STREAM out)
+parallel_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out)
 {
 	UNUSED(handle);
 	UNUSED(in);

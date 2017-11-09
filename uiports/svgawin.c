@@ -60,10 +60,10 @@ char** g_argv = 0;
 int UpAndRunning = 0;
 int g_sock = 0;
 int deactivated = 0;
-uint32 ext_disc_reason = 0;
+uint32_t ext_disc_reason = 0;
 char g_servername[128] = "";
-static uint32* colmap = 0;
-static uint8* desk_save = 0;
+static uint32_t* colmap = 0;
+static uint8_t* desk_save = 0;
 static int g_server_Bpp = 1;
 
 /* Keyboard LEDS */
@@ -73,7 +73,7 @@ static int scrolllock;
 
 // this is non null if vgalib has non accel functions available
 // reading from video memory is sooo slow
-static uint8* sdata = 0;
+static uint8_t* sdata = 0;
 static int g_save_mem = 0; // for video memory use e.g. sdata == 0
 
 // video acceleration
@@ -89,7 +89,7 @@ int clip_endx;
 int clip_endy;
 
 // mouse
-uint8 mouse_under[32 * 32 * 4]; // save area under mouse
+uint8_t mouse_under[32 * 32 * 4]; // save area under mouse
 int mousex = 0;
 int mousey = 0;
 int mouseb = 0;
@@ -97,8 +97,8 @@ int mouseb = 0;
 // mouse info
 typedef struct
 {
-  uint8 andmask[32 * 32];
-  uint8 xormask[32 * 32];
+  uint8_t andmask[32 * 32];
+  uint8_t xormask[32 * 32];
   int x;
   int y;
   int w;
@@ -117,15 +117,15 @@ char g_redirect_domain[16];
 char g_redirect_password[64];
 char g_redirect_username[64];
 char g_redirect_cookie[128];
-uint32 g_redirect_flags = 0;
+uint32_t g_redirect_flags = 0;
 
 // bitmap
 typedef struct
 {
   int width;
   int height;
-  uint8* data;
-  uint8 Bpp;
+  uint8_t* data;
+  uint8_t Bpp;
 } bitmap;
 
 typedef struct
@@ -200,7 +200,7 @@ int get_pixel(int x, int y)
       if (g_server_Bpp == 1)
         return sdata[y * g_width + x];
       else if (g_server_Bpp == 2)
-        return ((uint16*)sdata)[y * g_width + x];
+        return ((uint16_t*)sdata)[y * g_width + x];
       else
         return 0;
     }
@@ -230,7 +230,7 @@ void set_pixel(int x, int y, int pixel, int op)
         if (g_server_Bpp == 1)
           sdata[y * g_width + x] = pixel;
         else if (g_server_Bpp == 2)
-          ((uint16*)sdata)[y * g_width + x] = pixel;
+          ((uint16_t*)sdata)[y * g_width + x] = pixel;
       }
       else
       {
@@ -243,29 +243,29 @@ void set_pixel(int x, int y, int pixel, int op)
 
 //*****************************************************************************
 // get a pixel from a bitmap
-int get_pixel2(int x, int y, uint8* data, int width, int bpp)
+int get_pixel2(int x, int y, uint8_t* data, int width, int bpp)
 {
   if (bpp == 8)
     return data[y * width + x];
   else if (bpp == 16)
-    return ((uint16*)data)[y * width + x];
+    return ((uint16_t*)data)[y * width + x];
   else
     return 0;
 }
 
 //*****************************************************************************
 // set a pixel in a bitmap
-void set_pixel2(int x, int y, int pixel, uint8* data, int width, int bpp)
+void set_pixel2(int x, int y, int pixel, uint8_t* data, int width, int bpp)
 {
   if (bpp == 8)
     data[y * width + x] = pixel;
   else if (bpp == 16)
-    ((uint16*)data)[y * width + x] = pixel;
+    ((uint16_t*)data)[y * width + x] = pixel;
 }
 
 //*****************************************************************************
 // get a pointer into a bitmap
-uint8* get_ptr(int x, int y, uint8* data, int width, int bpp)
+uint8_t* get_ptr(int x, int y, uint8_t* data, int width, int bpp)
 {
   if (bpp == 8)
     return data + (y * width + x);
@@ -277,7 +277,7 @@ uint8* get_ptr(int x, int y, uint8* data, int width, int bpp)
 
 //*****************************************************************************
 // check if a certain pixel is set in a bitmap
-RD_BOOL is_pixel_on(uint8* data, int x, int y, int width, int bpp)
+RD_BOOL is_pixel_on(uint8_t* data, int x, int y, int width, int bpp)
 {
   int start;
   int shift;
@@ -304,7 +304,7 @@ RD_BOOL is_pixel_on(uint8* data, int x, int y, int width, int bpp)
 }
 
 //*****************************************************************************
-void set_pixel_on(uint8* data, int x, int y, int width, int bpp, int pixel)
+void set_pixel_on(uint8_t* data, int x, int y, int width, int bpp, int pixel)
 {
   if (bpp == 8)
   {
@@ -351,7 +351,7 @@ int warp_coords(int* x, int* y, int* cx, int* cy, int* srcx, int* srcy)
 }
 
 //*****************************************************************************
-void copy_mem(uint8* d, uint8* s, int n)
+void copy_mem(uint8_t* d, uint8_t* s, int n)
 {
   while (n & (~7))
   {
@@ -373,7 +373,7 @@ void copy_mem(uint8* d, uint8* s, int n)
 }
 
 //*****************************************************************************
-void copy_memb(uint8* d, uint8* s, int n)
+void copy_memb(uint8_t* d, uint8_t* s, int n)
 {
   d = (d + n) - 1;
   s = (s + n) - 1;
@@ -398,11 +398,11 @@ void copy_memb(uint8* d, uint8* s, int n)
 
 //*****************************************************************************
 // all in pixel except line_size is in bytes
-void accel_draw_box(int x, int y, int cx, int cy, uint8* data, int line_size)
+void accel_draw_box(int x, int y, int cx, int cy, uint8_t* data, int line_size)
 {
   int i;
-  uint8* s;
-  uint8* d;
+  uint8_t* s;
+  uint8_t* d;
 
   if (sdata != 0)
   {
@@ -434,8 +434,8 @@ void accel_draw_box(int x, int y, int cx, int cy, uint8* data, int line_size)
 void accel_fill_rect(int x, int y, int cx, int cy, int color)
 {
   int i;
-  uint8* temp;
-  uint8* d;
+  uint8_t* temp;
+  uint8_t* d;
 
   if (sdata != 0)
   {
@@ -445,7 +445,7 @@ void accel_fill_rect(int x, int y, int cx, int cy, int color)
         temp[i] = color;
     else if (g_server_Bpp == 2)
       for (i = 0; i < cx; i++)
-        ((uint16*)temp)[i] = color;
+        ((uint16_t*)temp)[i] = color;
     d = get_ptr(x, y, sdata, g_width, g_server_depth);
     for (i = 0; i < cy; i++)
     {
@@ -467,7 +467,7 @@ void accel_fill_rect(int x, int y, int cx, int cy, int color)
         temp[i] = color;
     else if (g_server_Bpp == 2)
       for (i = 0; i < cx; i++)
-        ((uint16*)temp)[i] = color;
+        ((uint16_t*)temp)[i] = color;
     for (i = 0; i < cy; i++)
       vga_drawscansegment(temp, x, y + i, cx * g_server_Bpp);
     xfree(temp);
@@ -477,9 +477,9 @@ void accel_fill_rect(int x, int y, int cx, int cy, int color)
 //*****************************************************************************
 void accel_screen_copy(int x, int y, int cx, int cy, int srcx, int srcy)
 {
-  uint8* temp;
-  uint8* s;
-  uint8* d;
+  uint8_t* temp;
+  uint8_t* s;
+  uint8_t* d;
   int i;
 
   if (sdata != 0)
@@ -525,7 +525,7 @@ void accel_screen_copy(int x, int y, int cx, int cy, int srcx, int srcy)
   else
   {
     // slow
-    temp = (uint8*)xmalloc(cx * cy * g_server_Bpp);
+    temp = (uint8_t*)xmalloc(cx * cy * g_server_Bpp);
     for (i = 0; i < cy; i++)
       vga_getscansegment(get_ptr(0, i, temp, cx, g_server_depth), srcx, srcy + i, cx * g_server_Bpp);
     for (i = 0; i < cy; i++)
@@ -571,7 +571,7 @@ void fill_rect(int x, int y, int cx, int cy, int colour, int opcode)
 }
 
 //*****************************************************************************
-void get_rect(int x, int y, int cx, int cy, uint8* p)
+void get_rect(int x, int y, int cx, int cy, uint8_t* p)
 {
   int i;
 
@@ -622,7 +622,7 @@ void draw_cursor_under(int ox, int oy)
   int i;
   int j;
   int k;
-  uint8* ptr;
+  uint8_t* ptr;
   int len;
 
   if (ox < 0)
@@ -652,8 +652,8 @@ void draw_cursor(void)
   int j;
   int k;
   int pixel;
-  uint8 mouse_a[32 * 32 * 4];
-  uint8* ptr;
+  uint8_t mouse_a[32 * 32 * 4];
+  uint8_t* ptr;
   int len;
 
   if (!g_draw_mouse)
@@ -749,7 +749,7 @@ void draw_cache_rects(void)
   int i;
   myrect* rect;
   myrect* rect1;
-  uint8* p;
+  uint8_t* p;
 
   // draw all the rects
   rect = head_rect;
@@ -855,7 +855,7 @@ int ui_init(void)
 {
   vga_init();
   memset(&mcursor, 0, sizeof(tcursor));
-  desk_save = (uint8*)xmalloc(0x38400 * g_server_Bpp);
+  desk_save = (uint8_t*)xmalloc(0x38400 * g_server_Bpp);
   return 1;
 }
 
@@ -1044,13 +1044,13 @@ int ui_select(int in)
 }
 
 /*****************************************************************************/
-void* ui_create_glyph(int width, int height, uint8* data)
+void* ui_create_glyph(int width, int height, uint8_t* data)
 {
   int i, j;
-  uint8* glyph_data;
+  uint8_t* glyph_data;
   bitmap* the_glyph;
 
-  glyph_data = (uint8*)xmalloc(width * height);
+  glyph_data = (uint8_t*)xmalloc(width * height);
   the_glyph = (bitmap*)xmalloc(sizeof(bitmap));
   the_glyph->width = width;
   the_glyph->height = height;
@@ -1142,12 +1142,12 @@ void ui_set_colourmap(void* map)
 }
 
 /*****************************************************************************/
-RD_HBITMAP ui_create_bitmap(int width, int height, uint8* data)
+RD_HBITMAP ui_create_bitmap(int width, int height, uint8_t* data)
 {
   bitmap* b;
 
   b = (bitmap*)xmalloc(sizeof(bitmap));
-  b->data = (uint8*)xmalloc(width * height * g_server_Bpp);
+  b->data = (uint8_t*)xmalloc(width * height * g_server_Bpp);
   b->width = width;
   b->height = height;
   b->Bpp = g_server_Bpp;
@@ -1201,11 +1201,11 @@ void draw_glyph (int x, int y, RD_HGLYPH glyph, int fgcolour)
 }
 
 /*****************************************************************************/
-void ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode,
+void ui_draw_text(uint8_t font, uint8_t flags, uint8_t opcode, int mixmode,
                   int x, int y,
                   int clipx, int clipy, int clipcx, int clipcy,
                   int boxx, int boxy, int boxcx, int boxcy, BRUSH * brush,
-                  int bgcolour, int fgcolour, uint8* text, uint8 length)
+                  int bgcolour, int fgcolour, uint8_t* text, uint8_t length)
 {
   int i;
   int j;
@@ -1250,7 +1250,7 @@ void ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode,
         entry = cache_get_text(text[i + 1]);
         if (entry != NULL)
         {
-          if ((((uint8 *) (entry->data))[1] == 0) && (!(flags & TEXT2_IMPLICIT_X)))
+          if ((((uint8_t *) (entry->data))[1] == 0) && (!(flags & TEXT2_IMPLICIT_X)))
           {
             if (flags & TEXT2_VERTICAL)
               y += text[i + 2];
@@ -1258,7 +1258,7 @@ void ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode,
               x += text[i + 2];
           }
           for (j = 0; j < entry->size; j++)
-            DO_GLYPH(((uint8 *) (entry->data)), j);
+            DO_GLYPH(((uint8_t *) (entry->data)), j);
         }
         if (i + 2 < length)
           i += 3;
@@ -1284,7 +1284,7 @@ void ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode,
 
 //*****************************************************************************
 // Bresenham's line drawing algorithm
-void ui_line(uint8 opcode, int startx, int starty, int endx,
+void ui_line(uint8_t opcode, int startx, int starty, int endx,
              int endy, PEN* pen)
 {
   int dx;
@@ -1375,7 +1375,7 @@ void ui_line(uint8 opcode, int startx, int starty, int endx,
 }
 
 /*****************************************************************************/
-void ui_triblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_triblt(uint8_t opcode, int x, int y, int cx, int cy,
                RD_HBITMAP src, int srcx, int srcy,
                BRUSH* brush, int bgcolour, int fgcolour)
 {
@@ -1383,7 +1383,7 @@ void ui_triblt(uint8 opcode, int x, int y, int cx, int cy,
 }
 
 /*****************************************************************************/
-void ui_memblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_memblt(uint8_t opcode, int x, int y, int cx, int cy,
                RD_HBITMAP src, int srcx, int srcy)
 {
   bitmap* b;
@@ -1415,9 +1415,9 @@ void ui_memblt(uint8 opcode, int x, int y, int cx, int cy,
 }
 
 /*****************************************************************************/
-void ui_desktop_restore(uint32 offset, int x, int y, int cx, int cy)
+void ui_desktop_restore(uint32_t offset, int x, int y, int cx, int cy)
 {
-  uint8* p;
+  uint8_t* p;
 
   if (offset > 0x38400)
     offset = 0;
@@ -1428,9 +1428,9 @@ void ui_desktop_restore(uint32 offset, int x, int y, int cx, int cy)
 }
 
 /*****************************************************************************/
-void ui_desktop_save(uint32 offset, int x, int y, int cx, int cy)
+void ui_desktop_save(uint32_t offset, int x, int y, int cx, int cy)
 {
-  uint8* p;
+  uint8_t* p;
 
   if (offset > 0x38400)
     offset = 0;
@@ -1455,12 +1455,12 @@ void ui_rect(int x, int y, int cx, int cy, int colour)
 }
 
 /*****************************************************************************/
-void ui_screenblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_screenblt(uint8_t opcode, int x, int y, int cx, int cy,
                   int srcx, int srcy)
 {
   int i;
   int j;
-  uint8* temp;
+  uint8_t* temp;
 
   if (x == srcx && y == srcy)
     return;
@@ -1472,7 +1472,7 @@ void ui_screenblt(uint8 opcode, int x, int y, int cx, int cy,
       accel_screen_copy(x, y, cx, cy, srcx, srcy);
     else
     {
-      temp = (uint8*)xmalloc(cx * cy * g_server_Bpp);
+      temp = (uint8_t*)xmalloc(cx * cy * g_server_Bpp);
       for (i = 0; i < cy; i++)
         for (j = 0; j < cx; j++)
           set_pixel2(j, i, get_pixel(srcx + j, srcy + i), temp, cx, g_server_depth);
@@ -1487,12 +1487,12 @@ void ui_screenblt(uint8 opcode, int x, int y, int cx, int cy,
 }
 
 /*****************************************************************************/
-void ui_patblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_patblt(uint8_t opcode, int x, int y, int cx, int cy,
                BRUSH * brush, int bgcolour, int fgcolour)
 {
   int i;
   int j;
-  uint8 ipattern[8];
+  uint8_t ipattern[8];
 
   if (warp_coords(&x, &y, &cx, &cy, NULL, NULL))
   {
@@ -1520,7 +1520,7 @@ void ui_patblt(uint8 opcode, int x, int y, int cx, int cy,
 }
 
 /*****************************************************************************/
-void ui_destblt(uint8 opcode, int x, int y, int cx, int cy)
+void ui_destblt(uint8_t opcode, int x, int y, int cx, int cy)
 {
   if (warp_coords(&x, &y, &cx, &cy, NULL, NULL))
   {
@@ -1550,7 +1550,7 @@ void ui_set_null_cursor(void)
 
 /*****************************************************************************/
 void ui_paint_bitmap(int x, int y, int cx, int cy,
-                     int width, int height, uint8* data)
+                     int width, int height, uint8_t* data)
 {
   if (warp_coords(&x, &y, &cx, &cy, NULL, NULL))
   {
@@ -1564,7 +1564,7 @@ void ui_paint_bitmap(int x, int y, int cx, int cy,
 /*****************************************************************************/
 void* ui_create_cursor(unsigned int x, unsigned int y,
                        int width, int height,
-                       uint8* andmask, uint8* xormask)
+                       uint8_t* andmask, uint8_t* xormask)
 {
   tcursor* c;
   int i;
@@ -1616,7 +1616,7 @@ void ui_set_cursor(void* cursor)
 }
 
 /*****************************************************************************/
-uint16 ui_get_numlock_state(unsigned int state)
+uint16_t ui_get_numlock_state(unsigned int state)
 {
   return 0;
 }
@@ -1645,36 +1645,36 @@ void ui_end_update(void)
 }
 
 /*****************************************************************************/
-void ui_polygon(uint8 opcode, uint8 fillmode, RD_POINT * point, int npoints,
+void ui_polygon(uint8_t opcode, uint8_t fillmode, RD_POINT * point, int npoints,
                 BRUSH * brush, int bgcolour, int fgcolour)
 {
 }
 
 /*****************************************************************************/
-void ui_polyline(uint8 opcode, RD_POINT * points, int npoints, PEN * pen)
+void ui_polyline(uint8_t opcode, RD_POINT * points, int npoints, PEN * pen)
 {
 }
 
 /*****************************************************************************/
-void ui_ellipse(uint8 opcode, uint8 fillmode,
+void ui_ellipse(uint8_t opcode, uint8_t fillmode,
                 int x, int y, int cx, int cy,
                 BRUSH * brush, int bgcolour, int fgcolour)
 {
 }
 
 /*****************************************************************************/
-void generate_random(uint8* random)
+void generate_random(uint8_t* random)
 {
   memcpy(random, "12345678901234567890123456789012", 32);
 }
 
 /*****************************************************************************/
-void save_licence(uint8* data, int length)
+void save_licence(uint8_t* data, int length)
 {
 }
 
 /*****************************************************************************/
-int load_licence(uint8** data)
+int load_licence(uint8_t** data)
 {
   return 0;
 }
@@ -1826,9 +1826,9 @@ void out_params(void)
 }
 
 /* produce a hex dump */
-void hexdump(uint8* p, uint32 len)
+void hexdump(uint8_t* p, uint32_t len)
 {
-  uint8* line;
+  uint8_t* line;
   int i;
   int thisline;
   int offset;

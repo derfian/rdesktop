@@ -92,7 +92,7 @@ tcp_can_send(int sck, int millis)
 
 /* Initialise TCP transport data packet */
 STREAM
-tcp_init(uint32 maxlen)
+tcp_init(uint32_t maxlen)
 {
 	static int cur_stream_id = 0;
 	STREAM result = NULL;
@@ -182,9 +182,9 @@ tcp_send(STREAM s)
 
 /* Receive a message on the TCP layer */
 STREAM
-tcp_recv(STREAM s, uint32 length)
+tcp_recv(STREAM s, uint32_t length)
 {
-	uint32 new_length, end_offset, p_offset;
+	uint32_t new_length, end_offset, p_offset;
 	int rcvd = 0, ssl_err;
 
 	if (g_network_error == True)
@@ -195,7 +195,7 @@ tcp_recv(STREAM s, uint32 length)
 		/* read into "new" stream */
 		if (length > g_in.size)
 		{
-			g_in.data = (uint8 *) xrealloc(g_in.data, length);
+			g_in.data = (uint8_t *) xrealloc(g_in.data, length);
 			g_in.size = length;
 		}
 		g_in.end = g_in.p = g_in.data;
@@ -209,7 +209,7 @@ tcp_recv(STREAM s, uint32 length)
 		{
 			p_offset = s->p - s->data;
 			end_offset = s->end - s->data;
-			s->data = (uint8 *) xrealloc(s->data, new_length);
+			s->data = (uint8_t *) xrealloc(s->data, new_length);
 			s->size = new_length;
 			s->p = s->data + p_offset;
 			s->end = s->data + end_offset;
@@ -420,7 +420,7 @@ RD_BOOL
 tcp_connect(char *server)
 {
 	socklen_t option_len;
-	uint32 option_value;
+	uint32_t option_value;
 	int i;
 
 #ifdef IPv6
@@ -485,7 +485,7 @@ tcp_connect(char *server)
 	}
 
 	servaddr.sin_family = AF_INET;
-	servaddr.sin_port = htons((uint16) g_tcp_port_rdp);
+	servaddr.sin_port = htons((uint16_t) g_tcp_port_rdp);
 
 	if (connect(g_sock, (struct sockaddr *) &servaddr, sizeof(struct sockaddr)) < 0)
 	{
@@ -515,12 +515,12 @@ tcp_connect(char *server)
 	}
 
 	g_in.size = 4096;
-	g_in.data = (uint8 *) xmalloc(g_in.size);
+	g_in.data = (uint8_t *) xmalloc(g_in.size);
 
 	for (i = 0; i < STREAM_COUNT; i++)
 	{
 		g_out[i].size = 4096;
-		g_out[i].data = (uint8 *) xmalloc(g_out[i].size);
+		g_out[i].data = (uint8_t *) xmalloc(g_out[i].size);
 	}
 
 	return True;
@@ -552,7 +552,7 @@ tcp_get_address()
 	socklen_t len = sizeof(sockaddr);
 	if (getsockname(g_sock, (struct sockaddr *) &sockaddr, &len) == 0)
 	{
-		uint8 *ip = (uint8 *) & sockaddr.sin_addr;
+		uint8_t *ip = (uint8_t *) & sockaddr.sin_addr;
 		sprintf(ipaddr, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 	}
 	else

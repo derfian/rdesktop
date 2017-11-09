@@ -20,7 +20,7 @@
 
 #include "rdesktop.h"
 
-uint16 g_mcs_userid;
+uint16_t g_mcs_userid;
 extern VCHANNEL g_channels[];
 extern unsigned int g_num_channels;
 
@@ -87,7 +87,7 @@ static RD_BOOL
 mcs_recv_connect_response(STREAM mcs_data)
 {
 	UNUSED(mcs_data);
-	uint8 result;
+	uint8_t result;
 	int length;
 	STREAM s;
 
@@ -158,9 +158,9 @@ mcs_send_aurq(void)
 
 /* Expect a AUcf message (ASN.1 PER) */
 static RD_BOOL
-mcs_recv_aucf(uint16 * mcs_userid)
+mcs_recv_aucf(uint16_t * mcs_userid)
 {
-	uint8 opcode, result;
+	uint8_t opcode, result;
 	STREAM s;
 
 	s = iso_recv(NULL);
@@ -189,7 +189,7 @@ mcs_recv_aucf(uint16 * mcs_userid)
 
 /* Send a CJrq message (ASN.1 PER) */
 static void
-mcs_send_cjrq(uint16 chanid)
+mcs_send_cjrq(uint16_t chanid)
 {
 	STREAM s;
 
@@ -209,7 +209,7 @@ mcs_send_cjrq(uint16 chanid)
 static RD_BOOL
 mcs_recv_cjcf(void)
 {
-	uint8 opcode, result;
+	uint8_t opcode, result;
 	STREAM s;
 
 	s = iso_recv(NULL);
@@ -251,9 +251,9 @@ mcs_init(int length)
 
 /* Send an MCS transport data packet to a specific channel */
 void
-mcs_send_to_channel(STREAM s, uint16 channel)
+mcs_send_to_channel(STREAM s, uint16_t channel)
 {
-	uint16 length;
+	uint16_t length;
 
 	s_pop_layer(s, mcs_hdr);
 	length = s->end - s->p - 8;
@@ -277,9 +277,9 @@ mcs_send(STREAM s)
 
 /* Receive an MCS transport data packet */
 STREAM
-mcs_recv(uint16 * channel, uint8 * rdpver)
+mcs_recv(uint16_t * channel, uint8_t * rdpver)
 {
-	uint8 opcode, appid, length;
+	uint8_t opcode, appid, length;
 	STREAM s;
 
 	s = iso_recv(rdpver);
@@ -309,7 +309,7 @@ mcs_recv(uint16 * channel, uint8 * rdpver)
 
 RD_BOOL
 mcs_connect_start(char *server, char *username, char *domain, char *password,
-		  RD_BOOL reconnect, uint32 * selected_protocol)
+		  RD_BOOL reconnect, uint32_t * selected_protocol)
 {
 	return iso_connect(server, username, domain, password, reconnect, selected_protocol);
 }

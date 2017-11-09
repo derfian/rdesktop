@@ -22,14 +22,14 @@
 
 #include "types.h"
 
-uint32 utils_djb2_hash(const char *str);
+uint32_t utils_djb2_hash(const char *str);
 char *utils_string_escape(const char *str);
 char *utils_string_unescape(const char *str);
 int utils_locale_to_utf8(const char *src, size_t is, char *dest, size_t os);
 int utils_mkdir_safe(const char *path, int mask);
 int utils_mkdir_p(const char *path, int mask);
-void utils_calculate_dpi_scale_factors(uint32 *physwidth, uint32 *physheight,
-				       uint32 *desktopscale, uint32 *devicescale);
+void utils_calculate_dpi_scale_factors(uint32_t *physwidth, uint32_t *physheight,
+				       uint32_t *desktopscale, uint32_t *devicescale);
 
 typedef enum log_level_t
 {

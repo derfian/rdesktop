@@ -155,7 +155,7 @@ printercache_rename_blob(char *printer, char *new_printer)
 
 
 int
-printercache_load_blob(char *printer_name, uint8 ** data)
+printercache_load_blob(char *printer_name, uint8_t ** data)
 {
 	char *home, *path;
 	struct stat st;
@@ -187,7 +187,7 @@ printercache_load_blob(char *printer_name, uint8 ** data)
 		return 0;
 	}
 
-	*data = (uint8 *) xmalloc(st.st_size);
+	*data = (uint8_t *) xmalloc(st.st_size);
 	length = read(fd, *data, st.st_size);
 	close(fd);
 	xfree(path);
@@ -195,7 +195,7 @@ printercache_load_blob(char *printer_name, uint8 ** data)
 }
 
 static void
-printercache_save_blob(char *printer_name, uint8 * data, uint32 length)
+printercache_save_blob(char *printer_name, uint8_t * data, uint32_t length)
 {
 	char *home, *path;
 	int fd;
@@ -236,7 +236,7 @@ printercache_save_blob(char *printer_name, uint8 * data, uint32 length)
 void
 printercache_process(STREAM s)
 {
-	uint32 type, printer_length, driver_length, printer_unicode_length, blob_length;
+	uint32_t type, printer_length, driver_length, printer_unicode_length, blob_length;
 	char device_name[9], *printer, *driver;
 
 	printer = driver = NULL;

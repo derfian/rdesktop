@@ -45,7 +45,7 @@ int g_polygon_ellipse_orders = 0;
 int g_bitmap_cache = 1;
 int g_bitmap_cache_persist_enable = 0;
 int g_bitmap_cache_precache = 1;
-uint32 g_rdp5_performanceflags =
+uint32_t g_rdp5_performanceflags =
   RDP5_NO_WALLPAPER | RDP5_NO_FULLWINDOWDRAG | RDP5_NO_MENUANIMATIONS;
 int g_console_session = 0;
 int g_keylayout = 0x409; /* Defaults to US keyboard layout */
@@ -88,7 +88,7 @@ char g_redirect_domain[16];
 char g_redirect_password[64];
 char g_redirect_username[64];
 char g_redirect_cookie[128];
-uint32 g_redirect_flags = 0;
+uint32_t g_redirect_flags = 0;
 
 #define COLOR16TO32(color) \
 ( \
@@ -97,7 +97,7 @@ uint32 g_redirect_flags = 0;
   ((((color << 3) & 0xf8) | ((color >>  2) & 0x7)) << 16) \
 )
 
-static uint32 g_ops[16] =
+static uint32_t g_ops[16] =
 {
   GR_MODE_CLEAR,         /* 0 */
   GR_MODE_NOR,           /* ~(src | dst) */
@@ -144,7 +144,7 @@ static int rop(int rop, int src, int dst)
 }
 
 /*****************************************************************************/
-static int get_pixel32(uint8 * data, int x, int y,
+static int get_pixel32(uint8_t * data, int x, int y,
                        int width, int height)
 {
   if (x >= 0 && y >= 0 && x < width && y < height)
@@ -158,7 +158,7 @@ static int get_pixel32(uint8 * data, int x, int y,
 }
 
 /*****************************************************************************/
-static void set_pixel32(uint8 * data, int x, int y,
+static void set_pixel32(uint8_t * data, int x, int y,
                         int width, int height, int pixel)
 {
   if (x >= 0 && y >= 0 && x < width && y < height)
@@ -223,7 +223,7 @@ static int warp_coords(int * x, int * y, int * cx, int * cy,
 
 /******************************************************************************/
 /* check if a certain pixel is set in a bitmap */
-static int is_pixel_on(uint8 * data, int x, int y, int width, int bpp)
+static int is_pixel_on(uint8_t * data, int x, int y, int width, int bpp)
 {
   int start;
   int shift;
@@ -283,7 +283,7 @@ void ui_bell(void)
 
 /*****************************************************************************/
 /* have to convert the RDP glyph to nanox glyph */
-void * ui_create_glyph(int width, int height, uint8 * data)
+void * ui_create_glyph(int width, int height, uint8_t * data)
 {
   char * p, * q, * r;
   int datasize, i, j;
@@ -336,11 +336,11 @@ void ui_set_colourmap(void * map)
 }
 
 /*****************************************************************************/
-void * ui_create_bitmap(int width, int height, uint8 * data)
+void * ui_create_bitmap(int width, int height, uint8_t * data)
 {
   GR_WINDOW_ID pixmap;
-  uint8 * p;
-  uint32 i, j, pixel;
+  uint8_t * p;
+  uint32_t i, j, pixel;
 
   p = data;
   pixmap = GrNewPixmap(width, height, 0);
@@ -351,9 +351,9 @@ void * ui_create_bitmap(int width, int height, uint8 * data)
     {
       for (j = 0; j < width; j++)
       {
-        pixel = *(((uint16 *) data) + (i * width + j));
+        pixel = *(((uint16_t *) data) + (i * width + j));
         pixel = COLOR16TO32(pixel);
-        *(((uint32 *) p) + (i * width + j)) = pixel;
+        *(((uint32_t *) p) + (i * width + j)) = pixel;
       }
     }
   }
@@ -415,11 +415,11 @@ void ui_destroy_bitmap(void * bmp)
 }
 
 /*****************************************************************************/
-void ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode,
+void ui_draw_text(uint8_t font, uint8_t flags, uint8_t opcode, int mixmode,
                   int x, int y,
                   int clipx, int clipy, int clipcx, int clipcy,
                   int boxx, int boxy, int boxcx, int boxcy, BRUSH * brush,
-                  int bgcolor, int fgcolor, uint8 * text, uint8 length)
+                  int bgcolor, int fgcolor, uint8_t * text, uint8_t length)
 {
   FONTGLYPH * glyph;
   int i, j, xyoffset, x1, y1;
@@ -471,7 +471,7 @@ void ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode,
         entry = cache_get_text(text[i + 1]);
         if (entry != NULL)
         {
-          if ((((uint8 *) (entry->data))[1] == 0) &&
+          if ((((uint8_t *) (entry->data))[1] == 0) &&
                                 (!(flags & TEXT2_IMPLICIT_X)))
           {
             if (flags & TEXT2_VERTICAL)
@@ -485,7 +485,7 @@ void ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode,
           }
           for (j = 0; j < entry->size; j++)
           {
-            DO_GLYPH(((uint8 *) (entry->data)), j);
+            DO_GLYPH(((uint8_t *) (entry->data)), j);
           }
         }
         if (i + 2 < length)
@@ -511,11 +511,11 @@ void ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode,
 }
 
 /*****************************************************************************/
-void ui_line(uint8 opcode, int startx, int starty, int endx, int endy,
+void ui_line(uint8_t opcode, int startx, int starty, int endx, int endy,
              PEN * pen)
 {
-  uint32 op;
-  uint32 color;
+  uint32_t op;
+  uint32_t color;
 
   color = pen->colour;
   if (opcode == 5) /* GR_MODE_INVERT, not supported so convert it */
@@ -542,7 +542,7 @@ void ui_line(uint8 opcode, int startx, int starty, int endx, int endy,
 }
 
 /*****************************************************************************/
-void ui_triblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_triblt(uint8_t opcode, int x, int y, int cx, int cy,
                void * src, int srcx, int srcy,
                BRUSH * brush, int bgcolor, int fgcolor)
 {
@@ -550,12 +550,12 @@ void ui_triblt(uint8 opcode, int x, int y, int cx, int cy,
 }
 
 /*****************************************************************************/
-void ui_memblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_memblt(uint8_t opcode, int x, int y, int cx, int cy,
                void * src, int srcx, int srcy)
 {
-  uint8 * dest;
-  uint8 * source;
-  uint8 * final;
+  uint8_t * dest;
+  uint8_t * source;
+  uint8_t * final;
   GR_WINDOW_INFO wi;
   int i, j, s, d;
   GR_WINDOW_ID pixmap;
@@ -597,13 +597,13 @@ void ui_memblt(uint8 opcode, int x, int y, int cx, int cy,
 }
 
 /*****************************************************************************/
-void ui_desktop_restore(uint32 offset, int x, int y, int cx, int cy)
+void ui_desktop_restore(uint32_t offset, int x, int y, int cx, int cy)
 {
 /* not used, turned off */
 }
 
 /*****************************************************************************/
-void ui_desktop_save(uint32 offset, int x, int y, int cx, int cy)
+void ui_desktop_save(uint32_t offset, int x, int y, int cx, int cy)
 {
 /* not used, turned off */
 }
@@ -621,7 +621,7 @@ void ui_rect(int x, int y, int cx, int cy, int color)
 
 /*****************************************************************************/
 /* using warp_coords cause clip seems to affect source in GrCopyArea */
-void ui_screenblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_screenblt(uint8_t opcode, int x, int y, int cx, int cy,
                   int srcx, int srcy)
 {
   if (opcode == 12)
@@ -642,11 +642,11 @@ void ui_screenblt(uint8 opcode, int x, int y, int cx, int cy,
 /* can't use stipple cause tsorigin don't work, GrPoint too slow,
    GrPoints too slow but better, using a copy from the screen,
    do the pattern and copy it back */
-void ui_patblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_patblt(uint8_t opcode, int x, int y, int cx, int cy,
                BRUSH * brush, int bgcolor, int fgcolor)
 {
-  uint8 ipattern[8], * dest, * final;
-  uint32 op;
+  uint8_t ipattern[8], * dest, * final;
+  uint32_t op;
   int i, j, s, d;
   GR_WINDOW_ID pixmap;
 
@@ -712,9 +712,9 @@ void ui_patblt(uint8 opcode, int x, int y, int cx, int cy,
 }
 
 /*****************************************************************************/
-void ui_destblt(uint8 opcode, int x, int y, int cx, int cy)
+void ui_destblt(uint8_t opcode, int x, int y, int cx, int cy)
 {
-  uint32 op;
+  uint32_t op;
 
   if (opcode == 0) /* black */
   {
@@ -746,7 +746,7 @@ void ui_destblt(uint8 opcode, int x, int y, int cx, int cy)
 
 /*****************************************************************************/
 void ui_paint_bitmap(int x, int y, int cx, int cy,
-                     int width, int height, uint8 * data)
+                     int width, int height, uint8_t * data)
 {
   void * b;
 
@@ -774,9 +774,9 @@ void ui_set_cursor(void * cursor)
 }
 
 //******************************************************************************
-static int is24on(uint8 * data, int x, int y)
+static int is24on(uint8_t * data, int x, int y)
 {
-  uint8 r, g, b;
+  uint8_t r, g, b;
   int start;
 
   if (data == 0)
@@ -791,7 +791,7 @@ static int is24on(uint8 * data, int x, int y)
 }
 
 //******************************************************************************
-static int is1on(uint8 * data, int x, int y)
+static int is1on(uint8_t * data, int x, int y)
 {
   int start;
   int shift;
@@ -806,7 +806,7 @@ static int is1on(uint8 * data, int x, int y)
 }
 
 //******************************************************************************
-static void set1(uint8 * data, int x, int y)
+static void set1(uint8_t * data, int x, int y)
 {
   int start;
   int shift;
@@ -821,9 +821,9 @@ static void set1(uint8 * data, int x, int y)
 }
 
 //******************************************************************************
-static void flipover(uint8 * data)
+static void flipover(uint8_t * data)
 {
-  uint8 adata[128];
+  uint8_t adata[128];
   int index;
 
   if (data == 0)
@@ -841,12 +841,12 @@ static void flipover(uint8 * data)
 }
 
 /*****************************************************************************/
-void * ui_create_cursor(uint32 x, uint32 y,
+void * ui_create_cursor(uint32_t x, uint32_t y,
                         int width, int height,
-                        uint8 * andmask, uint8 * xormask)
+                        uint8_t * andmask, uint8_t * xormask)
 {
-  uint8 adata[128];
-  uint8 amask[128];
+  uint8_t adata[128];
+  uint8_t amask[128];
   GR_BITMAP * databitmap;
   GR_BITMAP * maskbitmap;
   GR_CURSOR_ID cursor;
@@ -895,13 +895,13 @@ void ui_destroy_cursor(void * cursor)
 }
 
 /*****************************************************************************/
-uint16 ui_get_numlock_state(uint32 state)
+uint16_t ui_get_numlock_state(uint32_t state)
 {
   return 0;
 }
 
 /*****************************************************************************/
-uint32 read_keyboard_state(void)
+uint32_t read_keyboard_state(void)
 {
   return 0;
 }
@@ -922,14 +922,14 @@ void ui_end_update(void)
 }
 
 /*****************************************************************************/
-void ui_polygon(uint8 opcode, uint8 fillmode, POINT * point, int npoints,
+void ui_polygon(uint8_t opcode, uint8_t fillmode, POINT * point, int npoints,
                 BRUSH * brush, int bgcolor, int fgcolor)
 {
 /* not used, turned off */
 }
 
 /*****************************************************************************/
-void ui_polyline(uint8 opcode, POINT * points, int npoints, PEN * pen)
+void ui_polyline(uint8_t opcode, POINT * points, int npoints, PEN * pen)
 {
   int i, x, y, dx, dy;
 
@@ -949,7 +949,7 @@ void ui_polyline(uint8 opcode, POINT * points, int npoints, PEN * pen)
 }
 
 /*****************************************************************************/
-void ui_ellipse(uint8 opcode, uint8 fillmode,
+void ui_ellipse(uint8_t opcode, uint8_t fillmode,
                 int x, int y, int cx, int cy,
                 BRUSH * brush, int bgcolor, int fgcolor)
 {
@@ -957,18 +957,18 @@ void ui_ellipse(uint8 opcode, uint8 fillmode,
 }
 
 /*****************************************************************************/
-void generate_random(uint8 * random)
+void generate_random(uint8_t * random)
 {
   memcpy(random, "12345678901234567890123456789012", 32);
 }
 
 /*****************************************************************************/
-void save_licence(uint8 * data, int length)
+void save_licence(uint8_t * data, int length)
 {
 }
 
 /*****************************************************************************/
-int load_licence(uint8 ** data)
+int load_licence(uint8_t ** data)
 {
   return 0;
 }

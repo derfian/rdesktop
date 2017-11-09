@@ -39,7 +39,7 @@
 #define ERR_RESULT_NO_SUCH_COMMAND 0xffffffff
 
 extern RD_BOOL g_seamless_rdp;
-extern uint8 g_static_rdesktop_salt_16[];
+extern uint8_t g_static_rdesktop_salt_16[];
 extern char g_codepage[16];
 
 static RD_BOOL _ctrl_is_slave;
@@ -210,9 +210,9 @@ static void
 _ctrl_create_hash(const char *user, const char *domain, const char *host, char *hash, size_t hsize)
 {
 	RDSSL_SHA1 sha1;
-	uint8 out[20], delim;
-	uint16 version;
-	uint32 flags;
+	uint8_t out[20], delim;
+	uint16_t version;
+	uint32_t flags;
 
 	/* version\0user\0domain\0host\0flags */
 	flags = 0;
@@ -223,22 +223,22 @@ _ctrl_create_hash(const char *user, const char *domain, const char *host, char *
 		flags = CTRL_HASH_FLAG_SEAMLESS;
 
 	rdssl_sha1_init(&sha1);
-	rdssl_sha1_update(&sha1, (uint8 *) & version, sizeof(version));
+	rdssl_sha1_update(&sha1, (uint8_t *) & version, sizeof(version));
 	rdssl_sha1_update(&sha1, &delim, 1);
 
 	if (user)
-		rdssl_sha1_update(&sha1, (uint8 *) user, strlen(user));
+		rdssl_sha1_update(&sha1, (uint8_t *) user, strlen(user));
 	rdssl_sha1_update(&sha1, &delim, 1);
 
 	if (domain)
-		rdssl_sha1_update(&sha1, (uint8 *) domain, strlen(domain));
+		rdssl_sha1_update(&sha1, (uint8_t *) domain, strlen(domain));
 	rdssl_sha1_update(&sha1, &delim, 1);
 
 	if (host)
-		rdssl_sha1_update(&sha1, (uint8 *) host, strlen(host));
+		rdssl_sha1_update(&sha1, (uint8_t *) host, strlen(host));
 	rdssl_sha1_update(&sha1, &delim, 1);
 
-	rdssl_sha1_update(&sha1, (uint8 *) & flags, sizeof(flags));
+	rdssl_sha1_update(&sha1, (uint8_t *) & flags, sizeof(flags));
 	rdssl_sha1_final(&sha1, out);
 
 	sec_hash_to_string(hash, hsize, out, sizeof(out));

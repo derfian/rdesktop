@@ -20,8 +20,8 @@
 struct audio_packet
 {
 	struct stream s;
-	uint16 tick;
-	uint8 index;
+	uint16_t tick;
+	uint8_t index;
 
 	struct timeval arrive_tv;
 	struct timeval completion_tv;
@@ -36,13 +36,13 @@ struct audio_driver
 	void (*wave_out_close) (void);
 	  RD_BOOL(*wave_out_format_supported) (RD_WAVEFORMATEX * pwfx);
 	  RD_BOOL(*wave_out_set_format) (RD_WAVEFORMATEX * pwfx);
-	void (*wave_out_volume) (uint16 left, uint16 right);
+	void (*wave_out_volume) (uint16_t left, uint16_t right);
 
 	  RD_BOOL(*wave_in_open) (void);
 	void (*wave_in_close) (void);
 	  RD_BOOL(*wave_in_format_supported) (RD_WAVEFORMATEX * pwfx);
 	  RD_BOOL(*wave_in_set_format) (RD_WAVEFORMATEX * pwfx);
-	void (*wave_in_volume) (uint16 left, uint16 right);
+	void (*wave_in_volume) (uint16_t left, uint16_t right);
 
 	char *name;
 	char *description;

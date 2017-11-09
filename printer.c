@@ -34,7 +34,7 @@ get_printer_data(RD_NTHANDLE handle)
 }
 
 int
-printer_enum_devices(uint32 * id, char *optarg)
+printer_enum_devices(uint32_t * id, char *optarg)
 {
 	PRINTER *pprinter_data;
 
@@ -100,7 +100,7 @@ printer_enum_devices(uint32 * id, char *optarg)
 }
 
 static RD_NTSTATUS
-printer_create(uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition, uint32 flags,
+printer_create(uint32_t device_id, uint32_t access, uint32_t share_mode, uint32_t disposition, uint32_t flags,
 	       char *filename, RD_NTHANDLE * handle)
 {
 	UNUSED(access);
@@ -144,7 +144,7 @@ printer_close(RD_NTHANDLE handle)
 }
 
 static RD_NTSTATUS
-printer_write(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+printer_write(RD_NTHANDLE handle, uint8_t * data, uint32_t length, uint32_t offset, uint32_t * result)
 {
 	UNUSED(offset);
 	PRINTER *pprinter_data;

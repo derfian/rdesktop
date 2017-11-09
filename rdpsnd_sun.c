@@ -51,7 +51,7 @@ static RD_BOOL dsp_in;
 
 static int stereo;
 static int format;
-static uint32 snd_rate;
+static uint32_t snd_rate;
 static short samplewidth;
 static char *dsp_dev;
 
@@ -373,7 +373,7 @@ sun_set_format(RD_WAVEFORMATEX * pwfx)
 }
 
 void
-sun_volume(uint16 left, uint16 right)
+sun_volume(uint16_t left, uint16_t right)
 {
 	audio_info_t info;
 	uint balance;

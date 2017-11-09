@@ -27,12 +27,12 @@
 #define RDPEDISP_CHANNEL_NAME "Microsoft::Windows::RDS::DisplayControl"
 
 static void rdpedisp_send(STREAM s);
-static void rdpedisp_init_packet(STREAM s, uint32 type, uint32 length);
+static void rdpedisp_init_packet(STREAM s, uint32_t type, uint32_t length);
 
 static void
 rdpedisp_process_caps_pdu(STREAM s)
 {
-	uint32 tmp[3];
+	uint32_t tmp[3];
 
 	in_uint32_le(s, tmp[0]);	/* MaxNumMonitors */
 	in_uint32_le(s, tmp[1]);	/* MaxMonitorAreaFactorA */
@@ -46,7 +46,7 @@ rdpedisp_process_caps_pdu(STREAM s)
 static void
 rdpedisp_process_pdu(STREAM s)
 {
-	uint32 type;
+	uint32_t type;
 
 	/* Read DISPLAYCONTROL_HEADER */
 	in_uint32_le(s, type);	/* type */
@@ -68,10 +68,10 @@ rdpedisp_process_pdu(STREAM s)
 }
 
 static void
-rdpedisp_send_monitor_layout_pdu(uint32 width, uint32 height)
+rdpedisp_send_monitor_layout_pdu(uint32_t width, uint32_t height)
 {
 	struct stream s;
-	uint32 physwidth, physheight, desktopscale, devicescale;
+	uint32_t physwidth, physheight, desktopscale, devicescale;
 
 	memset(&s, 0, sizeof(s));
 
@@ -101,7 +101,7 @@ rdpedisp_send_monitor_layout_pdu(uint32 width, uint32 height)
 }
 
 static void
-rdpedisp_init_packet(STREAM s, uint32 type, uint32 length)
+rdpedisp_init_packet(STREAM s, uint32_t type, uint32_t length)
 {
 	s_realloc(s, length);
 	s_reset(s);
@@ -123,7 +123,7 @@ rdpedisp_is_available()
 }
 
 void
-rdpedisp_set_session_size(uint32 width, uint32 height)
+rdpedisp_set_session_size(uint32_t width, uint32_t height)
 {
 	if (rdpedisp_is_available() == False)
 		return;

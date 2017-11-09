@@ -55,16 +55,16 @@
 RDPCOMP g_mppc_dict;
 
 int
-mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen)
+mppc_expand(uint8_t * data, uint32_t clen, uint8_t ctype, uint32_t * roff, uint32_t * rlen)
 {
 	int k, walker_len = 0, walker;
-	uint32 i = 0;
+	uint32_t i = 0;
 	int next_offset, match_off;
 	int match_len;
 	int old_offset, match_bits;
 	RD_BOOL big = ctype & RDP_MPPC_BIG ? True : False;
 
-	uint8 *dict = g_mppc_dict.hist;
+	uint8_t *dict = g_mppc_dict.hist;
 
 	if ((ctype & RDP_MPPC_COMPRESSED) == 0)
 	{
@@ -120,7 +120,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 			}
 			if (next_offset >= RDP_MPPC_DICT_SIZE)
 				return -1;
-			dict[next_offset++] = (((uint32) walker) >> ((uint32) 24));
+			dict[next_offset++] = (((uint32_t) walker) >> ((uint32_t) 24));
 			walker <<= 8;
 			walker_len -= 8;
 			continue;
@@ -146,7 +146,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 			}
 			if (next_offset >= RDP_MPPC_DICT_SIZE)
 				return -1;
-			dict[next_offset++] = (uint8) (walker >> 24 | 0x80);
+			dict[next_offset++] = (uint8_t) (walker >> 24 | 0x80);
 			walker <<= 8;
 			walker_len -= 8;
 			continue;
@@ -171,7 +171,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 			   320-2367: 1110 followed by lower 11 bits of the value ( value - 320 )
 			   2368-65535: 110 followed by lower 16 bits of the value ( value - 2368 )
 			 */
-			switch (((uint32) walker) >> ((uint32) 29))
+			switch (((uint32_t) walker) >> ((uint32_t) 29))
 			{
 				case 7:	/* - 63 */
 					for (; walker_len < 9; walker_len += 8)
@@ -181,7 +181,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 						walker |= (data[i++] & 0xff) << (24 - walker_len);
 					}
 					walker <<= 3;
-					match_off = ((uint32) walker) >> ((uint32) 26);
+					match_off = ((uint32_t) walker) >> ((uint32_t) 26);
 					walker <<= 6;
 					walker_len -= 9;
 					break;
@@ -195,7 +195,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 					}
 
 					walker <<= 3;
-					match_off = (((uint32) walker) >> ((uint32) 24)) + 64;
+					match_off = (((uint32_t) walker) >> ((uint32_t) 24)) + 64;
 					walker <<= 8;
 					walker_len -= 11;
 					break;
@@ -210,7 +210,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 					}
 
 					walker <<= 2;
-					match_off = (((uint32) walker) >> ((uint32) 21)) + 320;
+					match_off = (((uint32_t) walker) >> ((uint32_t) 21)) + 320;
 					walker <<= 11;
 					walker_len -= 13;
 					break;
@@ -224,7 +224,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 					}
 
 					walker <<= 1;
-					match_off = (((uint32) walker) >> ((uint32) 16)) + 2368;
+					match_off = (((uint32_t) walker) >> ((uint32_t) 16)) + 2368;
 					walker <<= 16;
 					walker_len -= 17;
 					break;
@@ -237,7 +237,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 			   64-319: 1110 followed by the lower 8 bits of the value ( value - 64 )
 			   320-8191: 110 followed by the lower 13 bits of the value ( value - 320 )
 			 */
-			switch (((uint32) walker) >> ((uint32) 30))
+			switch (((uint32_t) walker) >> ((uint32_t) 30))
 			{
 				case 3:	/* - 63 */
 					if (walker_len < 8)
@@ -248,7 +248,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 						walker_len += 8;
 					}
 					walker <<= 2;
-					match_off = ((uint32) walker) >> ((uint32) 26);
+					match_off = ((uint32_t) walker) >> ((uint32_t) 26);
 					walker <<= 6;
 					walker_len -= 8;
 					break;
@@ -262,7 +262,7 @@ mppc_expand(uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen
 					}
 
 					walker <<= 2;
-					match_off = (((uint32) walker) >> ((uint32) 24)) + 64;
+					match_off = (((uint32_t) walker) >> ((uint32_t) 24)) + 64;
 					walker <<= 8;
 					walker_len -= 10;
 					break;

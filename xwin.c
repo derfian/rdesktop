@@ -45,8 +45,8 @@
 extern int g_sizeopt;
 extern int g_width;
 extern int g_height;
-extern uint32 g_windowed_width;
-extern uint32 g_windowed_height;
+extern uint32_t g_windowed_width;
+extern uint32_t g_windowed_height;
 extern int g_xpos;
 extern int g_ypos;
 extern int g_pos;
@@ -107,7 +107,7 @@ static RD_BOOL g_seamless_broken_restack = False;	/* WM does not properly restac
 extern RD_BOOL g_seamless_rdp;
 extern RD_BOOL g_seamless_persistent_mode;
 
-extern uint32 g_embed_wnd;
+extern uint32_t g_embed_wnd;
 RD_BOOL g_enable_compose = False;
 RD_BOOL g_Unobscured;		/* used for screenblt */
 static GC g_gc = NULL;
@@ -192,9 +192,9 @@ PropMotifWmHints;
 
 typedef struct
 {
-	uint32 red;
-	uint32 green;
-	uint32 blue;
+	uint32_t red;
+	uint32_t green;
+	uint32_t blue;
 }
 PixelColour;
 
@@ -277,7 +277,7 @@ seamless_XDrawLines(Drawable d, XPoint * points, int npoints, int xoffset, int y
 /* colour maps */
 extern RD_BOOL g_owncolmap;
 static Colormap g_xcolmap;
-static uint32 *g_colmap = NULL;
+static uint32_t *g_colmap = NULL;
 
 #define TRANSLATE(col)		( g_server_depth != 8 ? translate_colour(col) : g_owncolmap ? col : g_colmap[col] )
 #define SET_FOREGROUND(col)	XSetForeground(g_display, g_gc, TRANSLATE(col));
@@ -845,8 +845,8 @@ seamless_restack_test()
 #define LOUT24(o, x) { *(o++) = x; *(o++) = x >> 8; *(o++) = x >> 16; }
 #define LOUT32(o, x) { *(o++) = x; *(o++) = x >> 8; *(o++) = x >> 16; *(o++) = x >> 24; }
 
-static uint32
-translate_colour(uint32 colour)
+static uint32_t
+translate_colour(uint32_t colour)
 {
 	PixelColour pc;
 	switch (g_server_depth)
@@ -907,23 +907,23 @@ translate_colour(uint32 colour)
 /* *INDENT-ON* */
 
 static void
-translate8to8(const uint8 * data, uint8 * out, uint8 * end)
+translate8to8(const uint8_t * data, uint8_t * out, uint8_t * end)
 {
 	while (out < end)
-		*(out++) = (uint8) g_colmap[*(data++)];
+		*(out++) = (uint8_t) g_colmap[*(data++)];
 }
 
 static void
-translate8to16(const uint8 * data, uint8 * out, uint8 * end)
+translate8to16(const uint8_t * data, uint8_t * out, uint8_t * end)
 {
-	uint16 value;
+	uint16_t value;
 
 	if (g_compatible_arch)
 	{
 		/* *INDENT-OFF* */
 		REPEAT2
 		(
-			*((uint16 *) out) = g_colmap[*(data++)];
+			*((uint16_t *) out) = g_colmap[*(data++)];
 			out += 2;
 		)
 		/* *INDENT-ON* */
@@ -932,7 +932,7 @@ translate8to16(const uint8 * data, uint8 * out, uint8 * end)
 	{
 		while (out < end)
 		{
-			value = (uint16) g_colmap[*(data++)];
+			value = (uint16_t) g_colmap[*(data++)];
 			BOUT16(out, value);
 		}
 	}
@@ -940,7 +940,7 @@ translate8to16(const uint8 * data, uint8 * out, uint8 * end)
 	{
 		while (out < end)
 		{
-			value = (uint16) g_colmap[*(data++)];
+			value = (uint16_t) g_colmap[*(data++)];
 			LOUT16(out, value);
 		}
 	}
@@ -948,9 +948,9 @@ translate8to16(const uint8 * data, uint8 * out, uint8 * end)
 
 /* little endian - conversion happens when colourmap is built */
 static void
-translate8to24(const uint8 * data, uint8 * out, uint8 * end)
+translate8to24(const uint8_t * data, uint8_t * out, uint8_t * end)
 {
-	uint32 value;
+	uint32_t value;
 
 	if (g_compatible_arch)
 	{
@@ -971,16 +971,16 @@ translate8to24(const uint8 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate8to32(const uint8 * data, uint8 * out, uint8 * end)
+translate8to32(const uint8_t * data, uint8_t * out, uint8_t * end)
 {
-	uint32 value;
+	uint32_t value;
 
 	if (g_compatible_arch)
 	{
 		/* *INDENT-OFF* */
 		REPEAT4
 		(
-			*((uint32 *) out) = g_colmap[*(data++)];
+			*((uint32_t *) out) = g_colmap[*(data++)];
 			out += 4;
 		)
 		/* *INDENT-ON* */
@@ -1004,10 +1004,10 @@ translate8to32(const uint8 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate15to16(const uint16 * data, uint8 * out, uint8 * end)
+translate15to16(const uint16_t * data, uint8_t * out, uint8_t * end)
 {
-	uint16 pixel;
-	uint16 value;
+	uint16_t pixel;
+	uint16_t value;
 	PixelColour pc;
 
 	if (g_xserver_be)
@@ -1041,10 +1041,10 @@ translate15to16(const uint16 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate15to24(const uint16 * data, uint8 * out, uint8 * end)
+translate15to24(const uint16_t * data, uint8_t * out, uint8_t * end)
 {
-	uint32 value;
-	uint16 pixel;
+	uint32_t value;
+	uint16_t pixel;
 	PixelColour pc;
 
 	if (g_compatible_arch)
@@ -1091,10 +1091,10 @@ translate15to24(const uint16 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate15to32(const uint16 * data, uint8 * out, uint8 * end)
+translate15to32(const uint16_t * data, uint8_t * out, uint8_t * end)
 {
-	uint16 pixel;
-	uint32 value;
+	uint16_t pixel;
+	uint32_t value;
 	PixelColour pc;
 
 	if (g_compatible_arch)
@@ -1142,10 +1142,10 @@ translate15to32(const uint16 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate16to16(const uint16 * data, uint8 * out, uint8 * end)
+translate16to16(const uint16_t * data, uint8_t * out, uint8_t * end)
 {
-	uint16 pixel;
-	uint16 value;
+	uint16_t pixel;
+	uint16_t value;
 	PixelColour pc;
 
 	if (g_xserver_be)
@@ -1199,10 +1199,10 @@ translate16to16(const uint16 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate16to24(const uint16 * data, uint8 * out, uint8 * end)
+translate16to24(const uint16_t * data, uint8_t * out, uint8_t * end)
 {
-	uint32 value;
-	uint16 pixel;
+	uint32_t value;
+	uint16_t pixel;
 	PixelColour pc;
 
 	if (g_compatible_arch)
@@ -1269,10 +1269,10 @@ translate16to24(const uint16 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate16to32(const uint16 * data, uint8 * out, uint8 * end)
+translate16to32(const uint16_t * data, uint8_t * out, uint8_t * end)
 {
-	uint16 pixel;
-	uint32 value;
+	uint16_t pixel;
+	uint32_t value;
 	PixelColour pc;
 
 	if (g_compatible_arch)
@@ -1340,10 +1340,10 @@ translate16to32(const uint16 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate24to16(const uint8 * data, uint8 * out, uint8 * end)
+translate24to16(const uint8_t * data, uint8_t * out, uint8_t * end)
 {
-	uint32 pixel = 0;
-	uint16 value;
+	uint32_t pixel = 0;
+	uint16_t value;
 	PixelColour pc;
 
 	while (out < end)
@@ -1365,10 +1365,10 @@ translate24to16(const uint8 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate24to24(const uint8 * data, uint8 * out, uint8 * end)
+translate24to24(const uint8_t * data, uint8_t * out, uint8_t * end)
 {
-	uint32 pixel;
-	uint32 value;
+	uint32_t pixel;
+	uint32_t value;
 	PixelColour pc;
 
 	if (g_xserver_be)
@@ -1398,10 +1398,10 @@ translate24to24(const uint8 * data, uint8 * out, uint8 * end)
 }
 
 static void
-translate24to32(const uint8 * data, uint8 * out, uint8 * end)
+translate24to32(const uint8_t * data, uint8_t * out, uint8_t * end)
 {
-	uint32 pixel;
-	uint32 value;
+	uint32_t pixel;
+	uint32_t value;
 	PixelColour pc;
 
 	if (g_compatible_arch)
@@ -1419,7 +1419,7 @@ translate24to32(const uint8 * data, uint8 * out, uint8 * end)
 		REPEAT4
 		(
 		 /* Only read 3 bytes. Reading 4 bytes means reading beyond buffer. */
-		 *((uint32 *) out) = *((uint16 *) data) + (*((uint8 *) data + 2) << 16);
+		 *((uint32_t *) out) = *((uint16_t *) data) + (*((uint8_t *) data + 2) << 16);
 		 out += 4;
 		 data += 3;
 		)
@@ -1452,12 +1452,12 @@ translate24to32(const uint8 * data, uint8 * out, uint8 * end)
 	}
 }
 
-static uint8 *
-translate_image(int width, int height, uint8 * data)
+static uint8_t *
+translate_image(int width, int height, uint8_t * data)
 {
 	int size;
-	uint8 *out;
-	uint8 *end;
+	uint8_t *out;
+	uint8_t *end;
 
 	/*
 	   If RDP depth and X Visual depths match,
@@ -1483,7 +1483,7 @@ translate_image(int width, int height, uint8 * data)
 	}
 
 	size = width * height * (g_bpp / 8);
-	out = (uint8 *) xmalloc(size);
+	out = (uint8_t *) xmalloc(size);
 	end = out + size;
 
 	switch (g_server_depth)
@@ -1506,13 +1506,13 @@ translate_image(int width, int height, uint8 * data)
 			switch (g_bpp)
 			{
 				case 32:
-					translate16to32((uint16 *) data, out, end);
+					translate16to32((uint16_t *) data, out, end);
 					break;
 				case 24:
-					translate16to24((uint16 *) data, out, end);
+					translate16to24((uint16_t *) data, out, end);
 					break;
 				case 16:
-					translate16to16((uint16 *) data, out, end);
+					translate16to16((uint16_t *) data, out, end);
 					break;
 			}
 			break;
@@ -1520,13 +1520,13 @@ translate_image(int width, int height, uint8 * data)
 			switch (g_bpp)
 			{
 				case 32:
-					translate15to32((uint16 *) data, out, end);
+					translate15to32((uint16_t *) data, out, end);
 					break;
 				case 24:
-					translate15to24((uint16 *) data, out, end);
+					translate15to24((uint16_t *) data, out, end);
 					break;
 				case 16:
-					translate15to16((uint16 *) data, out, end);
+					translate15to16((uint16_t *) data, out, end);
 					break;
 			}
 			break;
@@ -1575,7 +1575,7 @@ xwin_refresh_pointer_map(void)
 }
 
 RD_BOOL
-get_key_state(unsigned int state, uint32 keysym)
+get_key_state(unsigned int state, uint32_t keysym)
 {
 	int modifierpos, key, keysymMask = 0;
 	int offset;
@@ -1600,7 +1600,7 @@ get_key_state(unsigned int state, uint32 keysym)
 }
 
 static void
-calculate_shifts(uint32 mask, int *shift_r, int *shift_l)
+calculate_shifts(uint32_t mask, int *shift_r, int *shift_l)
 {
 	*shift_l = ffs(mask) - 1;
 	mask >>= *shift_l;
@@ -1611,7 +1611,7 @@ calculate_shifts(uint32 mask, int *shift_r, int *shift_l)
    calculates the bits-per-pixel of this channel (a.k.a. colour weight).
  */
 static unsigned
-calculate_mask_weight(uint32 mask)
+calculate_mask_weight(uint32_t mask)
 {
 	unsigned weight = 0;
 	do
@@ -1885,8 +1885,8 @@ ui_init(void)
 	}
 
 	{
-		uint16 endianness_test = 1;
-		g_host_be = !(RD_BOOL) (*(uint8 *) (&endianness_test));
+		uint16_t endianness_test = 1;
+		g_host_be = !(RD_BOOL) (*(uint8_t *) (&endianness_test));
 	}
 
 	g_old_error_handler = XSetErrorHandler(error_handler);
@@ -1985,7 +1985,7 @@ ui_init_connection(void)
 	else if (g_sizeopt == 1)
 	{
 		/* Fetch geometry from _NET_WORKAREA */
-		uint32 x, y, cx, cy;
+		uint32_t x, y, cx, cy;
 		if (get_current_workarea(&x, &y, &cx, &cy) == 0)
 		{
 			g_width = cx;
@@ -2054,8 +2054,8 @@ get_input_mask(long *input_mask)
 RD_BOOL
 ui_create_window(void)
 {
-	uint8 null_pointer_mask[1] = { 0x80 };
-	uint8 null_pointer_data[24] = { 0x00 };
+	uint8_t null_pointer_mask[1] = { 0x80 };
+	uint8_t null_pointer_data[24] = { 0x00 };
 
 	XSetWindowAttributes attribs;
 	XClassHint *classhints;
@@ -2284,7 +2284,7 @@ xwin_toggle_fullscreen(void)
 static void
 handle_button_event(XEvent xevent, RD_BOOL down)
 {
-	uint16 button, input_type, flags = 0;
+	uint16_t button, input_type, flags = 0;
 	g_last_gesturetime = xevent.xbutton.time;
 	/* Reverse the pointer button mapping, e.g. in the case of
 	   "left-handed mouse mode"; the RDP session expects to
@@ -2384,7 +2384,7 @@ xwin_process_events(void)
 {
 	XEvent xevent;
 	KeySym keysym;
-	uint32 ev_time;
+	uint32_t ev_time;
 	char str[256];
 	Status status;
 	int events = 0;
@@ -2815,11 +2815,11 @@ ui_move_pointer(int x, int y)
 }
 
 RD_HBITMAP
-ui_create_bitmap(int width, int height, uint8 * data)
+ui_create_bitmap(int width, int height, uint8_t * data)
 {
 	XImage *image;
 	Pixmap bitmap;
-	uint8 *tdata;
+	uint8_t *tdata;
 	int bitmap_pad;
 
 	if (g_server_depth == 8)
@@ -2848,10 +2848,10 @@ ui_create_bitmap(int width, int height, uint8 * data)
 }
 
 void
-ui_paint_bitmap(int x, int y, int cx, int cy, int width, int height, uint8 * data)
+ui_paint_bitmap(int x, int y, int cx, int cy, int width, int height, uint8_t * data)
 {
 	XImage *image;
-	uint8 *tdata;
+	uint8_t *tdata;
 	int bitmap_pad;
 
 	if (g_server_depth == 8)
@@ -2898,7 +2898,7 @@ ui_destroy_bitmap(RD_HBITMAP bmp)
 }
 
 RD_HGLYPH
-ui_create_glyph(int width, int height, uint8 * data)
+ui_create_glyph(int width, int height, uint8_t * data)
 {
 	XImage *image;
 	Pixmap bitmap;
@@ -2930,13 +2930,13 @@ ui_destroy_glyph(RD_HGLYPH glyph)
 
 #define GET_BIT(ptr, bit) (*(ptr + bit / 8) & (1 << (7 - (bit % 8))))
 
-static uint32
-get_pixel(uint32 idx, uint8 * andmask, uint8 * xormask, int bpp, uint8 * xor_flag)
+static uint32_t
+get_pixel(uint32_t idx, uint8_t * andmask, uint8_t * xormask, int bpp, uint8_t * xor_flag)
 {
-	uint32 offs;
-	uint32 argb;
-	uint8 alpha;
-	uint8 *pxor;
+	uint32_t offs;
+	uint32_t argb;
+	uint8_t alpha;
+	uint8_t *pxor;
 
 	*xor_flag = 0;
 
@@ -2980,7 +2980,7 @@ get_pixel(uint32 idx, uint8 * andmask, uint8 * xormask, int bpp, uint8 * xor_fla
 
 /* Copies the pixels from src to dest with given color and offset */
 static inline void
-xcursor_stencil(XcursorImage * src, XcursorImage * dst, int dx, int dy, uint32 argb)
+xcursor_stencil(XcursorImage * src, XcursorImage * dst, int dx, int dy, uint32_t argb)
 {
 	int x, y, si, di;
 	assert(src->width == dst->width);
@@ -3007,7 +3007,7 @@ xcursor_stencil(XcursorImage * src, XcursorImage * dst, int dx, int dy, uint32 a
 static inline void
 xcursor_merge(XcursorImage * src, XcursorImage * dst)
 {
-	uint32 i;
+	uint32_t i;
 	assert(src->width == dst->width);
 	assert(src->height == dst->height);
 	for (i = 0; i < src->width * src->height; i++)
@@ -3019,14 +3019,14 @@ xcursor_merge(XcursorImage * src, XcursorImage * dst)
 }
 
 RD_HCURSOR
-ui_create_cursor(unsigned int xhot, unsigned int yhot, uint32 width,
-		 uint32 height, uint8 * andmask, uint8 * xormask, int bpp)
+ui_create_cursor(unsigned int xhot, unsigned int yhot, uint32_t width,
+		 uint32_t height, uint8_t * andmask, uint8_t * xormask, int bpp)
 {
 	Cursor cursor;
 	XcursorPixel *out;
 	XcursorImage *cimg, *tmp;
-	uint32 x, y, oidx, idx, argb;
-	uint8 outline, xor;
+	uint32_t x, y, oidx, idx, argb;
+	uint8_t outline, xor;
 
 	logger(GUI, Debug, "ui_create_cursor(): xhot=%d, yhot=%d, width=%d, height=%d, bpp=%d",
 	       xhot, yhot, width, height, bpp);
@@ -3143,10 +3143,10 @@ ui_create_colourmap(COLOURMAP * colours)
 	int i, ncolours = colours->ncolours;
 	if (!g_owncolmap)
 	{
-		uint32 *map = (uint32 *) xmalloc(sizeof(*g_colmap) * ncolours);
+		uint32_t *map = (uint32_t *) xmalloc(sizeof(*g_colmap) * ncolours);
 		XColor xentry;
 		XColor xc_cache[256];
-		uint32 colour;
+		uint32_t colour;
 		int colLookup = 256;
 		for (i = 0; i < ncolours; i++)
 		{
@@ -3253,7 +3253,7 @@ ui_set_colourmap(RD_HCOLOURMAP map)
 		if (g_colmap)
 			xfree(g_colmap);
 
-		g_colmap = (uint32 *) map;
+		g_colmap = (uint32_t *) map;
 	}
 	else
 	{
@@ -3289,7 +3289,7 @@ ui_bell(void)
 }
 
 void
-ui_destblt(uint8 opcode,
+ui_destblt(uint8_t opcode,
 	   /* dest */ int x, int y, int cx, int cy)
 {
 	SET_FUNCTION(opcode);
@@ -3297,7 +3297,7 @@ ui_destblt(uint8 opcode,
 	RESET_FUNCTION(opcode);
 }
 
-static uint8 hatch_patterns[] = {
+static uint8_t hatch_patterns[] = {
 	0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00,	/* 0 - bsHorizontal */
 	0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,	/* 1 - bsVertical */
 	0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01,	/* 2 - bsFDiagonal */
@@ -3307,12 +3307,12 @@ static uint8 hatch_patterns[] = {
 };
 
 void
-ui_patblt(uint8 opcode,
+ui_patblt(uint8_t opcode,
 	  /* dest */ int x, int y, int cx, int cy,
-	  /* brush */ BRUSH * brush, uint32 bgcolour, uint32 fgcolour)
+	  /* brush */ BRUSH * brush, uint32_t bgcolour, uint32_t fgcolour)
 {
 	Pixmap fill;
-	uint8 i, ipattern[8];
+	uint8_t i, ipattern[8];
 
 	SET_FUNCTION(opcode);
 
@@ -3394,7 +3394,7 @@ ui_patblt(uint8 opcode,
 }
 
 void
-ui_screenblt(uint8 opcode,
+ui_screenblt(uint8_t opcode,
 	     /* dest */ int x, int y, int cx, int cy,
 	     /* src */ int srcx, int srcy)
 {
@@ -3418,7 +3418,7 @@ ui_screenblt(uint8 opcode,
 }
 
 void
-ui_memblt(uint8 opcode,
+ui_memblt(uint8_t opcode,
 	  /* dest */ int x, int y, int cx, int cy,
 	  /* src */ RD_HBITMAP src, int srcx, int srcy)
 {
@@ -3433,10 +3433,10 @@ ui_memblt(uint8 opcode,
 }
 
 void
-ui_triblt(uint8 opcode,
+ui_triblt(uint8_t opcode,
 	  /* dest */ int x, int y, int cx, int cy,
 	  /* src */ RD_HBITMAP src, int srcx, int srcy,
-	  /* brush */ BRUSH * brush, uint32 bgcolour, uint32 fgcolour)
+	  /* brush */ BRUSH * brush, uint32_t bgcolour, uint32_t fgcolour)
 {
 	/* This is potentially difficult to do in general. Until someone
 	   comes up with a more efficient way of doing it I am using cases. */
@@ -3466,7 +3466,7 @@ ui_triblt(uint8 opcode,
 }
 
 void
-ui_line(uint8 opcode,
+ui_line(uint8_t opcode,
 	/* dest */ int startx, int starty, int endx, int endy,
 	/* pen */ PEN * pen)
 {
@@ -3484,19 +3484,19 @@ ui_line(uint8 opcode,
 void
 ui_rect(
 	       /* dest */ int x, int y, int cx, int cy,
-	       /* brush */ uint32 colour)
+	       /* brush */ uint32_t colour)
 {
 	SET_FOREGROUND(colour);
 	FILL_RECTANGLE(x, y, cx, cy);
 }
 
 void
-ui_polygon(uint8 opcode,
-	   /* mode */ uint8 fillmode,
+ui_polygon(uint8_t opcode,
+	   /* mode */ uint8_t fillmode,
 	   /* dest */ RD_POINT * point, int npoints,
-	   /* brush */ BRUSH * brush, uint32 bgcolour, uint32 fgcolour)
+	   /* brush */ BRUSH * brush, uint32_t bgcolour, uint32_t fgcolour)
 {
-	uint8 style, i, ipattern[8];
+	uint8_t style, i, ipattern[8];
 	Pixmap fill;
 
 	SET_FUNCTION(opcode);
@@ -3589,7 +3589,7 @@ ui_polygon(uint8 opcode,
 }
 
 void
-ui_polyline(uint8 opcode,
+ui_polyline(uint8_t opcode,
 	    /* dest */ RD_POINT * points, int npoints,
 	    /* pen */ PEN * pen)
 {
@@ -3608,12 +3608,12 @@ ui_polyline(uint8 opcode,
 }
 
 void
-ui_ellipse(uint8 opcode,
-	   /* mode */ uint8 fillmode,
+ui_ellipse(uint8_t opcode,
+	   /* mode */ uint8_t fillmode,
 	   /* dest */ int x, int y, int cx, int cy,
-	   /* brush */ BRUSH * brush, uint32 bgcolour, uint32 fgcolour)
+	   /* brush */ BRUSH * brush, uint32_t bgcolour, uint32_t fgcolour)
 {
-	uint8 style, i, ipattern[8];
+	uint8_t style, i, ipattern[8];
 	Pixmap fill;
 
 	SET_FUNCTION(opcode);
@@ -3698,7 +3698,7 @@ void
 ui_draw_glyph(int mixmode,
 	      /* dest */ int x, int y, int cx, int cy,
 	      /* src */ RD_HGLYPH glyph, int srcx, int srcy,
-	      uint32 bgcolour, uint32 fgcolour)
+	      uint32_t bgcolour, uint32_t fgcolour)
 {
 	UNUSED(srcx);
 	UNUSED(srcy);
@@ -3751,10 +3751,10 @@ ui_draw_glyph(int mixmode,
 }
 
 void
-ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode, int x, int y,
+ui_draw_text(uint8_t font, uint8_t flags, uint8_t opcode, int mixmode, int x, int y,
 	     int clipx, int clipy, int clipcx, int clipcy,
 	     int boxx, int boxy, int boxcx, int boxcy, BRUSH * brush,
-	     uint32 bgcolour, uint32 fgcolour, uint8 * text, uint8 length)
+	     uint32_t bgcolour, uint32_t fgcolour, uint8_t * text, uint8_t length)
 {
 	UNUSED(opcode);
 	UNUSED(brush);
@@ -3820,7 +3820,7 @@ ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode, int x, int y,
 				entry = cache_get_text(text[i + 1]);
 				if (entry->data != NULL)
 				{
-					if ((((uint8 *) (entry->data))[1] == 0)
+					if ((((uint8_t *) (entry->data))[1] == 0)
 					    && (!(flags & TEXT2_IMPLICIT_X)) && (i + 2 < length))
 					{
 						if (flags & TEXT2_VERTICAL)
@@ -3829,7 +3829,7 @@ ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode, int x, int y,
 							x += text[i + 2];
 					}
 					for (j = 0; j < entry->size; j++)
-						DO_GLYPH(((uint8 *) (entry->data)), j);
+						DO_GLYPH(((uint8_t *) (entry->data)), j);
 				}
 				if (i + 2 < length)
 					i += 3;
@@ -3876,7 +3876,7 @@ ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode, int x, int y,
 }
 
 void
-ui_desktop_save(uint32 offset, int x, int y, int cx, int cy)
+ui_desktop_save(uint32_t offset, int x, int y, int cx, int cy)
 {
 	Pixmap pix;
 	XImage *image;
@@ -3896,16 +3896,16 @@ ui_desktop_save(uint32 offset, int x, int y, int cx, int cy)
 	}
 
 	offset *= g_bpp / 8;
-	cache_put_desktop(offset, cx, cy, image->bytes_per_line, g_bpp / 8, (uint8 *) image->data);
+	cache_put_desktop(offset, cx, cy, image->bytes_per_line, g_bpp / 8, (uint8_t *) image->data);
 
 	XDestroyImage(image);
 }
 
 void
-ui_desktop_restore(uint32 offset, int x, int y, int cx, int cy)
+ui_desktop_restore(uint32_t offset, int x, int y, int cx, int cy)
 {
 	XImage *image;
-	uint8 *data;
+	uint8_t *data;
 
 	offset *= g_bpp / 8;
 	data = cache_get_desktop(offset, cx, cy, g_bpp / 8);

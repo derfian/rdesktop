@@ -36,7 +36,7 @@ extern char *g_sc_container_name;
 
 /* Send a self-contained ISO PDU */
 static void
-iso_send_msg(uint8 code)
+iso_send_msg(uint8_t code)
 {
 	STREAM s;
 
@@ -57,7 +57,7 @@ iso_send_msg(uint8 code)
 }
 
 static void
-iso_send_connection_request(char *username, uint32 neg_proto)
+iso_send_connection_request(char *username, uint32_t neg_proto)
 {
 	STREAM s;
 	int length = 30 + strlen(username);
@@ -98,11 +98,11 @@ iso_send_connection_request(char *username, uint32 neg_proto)
 
 /* Receive a message on the ISO layer, return code */
 static STREAM
-iso_recv_msg(uint8 * code, uint8 * rdpver)
+iso_recv_msg(uint8_t * code, uint8_t * rdpver)
 {
 	STREAM s;
-	uint16 length;
-	uint8 version;
+	uint16_t length;
+	uint8_t version;
 
 	s = tcp_recv(NULL, 4);
 	if (s == NULL)
@@ -162,7 +162,7 @@ iso_init(int length)
 void
 iso_send(STREAM s)
 {
-	uint16 length;
+	uint16_t length;
 
 	s_pop_layer(s, iso_hdr);
 	length = s->end - s->p;
@@ -180,10 +180,10 @@ iso_send(STREAM s)
 
 /* Receive ISO transport data packet */
 STREAM
-iso_recv(uint8 * rdpver)
+iso_recv(uint8_t * rdpver)
 {
 	STREAM s;
-	uint8 code = 0;
+	uint8_t code = 0;
 
 	s = iso_recv_msg(&code, rdpver);
 	if (s == NULL)
@@ -202,12 +202,12 @@ iso_recv(uint8 * rdpver)
 /* Establish a connection up to the ISO layer */
 RD_BOOL
 iso_connect(char *server, char *username, char *domain, char *password,
-	    RD_BOOL reconnect, uint32 * selected_protocol)
+	    RD_BOOL reconnect, uint32_t * selected_protocol)
 {
 	UNUSED(reconnect);
 	STREAM s;
-	uint8 code;
-	uint32 neg_proto;
+	uint8_t code;
+	uint32_t neg_proto;
 
 	g_negotiate_rdp_protocol = True;
 
@@ -252,8 +252,8 @@ iso_connect(char *server, char *username, char *domain, char *password,
 		/* handle RDP_NEG_REQ response */
 		const char *reason = NULL;
 
-		uint8 type = 0;
-		uint32 data = 0;
+		uint8_t type = 0;
+		uint32_t data = 0;
 
 		in_uint8(s, type);
 		in_uint8s(s, 1); /* skip flags */

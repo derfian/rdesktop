@@ -32,17 +32,17 @@
 
 #define MAX_VOLUME 65535
 
-static uint16 softvol_left = MAX_VOLUME;
-static uint16 softvol_right = MAX_VOLUME;
-static uint32 resample_to_srate = 44100;
-static uint16 resample_to_bitspersample = 16;
-static uint16 resample_to_channels = 2;
+static uint16_t softvol_left = MAX_VOLUME;
+static uint16_t softvol_right = MAX_VOLUME;
+static uint32_t resample_to_srate = 44100;
+static uint16_t resample_to_bitspersample = 16;
+static uint16_t resample_to_channels = 2;
 #ifdef HAVE_LIBSAMPLERATE
 static SRC_STATE *src_converter = NULL;
 #endif
 
 void
-rdpsnd_dsp_softvol_set(uint16 left, uint16 right)
+rdpsnd_dsp_softvol_set(uint16_t left, uint16_t right)
 {
 	softvol_left = left;
 	softvol_right = right;
@@ -69,7 +69,7 @@ rdpsnd_dsp_softvol(unsigned char *buffer, unsigned int size, RD_WAVEFORMATEX * f
 
 	if (format->wBitsPerSample == 8)
 	{
-		sint8 val;
+		int8_t val;
 
 		while (posout < buffer + size)
 		{
@@ -86,7 +86,7 @@ rdpsnd_dsp_softvol(unsigned char *buffer, unsigned int size, RD_WAVEFORMATEX * f
 	}
 	else
 	{
-		sint16 val;
+		int16_t val;
 
 		while (posout < buffer + size)
 		{
@@ -115,7 +115,7 @@ void
 rdpsnd_dsp_swapbytes(unsigned char *buffer, unsigned int size, RD_WAVEFORMATEX * format)
 {
 	int i;
-	uint8 swap;
+	uint8_t swap;
 
 	if (format->wBitsPerSample == 8)
 		return;
@@ -132,7 +132,7 @@ rdpsnd_dsp_swapbytes(unsigned char *buffer, unsigned int size, RD_WAVEFORMATEX *
 }
 
 RD_BOOL
-rdpsnd_dsp_resample_set(uint32 device_srate, uint16 device_bitspersample, uint16 device_channels)
+rdpsnd_dsp_resample_set(uint32_t device_srate, uint16_t device_bitspersample, uint16_t device_channels)
 {
 #ifdef HAVE_LIBSAMPLERATE
 	int err;
@@ -175,7 +175,7 @@ rdpsnd_dsp_resample_supported(RD_WAVEFORMATEX * format)
 	return True;
 }
 
-uint32
+uint32_t
 rdpsnd_dsp_resample(unsigned char **out, unsigned char *in, unsigned int size,
 		    RD_WAVEFORMATEX * format, RD_BOOL stream_be)
 {
@@ -319,7 +319,7 @@ rdpsnd_dsp_resample(unsigned char **out, unsigned char *in, unsigned int size,
 #if 0				/* Linear resampling, TODO: soundquality fixes (LP filter) */
 		if (samplewidth == 1)
 		{
-			sint8 cval1, cval2;
+			int8_t cval1, cval2;
 			for (j = 0; j < resample_to_channels; j++)
 			{
 				memcpy(&cval1,
@@ -329,7 +329,7 @@ rdpsnd_dsp_resample(unsigned char **out, unsigned char *in, unsigned int size,
 				       in + ((source + 1) * resample_to_channels * samplewidth) +
 				       (samplewidth * j), samplewidth);
 
-				cval1 += (sint8) (cval2 * part) / 100;
+				cval1 += (int8_t) (cval2 * part) / 100;
 
 				memcpy(*out + (i * resample_to_channels * samplewidth) +
 				       (samplewidth * j), &cval1, samplewidth);
@@ -337,7 +337,7 @@ rdpsnd_dsp_resample(unsigned char **out, unsigned char *in, unsigned int size,
 		}
 		else
 		{
-			sint16 sval1, sval2;
+			int16_t sval1, sval2;
 			for (j = 0; j < resample_to_channels; j++)
 			{
 				memcpy(&sval1,
@@ -347,7 +347,7 @@ rdpsnd_dsp_resample(unsigned char **out, unsigned char *in, unsigned int size,
 				       in + ((source + 1) * resample_to_channels * samplewidth) +
 				       (samplewidth * j), samplewidth);
 
-				sval1 += (sint16) (sval2 * part) / 100;
+				sval1 += (int16_t) (sval2 * part) / 100;
 
 				memcpy(*out + (i * resample_to_channels * samplewidth) +
 				       (samplewidth * j), &sval1, samplewidth);

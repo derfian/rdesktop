@@ -41,8 +41,8 @@ extern int g_pstcache_fd[];
 struct bmpcache_entry
 {
 	RD_HBITMAP bitmap;
-	sint16 previous;
-	sint16 next;
+	int16_t previous;
+	int16_t next;
 };
 
 static struct bmpcache_entry g_bmpcache[3][0xa00];
@@ -55,10 +55,10 @@ static int g_bmpcache_count[3];
 
 /* Setup the bitmap cache lru/mru linked list */
 void
-cache_rebuild_bmpcache_linked_list(uint8 id, sint16 * idx, int count)
+cache_rebuild_bmpcache_linked_list(uint8_t id, int16_t * idx, int count)
 {
 	int n = count, c = 0;
-	sint16 n_idx;
+	int16_t n_idx;
 
 	/* find top, skip evicted bitmaps */
 	while (--n >= 0 && g_bmpcache[id][idx[n]].bitmap == NULL);
@@ -102,7 +102,7 @@ cache_rebuild_bmpcache_linked_list(uint8 id, sint16 * idx, int count)
 
 /* Move a bitmap to a new position in the linked list. */
 void
-cache_bump_bitmap(uint8 id, uint16 idx, int bump)
+cache_bump_bitmap(uint8_t id, uint16_t idx, int bump)
 {
 	int p_idx, n_idx, n;
 
@@ -168,9 +168,9 @@ cache_bump_bitmap(uint8 id, uint16 idx, int bump)
 
 /* Evict the least-recently used bitmap from the cache */
 void
-cache_evict_bitmap(uint8 id)
+cache_evict_bitmap(uint8_t id)
 {
-	uint16 idx;
+	uint16_t idx;
 	int n_idx;
 
 	if (!IS_PERSISTENT(id))
@@ -194,7 +194,7 @@ cache_evict_bitmap(uint8 id)
 
 /* Retrieve a bitmap from the cache */
 RD_HBITMAP
-cache_get_bitmap(uint8 id, uint16 idx)
+cache_get_bitmap(uint8_t id, uint16_t idx)
 {
 	if ((id < NUM_ELEMENTS(g_bmpcache)) && (idx < NUM_ELEMENTS(g_bmpcache[0])))
 	{
@@ -218,7 +218,7 @@ cache_get_bitmap(uint8 id, uint16 idx)
 
 /* Store a bitmap in the cache */
 void
-cache_put_bitmap(uint8 id, uint16 idx, RD_HBITMAP bitmap)
+cache_put_bitmap(uint8_t id, uint16_t idx, RD_HBITMAP bitmap)
 {
 	RD_HBITMAP old;
 
@@ -256,7 +256,7 @@ cache_put_bitmap(uint8 id, uint16 idx, RD_HBITMAP bitmap)
 void
 cache_save_state(void)
 {
-	uint32 id = 0, t = 0;
+	uint32_t id = 0, t = 0;
 	int idx;
 
 	for (id = 0; id < NUM_ELEMENTS(g_bmpcache); id++)
@@ -280,7 +280,7 @@ static FONTGLYPH g_fontcache[12][256];
 
 /* Retrieve a glyph from the font cache */
 FONTGLYPH *
-cache_get_font(uint8 font, uint16 character)
+cache_get_font(uint8_t font, uint16_t character)
 {
 	FONTGLYPH *glyph;
 
@@ -297,8 +297,8 @@ cache_get_font(uint8 font, uint16 character)
 
 /* Store a glyph in the font cache */
 void
-cache_put_font(uint8 font, uint16 character, uint16 offset,
-	       uint16 baseline, uint16 width, uint16 height, RD_HGLYPH pixmap)
+cache_put_font(uint8_t font, uint16_t character, uint16_t offset,
+	       uint16_t baseline, uint16_t width, uint16_t height, RD_HGLYPH pixmap)
 {
 	FONTGLYPH *glyph;
 
@@ -326,7 +326,7 @@ static DATABLOB g_textcache[256];
 
 /* Retrieve a text item from the cache */
 DATABLOB *
-cache_get_text(uint8 cache_id)
+cache_get_text(uint8_t cache_id)
 {
 	DATABLOB *text;
 
@@ -336,7 +336,7 @@ cache_get_text(uint8 cache_id)
 
 /* Store a text item in the cache */
 void
-cache_put_text(uint8 cache_id, void *data, int length)
+cache_put_text(uint8_t cache_id, void *data, int length)
 {
 	DATABLOB *text;
 
@@ -350,11 +350,11 @@ cache_put_text(uint8 cache_id, void *data, int length)
 
 
 /* DESKTOP CACHE */
-static uint8 g_deskcache[0x38400 * 4];
+static uint8_t g_deskcache[0x38400 * 4];
 
 /* Retrieve desktop data from the cache */
-uint8 *
-cache_get_desktop(uint32 offset, int cx, int cy, int bytes_per_pixel)
+uint8_t *
+cache_get_desktop(uint32_t offset, int cx, int cy, int bytes_per_pixel)
 {
 	int length = cx * cy * bytes_per_pixel;
 
@@ -372,7 +372,7 @@ cache_get_desktop(uint32 offset, int cx, int cy, int bytes_per_pixel)
 
 /* Store desktop data in the cache */
 void
-cache_put_desktop(uint32 offset, int cx, int cy, int scanline, int bytes_per_pixel, uint8 * data)
+cache_put_desktop(uint32_t offset, int cx, int cy, int scanline, int bytes_per_pixel, uint8_t * data)
 {
 	int length = cx * cy * bytes_per_pixel;
 
@@ -401,7 +401,7 @@ static RD_HCURSOR g_cursorcache[0x20];
 
 /* Retrieve cursor from cache */
 RD_HCURSOR
-cache_get_cursor(uint16 cache_idx)
+cache_get_cursor(uint16_t cache_idx)
 {
 	RD_HCURSOR cursor;
 
@@ -418,7 +418,7 @@ cache_get_cursor(uint16 cache_idx)
 
 /* Store cursor in cache */
 void
-cache_put_cursor(uint16 cache_idx, RD_HCURSOR cursor)
+cache_put_cursor(uint16_t cache_idx, RD_HCURSOR cursor)
 {
 	RD_HCURSOR old;
 
@@ -442,7 +442,7 @@ static BRUSHDATA g_brushcache[2][64];
 
 /* Retrieve brush from cache */
 BRUSHDATA *
-cache_get_brush_data(uint8 colour_code, uint8 idx)
+cache_get_brush_data(uint8_t colour_code, uint8_t idx)
 {
 	colour_code = colour_code == 1 ? 0 : 1;
 	if (idx < NUM_ELEMENTS(g_brushcache[0]))
@@ -456,7 +456,7 @@ cache_get_brush_data(uint8 colour_code, uint8 idx)
 /* Store brush in cache */
 /* this function takes over the data pointer in struct, e.g. caller gives it up */
 void
-cache_put_brush_data(uint8 colour_code, uint8 idx, BRUSHDATA * brush_data)
+cache_put_brush_data(uint8_t colour_code, uint8_t idx, BRUSHDATA * brush_data)
 {
 	BRUSHDATA *bd;
 

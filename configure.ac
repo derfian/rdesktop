@@ -4,7 +4,7 @@ AC_CONFIG_SRCDIR([rdesktop.c])
 
 AC_CANONICAL_HOST
 
-AC_PROG_CC
+AC_PROG_CC_C99
 if test "$GCC" = yes; then
     CFLAGS="$CFLAGS -Wall -Wextra"
 fi

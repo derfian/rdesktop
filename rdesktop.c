@@ -53,7 +53,7 @@
 #define RECONNECT_TIMEOUT (3600+600)
 #define RDESKTOP_LICENSE_STORE "/.local/share/rdesktop/licenses"
 
-uint8 g_static_rdesktop_salt_16[16] = {
+uint8_t g_static_rdesktop_salt_16[16] = {
 	0xb8, 0x82, 0x29, 0x31, 0xc5, 0x39, 0xd9, 0x44,
 	0x54, 0x15, 0x5e, 0x14, 0x71, 0x38, 0xd5, 0x4d
 };
@@ -74,8 +74,8 @@ int g_sizeopt = 0;		/* If non-zero, a special size has been
 int g_dpi = 0;			/* device DPI: default not set */
 int g_width = 1024;
 int g_height = 768;
-uint32 g_windowed_width = 1024;
-uint32 g_windowed_height = 768;
+uint32_t g_windowed_width = 1024;
+uint32_t g_windowed_height = 768;
 int g_xpos = 0;
 int g_ypos = 0;
 int g_pos = 0;			/* 0 position unspecified,
@@ -113,31 +113,31 @@ char g_seamless_shell[512];
 char g_seamless_spawn_cmd[512];
 RD_BOOL g_seamless_persistent_mode = True;
 RD_BOOL g_user_quit = False;
-uint32 g_embed_wnd;
-uint32 g_rdp5_performanceflags = (PERF_DISABLE_FULLWINDOWDRAG |
+uint32_t g_embed_wnd;
+uint32_t g_rdp5_performanceflags = (PERF_DISABLE_FULLWINDOWDRAG |
 				  PERF_DISABLE_MENUANIMATIONS |
 				  PERF_ENABLE_FONT_SMOOTHING);
 /* Session Directory redirection */
 RD_BOOL g_redirect = False;
 char *g_redirect_server;
-uint32 g_redirect_server_len;
+uint32_t g_redirect_server_len;
 char *g_redirect_domain;
-uint32 g_redirect_domain_len;
+uint32_t g_redirect_domain_len;
 char *g_redirect_username;
-uint32 g_redirect_username_len;
-uint8 *g_redirect_lb_info;
-uint32 g_redirect_lb_info_len;
-uint8 *g_redirect_cookie;
-uint32 g_redirect_cookie_len;
-uint32 g_redirect_flags = 0;
-uint32 g_redirect_session_id = 0;
+uint32_t g_redirect_username_len;
+uint8_t *g_redirect_lb_info;
+uint32_t g_redirect_lb_info_len;
+uint8_t *g_redirect_cookie;
+uint32_t g_redirect_cookie_len;
+uint32_t g_redirect_flags = 0;
+uint32_t g_redirect_session_id = 0;
 
-uint32 g_reconnect_logonid = 0;
+uint32_t g_reconnect_logonid = 0;
 char g_reconnect_random[16];
 time_t g_reconnect_random_ts;
 RD_BOOL g_has_reconnect_random = False;
 RD_BOOL g_reconnect_loop = False;
-uint8 g_client_random[SEC_RANDOM_SIZE];
+uint8_t g_client_random[SEC_RANDOM_SIZE];
 RD_BOOL g_pending_resize = False;
 
 #ifdef WITH_RDPSND
@@ -152,7 +152,7 @@ char *g_sc_card_name = NULL;
 char *g_sc_container_name = NULL;
 
 extern RDPDR_DEVICE g_rdpdr_device[];
-extern uint32 g_num_devices;
+extern uint32_t g_num_devices;
 extern char *g_rdpdr_clientname;
 
 /* Display usage information */
@@ -263,7 +263,7 @@ usage(char *program)
 }
 
 static int
-handle_disconnect_reason(RD_BOOL deactivated, uint16 reason)
+handle_disconnect_reason(RD_BOOL deactivated, uint16_t reason)
 {
 	char *text;
 	int retval;
@@ -600,7 +600,7 @@ main(int argc, char *argv[])
 	char directory[256];
 	RD_BOOL deactivated;
 	struct passwd *pw;
-	uint32 flags, ext_disc_reason = 0;
+	uint32_t flags, ext_disc_reason = 0;
 	char *p;
 	int c;
 	char *locale = NULL;
@@ -1331,7 +1331,7 @@ main(int argc, char *argv[])
 #ifdef EGD_SOCKET
 /* Read 32 random bytes from PRNGD or EGD socket (based on OpenSSL RAND_egd) */
 static RD_BOOL
-generate_random_egd(uint8 * buf)
+generate_random_egd(uint8_t * buf)
 {
 	struct sockaddr_un addr;
 	RD_BOOL ret = False;
@@ -1368,12 +1368,12 @@ generate_random_egd(uint8 * buf)
 
 /* Generate a 32-byte random for the secure transport code. */
 void
-generate_random(uint8 * random)
+generate_random(uint8_t * random)
 {
 	struct stat st;
 	struct tms tmsbuf;
 	RDSSL_MD5 md5;
-	uint32 *r;
+	uint32_t *r;
 	int fd, n;
 
 	/* If we have a kernel random device, try that first */
@@ -1393,7 +1393,7 @@ generate_random(uint8 * random)
 #endif
 
 	/* Otherwise use whatever entropy we can gather - ideas welcome. */
-	r = (uint32 *) random;
+	r = (uint32_t *) random;
 	r[0] = (getpid()) | (getppid() << 16);
 	r[1] = (getuid()) | (getgid() << 16);
 	r[2] = times(&tmsbuf);	/* system uptime (clocks) */
@@ -1740,7 +1740,7 @@ l_to_a(long N, int base)
 int
 load_licence(unsigned char **data)
 {
-	uint8 ho[20], hi[16];
+	uint8_t ho[20], hi[16];
 	char *home, path[PATH_MAX], hash[41];
 	struct stat st;
 	int fd, length;
@@ -1773,7 +1773,7 @@ load_licence(unsigned char **data)
 		return -1;
 	}
 
-	*data = (uint8 *) xmalloc(st.st_size);
+	*data = (uint8_t *) xmalloc(st.st_size);
 	length = read(fd, *data, st.st_size);
 	close(fd);
 	return length;
@@ -1782,7 +1782,7 @@ load_licence(unsigned char **data)
 void
 save_licence(unsigned char *data, int length)
 {
-	uint8 ho[20], hi[16];
+	uint8_t ho[20], hi[16];
 	char *home, path[PATH_MAX], tmppath[PATH_MAX], hash[41];
 	int fd;
 

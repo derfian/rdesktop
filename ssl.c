@@ -47,13 +47,13 @@ rdssl_sha1_init(RDSSL_SHA1 * sha1)
 }
 
 void
-rdssl_sha1_update(RDSSL_SHA1 * sha1, uint8 * data, uint32 len)
+rdssl_sha1_update(RDSSL_SHA1 * sha1, uint8_t * data, uint32_t len)
 {
 	SHA1_Update(sha1, data, len);
 }
 
 void
-rdssl_sha1_final(RDSSL_SHA1 * sha1, uint8 * out_data)
+rdssl_sha1_final(RDSSL_SHA1 * sha1, uint8_t * out_data)
 {
 	SHA1_Final(out_data, sha1);
 }
@@ -65,34 +65,34 @@ rdssl_md5_init(RDSSL_MD5 * md5)
 }
 
 void
-rdssl_md5_update(RDSSL_MD5 * md5, uint8 * data, uint32 len)
+rdssl_md5_update(RDSSL_MD5 * md5, uint8_t * data, uint32_t len)
 {
 	MD5_Update(md5, data, len);
 }
 
 void
-rdssl_md5_final(RDSSL_MD5 * md5, uint8 * out_data)
+rdssl_md5_final(RDSSL_MD5 * md5, uint8_t * out_data)
 {
 	MD5_Final(out_data, md5);
 }
 
 void
-rdssl_rc4_set_key(RDSSL_RC4 * rc4, uint8 * key, uint32 len)
+rdssl_rc4_set_key(RDSSL_RC4 * rc4, uint8_t * key, uint32_t len)
 {
 	RC4_set_key(rc4, len, key);
 }
 
 void
-rdssl_rc4_crypt(RDSSL_RC4 * rc4, uint8 * in_data, uint8 * out_data, uint32 len)
+rdssl_rc4_crypt(RDSSL_RC4 * rc4, uint8_t * in_data, uint8_t * out_data, uint32_t len)
 {
 	RC4(rc4, len, in_data, out_data);
 }
 
 static void
-reverse(uint8 * p, int len)
+reverse(uint8_t * p, int len)
 {
 	int i, j;
-	uint8 temp;
+	uint8_t temp;
 
 	for (i = 0, j = len - 1; i < j; i++, j--)
 	{
@@ -103,12 +103,12 @@ reverse(uint8 * p, int len)
 }
 
 void
-rdssl_rsa_encrypt(uint8 * out, uint8 * in, int len, uint32 modulus_size, uint8 * modulus,
-		  uint8 * exponent)
+rdssl_rsa_encrypt(uint8_t * out, uint8_t * in, int len, uint32_t modulus_size, uint8_t * modulus,
+		  uint8_t * exponent)
 {
 	BN_CTX *ctx;
 	BIGNUM *mod, *exp, *x, *y;
-	uint8 inr[SEC_MAX_MODULUS_SIZE];
+	uint8_t inr[SEC_MAX_MODULUS_SIZE];
 	int outlen;
 
 	reverse(modulus, modulus_size);
@@ -140,7 +140,7 @@ rdssl_rsa_encrypt(uint8 * out, uint8 * in, int len, uint32 modulus_size, uint8 *
 
 /* returns newly allocated RDSSL_CERT or NULL */
 RDSSL_CERT *
-rdssl_cert_read(uint8 * data, uint32 len)
+rdssl_cert_read(uint8_t * data, uint32_t len)
 {
 	/* this will move the data pointer but we don't care, we don't use it again */
 	return d2i_X509(NULL, (D2I_X509_CONST unsigned char **) &data, len);
@@ -154,7 +154,7 @@ rdssl_cert_free(RDSSL_CERT * cert)
 
 /* returns newly allocated RDSSL_RKEY or NULL */
 RDSSL_RKEY *
-rdssl_cert_to_rkey(RDSSL_CERT * cert, uint32 * key_len)
+rdssl_cert_to_rkey(RDSSL_CERT * cert, uint32_t * key_len)
 {
 	EVP_PKEY *epk = NULL;
 	RDSSL_RKEY *lkey;
@@ -279,8 +279,8 @@ rdssl_rkey_free(RDSSL_RKEY * rkey)
 
 /* returns error */
 int
-rdssl_rkey_get_exp_mod(RDSSL_RKEY * rkey, uint8 * exponent, uint32 max_exp_len, uint8 * modulus,
-		       uint32 max_mod_len)
+rdssl_rkey_get_exp_mod(RDSSL_RKEY * rkey, uint8_t * exponent, uint32_t max_exp_len, uint8_t * modulus,
+		       uint32_t max_mod_len)
 {
 	int len;
 
@@ -307,8 +307,8 @@ rdssl_rkey_get_exp_mod(RDSSL_RKEY * rkey, uint8 * exponent, uint32 max_exp_len, 
 
 /* returns boolean */
 RD_BOOL
-rdssl_sig_ok(uint8 * exponent, uint32 exp_len, uint8 * modulus, uint32 mod_len,
-	     uint8 * signature, uint32 sig_len)
+rdssl_sig_ok(uint8_t * exponent, uint32_t exp_len, uint8_t * modulus, uint32_t mod_len,
+	     uint8_t * signature, uint32_t sig_len)
 {
 	UNUSED(exponent);
 	UNUSED(exp_len);

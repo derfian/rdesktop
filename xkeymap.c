@@ -51,10 +51,10 @@ static RD_BOOL keymap_loaded;
 static key_translation_entry *keymap[KEYMAP_SIZE];
 static KeySym keypress_keysyms[256];
 static int min_keycode;
-static uint16 remote_modifier_state = 0;
-static uint16 saved_remote_modifier_state = 0;
+static uint16_t remote_modifier_state = 0;
+static uint16_t saved_remote_modifier_state = 0;
 
-static void update_modifier_state(uint8 scancode, RD_BOOL pressed);
+static void update_modifier_state(uint8_t scancode, RD_BOOL pressed);
 
 /* Free key_translation structure, including linked list */
 static void
@@ -74,7 +74,7 @@ free_key_translation(key_translation * ptr)
 static void
 delete_key_translation_entry(KeySym keysym)
 {
-	uint32 hash;
+	uint32_t hash;
 	key_translation_entry *ptr;
 	key_translation_entry *next;
 	key_translation_entry *prev;
@@ -111,7 +111,7 @@ delete_key_translation_entry(KeySym keysym)
 static key_translation_entry *
 new_key_translation_entry(KeySym keysym)
 {
-	uint32 hash;
+	uint32_t hash;
 	key_translation_entry *entry;
 
 	/* Clear out any existing entry */
@@ -132,7 +132,7 @@ new_key_translation_entry(KeySym keysym)
 
 /* Retrieve the key_translation_entry for a given keysym */
 static key_translation_entry *
-get_key_translation_entry(uint32 keysym)
+get_key_translation_entry(uint32_t keysym)
 {
 	key_translation_entry *ptr;
 	key_translation_entry *next;
@@ -153,7 +153,7 @@ get_key_translation_entry(uint32 keysym)
 }
 
 static void
-add_to_keymap(char *keyname, uint8 scancode, uint16 modifiers, char *mapname)
+add_to_keymap(char *keyname, uint8_t scancode, uint16_t modifiers, char *mapname)
 {
 	KeySym keysym;
 	key_translation_entry *entry;
@@ -378,8 +378,8 @@ xkeymap_read(char *mapname)
 	unsigned int line_length = 0;
 	char *keyname, *p;
 	char *line_rest;
-	uint8 scancode;
-	uint16 modifiers;
+	uint8_t scancode;
+	uint16_t modifiers;
 
 	fp = xkeymap_open(mapname);
 	if (fp == NULL)
@@ -553,9 +553,9 @@ xkeymap_init(void)
 }
 
 static void
-send_winkey(uint32 ev_time, RD_BOOL pressed, RD_BOOL leftkey)
+send_winkey(uint32_t ev_time, RD_BOOL pressed, RD_BOOL leftkey)
 {
-	uint8 winkey;
+	uint8_t winkey;
 
 	if (leftkey)
 		winkey = SCANCODE_CHAR_LWIN;
@@ -591,7 +591,7 @@ send_winkey(uint32 ev_time, RD_BOOL pressed, RD_BOOL leftkey)
 }
 
 static void
-reset_winkey(uint32 ev_time)
+reset_winkey(uint32_t ev_time)
 {
 	if (g_rdp_version >= RDP_V5)
 	{
@@ -633,7 +633,7 @@ reset_keypress_keysym(unsigned int keycode, KeySym keysym)
 
 /* Handle special key combinations */
 RD_BOOL
-handle_special_keys(uint32 keysym, unsigned int state, uint32 ev_time, RD_BOOL pressed)
+handle_special_keys(uint32_t keysym, unsigned int state, uint32_t ev_time, RD_BOOL pressed)
 {
 	switch (keysym)
 	{
@@ -725,7 +725,7 @@ handle_special_keys(uint32 keysym, unsigned int state, uint32 ev_time, RD_BOOL p
 
 
 key_translation
-xkeymap_translate_key(uint32 keysym, unsigned int keycode, unsigned int state)
+xkeymap_translate_key(uint32_t keysym, unsigned int keycode, unsigned int state)
 {
 	key_translation tr = { 0, 0, 0, 0 };
 	key_translation *ptr;
@@ -807,7 +807,7 @@ xkeymap_translate_key(uint32 keysym, unsigned int keycode, unsigned int state)
 }
 
 static RD_BOOL
-is_modifier(uint8 scancode)
+is_modifier(uint8_t scancode)
 {
 	switch (scancode)
 	{
@@ -829,8 +829,8 @@ is_modifier(uint8 scancode)
 
 
 void
-xkeymap_send_keys(uint32 keysym, unsigned int keycode, unsigned int state, uint32 ev_time,
-		  RD_BOOL pressed, uint8 nesting)
+xkeymap_send_keys(uint32_t keysym, unsigned int keycode, unsigned int state, uint32_t ev_time,
+		  RD_BOOL pressed, uint8_t nesting)
 {
 	key_translation tr, *ptr;
 	tr = xkeymap_translate_key(keysym, keycode, state);
@@ -872,8 +872,8 @@ xkeymap_send_keys(uint32 keysym, unsigned int keycode, unsigned int state, uint3
 	}
 }
 
-uint16
-xkeymap_translate_button(unsigned int button, uint16 * input_type)
+uint16_t
+xkeymap_translate_button(unsigned int button, uint16_t * input_type)
 {
 	*input_type = RDP_INPUT_MOUSE;
 
@@ -901,7 +901,7 @@ xkeymap_translate_button(unsigned int button, uint16 * input_type)
 }
 
 char *
-get_ksname(uint32 keysym)
+get_ksname(uint32_t keysym)
 {
 	char *ksname = NULL;
 
@@ -914,7 +914,7 @@ get_ksname(uint32 keysym)
 }
 
 void
-save_remote_modifiers(uint8 scancode)
+save_remote_modifiers(uint8_t scancode)
 {
 	if (is_modifier(scancode))
 		return;
@@ -923,7 +923,7 @@ save_remote_modifiers(uint8 scancode)
 }
 
 void
-restore_remote_modifiers(uint32 ev_time, uint8 scancode)
+restore_remote_modifiers(uint32_t ev_time, uint8_t scancode)
 {
 	key_translation dummy = { 0 };
 
@@ -936,7 +936,7 @@ restore_remote_modifiers(uint32 ev_time, uint8 scancode)
 }
 
 void
-ensure_remote_modifiers(uint32 ev_time, key_translation tr)
+ensure_remote_modifiers(uint32_t ev_time, key_translation tr)
 {
 	/* If this key is a modifier, do nothing */
 	if (is_modifier(tr.scancode))
@@ -949,7 +949,7 @@ ensure_remote_modifiers(uint32 ev_time, key_translation tr)
 		    != MASK_HAS_BITS(remote_modifier_state, MapNumLockMask))
 		{
 			/* The remote modifier state is not correct */
-			uint16 new_remote_state;
+			uint16_t new_remote_state;
 
 			if (MASK_HAS_BITS(tr.modifiers, MapNumLockMask))
 			{
@@ -1031,10 +1031,10 @@ read_keyboard_state()
 }
 
 
-uint16
+uint16_t
 ui_get_numlock_state(unsigned int state)
 {
-	uint16 numlock_state = 0;
+	uint16_t numlock_state = 0;
 
 	if (get_key_state(state, XK_Num_Lock))
 		numlock_state = KBD_FLAG_NUMLOCK;
@@ -1049,7 +1049,7 @@ reset_modifier_keys()
 	unsigned int state = read_keyboard_state();
 
 	/* reset keys */
-	uint32 ev_time;
+	uint32_t ev_time;
 	ev_time = time(NULL);
 
 	if (MASK_HAS_BITS(remote_modifier_state, MapLeftShiftMask)
@@ -1084,9 +1084,9 @@ reset_modifier_keys()
 
 
 static void
-update_modifier_state(uint8 scancode, RD_BOOL pressed)
+update_modifier_state(uint8_t scancode, RD_BOOL pressed)
 {
-	uint16 old_modifier_state;
+	uint16_t old_modifier_state;
 
 	old_modifier_state = remote_modifier_state;
 
@@ -1142,7 +1142,7 @@ update_modifier_state(uint8 scancode, RD_BOOL pressed)
 
 /* Send keyboard input */
 void
-rdp_send_scancode(uint32 time, uint16 flags, uint8 scancode)
+rdp_send_scancode(uint32_t time, uint16_t flags, uint8_t scancode)
 {
 	update_modifier_state(scancode, !(flags & RDP_KEYRELEASE));
 

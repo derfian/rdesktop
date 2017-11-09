@@ -33,11 +33,11 @@
 
 static VCHANNEL *cliprdr_channel;
 
-static uint8 *last_formats = NULL;
-static uint32 last_formats_length = 0;
+static uint8_t *last_formats = NULL;
+static uint32_t last_formats_length = 0;
 
 static void
-cliprdr_send_packet(uint16 type, uint16 status, uint8 * data, uint32 length)
+cliprdr_send_packet(uint16_t type, uint16_t status, uint8_t * data, uint32_t length)
 {
 	STREAM s;
 
@@ -60,9 +60,9 @@ cliprdr_send_packet(uint16 type, uint16 status, uint8 * data, uint32 length)
    cliprdr_send_native_format_announce.
  */
 void
-cliprdr_send_simple_native_format_announce(uint32 format)
+cliprdr_send_simple_native_format_announce(uint32_t format)
 {
-	uint8 buffer[36];
+	uint8_t buffer[36];
 
 	logger(Clipboard, Debug, "cliprdr_send_simple_native_format_announce() format 0x%x",
 	       format);
@@ -74,10 +74,10 @@ cliprdr_send_simple_native_format_announce(uint32 format)
 
 /* Announces our readiness to supply clipboard data in multiple
    formats, each denoted by a 36-byte format descriptor of
-   [ uint32 format + 32-byte description ].
+   [ uint32_t format + 32-byte description ].
  */
 void
-cliprdr_send_native_format_announce(uint8 * formats_data, uint32 formats_data_length)
+cliprdr_send_native_format_announce(uint8_t * formats_data, uint32_t formats_data_length)
 {
 	logger(Clipboard, Debug, "cliprdr_send_native_format_announce()");
 
@@ -96,9 +96,9 @@ cliprdr_send_native_format_announce(uint8 * formats_data, uint32 formats_data_le
 }
 
 void
-cliprdr_send_data_request(uint32 format)
+cliprdr_send_data_request(uint32_t format)
 {
-	uint8 buffer[4];
+	uint8_t buffer[4];
 
 	logger(Clipboard, Debug, "cliprdr_send_data_request(), format 0x%x", format);
 	buf_out_uint32(buffer, format);
@@ -106,7 +106,7 @@ cliprdr_send_data_request(uint32 format)
 }
 
 void
-cliprdr_send_data(uint8 * data, uint32 length)
+cliprdr_send_data(uint8_t * data, uint32_t length)
 {
 	logger(Clipboard, Debug, "cliprdr_send_data(), length %d bytes", length);
 	cliprdr_send_packet(CLIPRDR_DATA_RESPONSE, CLIPRDR_RESPONSE, data, length);
@@ -115,9 +115,9 @@ cliprdr_send_data(uint8 * data, uint32 length)
 static void
 cliprdr_process(STREAM s)
 {
-	uint16 type, status;
-	uint32 length, format;
-	uint8 *data;
+	uint16_t type, status;
+	uint32_t length, format;
+	uint8_t *data;
 
 	in_uint16_le(s, type);
 	in_uint16_le(s, status);

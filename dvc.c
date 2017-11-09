@@ -21,7 +21,7 @@
 #include "rdesktop.h"
 
 #define MAX_DVC_CHANNELS 20
-#define INVALID_CHANNEL ((uint32)-1)
+#define INVALID_CHANNEL ((uint32_t) -1)
 
 #define DYNVC_CREATE_REQ		0x01
 #define DYNVC_DATA_FIRST		0x02
@@ -34,31 +34,31 @@
 #define DYNVC_SOFT_SYNC_RESPONSE	0x09
 
 typedef union dvc_hdr_t {
-    uint8 data;
+    uint8_t data;
     struct {
-      uint8 cbid:2;
-      uint8 sp:2;
-      uint8 cmd:4;
+      uint8_t cbid:2;
+      uint8_t sp:2;
+      uint8_t cmd:4;
     } hdr;
 } dvc_hdr_t;
 
 typedef struct dvc_channel_t
 {
-	uint32 hash;
-	uint32 channel_id;
+	uint32_t hash;
+	uint32_t channel_id;
 	dvc_channel_process_fn handler;
 } dvc_channel_t;
 
 static VCHANNEL *dvc_channel;
 static dvc_channel_t channels[MAX_DVC_CHANNELS];
 
-static uint32 dvc_in_channelid(STREAM s, dvc_hdr_t hdr);
+static uint32_t dvc_in_channelid(STREAM s, dvc_hdr_t hdr);
 
 static RD_BOOL
 dvc_channels_exists(const char *name)
 {
 	int i;
-	uint32 hash;
+	uint32_t hash;
 	hash = utils_djb2_hash(name);
 	for (i = 0; i < MAX_DVC_CHANNELS; i++)
 	{
@@ -70,7 +70,7 @@ dvc_channels_exists(const char *name)
 }
 
 static const dvc_channel_t *
-dvc_channels_get_by_id(uint32 id)
+dvc_channels_get_by_id(uint32_t id)
 {
 	int i;
 
@@ -85,11 +85,11 @@ dvc_channels_get_by_id(uint32 id)
 	return NULL;
 }
 
-static uint32
+static uint32_t
 dvc_channels_get_id(const char *name)
 {
 	int i;
-	uint32 hash;
+	uint32_t hash;
 	hash = utils_djb2_hash(name);
 
 	for (i = 0; i < MAX_DVC_CHANNELS; i++)
@@ -104,7 +104,7 @@ dvc_channels_get_id(const char *name)
 }
 
 static RD_BOOL
-dvc_channels_remove_by_id(uint32 channelid)
+dvc_channels_remove_by_id(uint32_t channelid)
 {
 	int i;
 
@@ -120,10 +120,10 @@ dvc_channels_remove_by_id(uint32 channelid)
 }
 
 static RD_BOOL
-dvc_channels_add(const char *name, dvc_channel_process_fn handler, uint32 channel_id)
+dvc_channels_add(const char *name, dvc_channel_process_fn handler, uint32_t channel_id)
 {
 	int i;
-	uint32 hash;
+	uint32_t hash;
 
 	if (dvc_channels_exists(name) == True)
 	{
@@ -152,10 +152,10 @@ dvc_channels_add(const char *name, dvc_channel_process_fn handler, uint32 channe
 }
 
 static int
-dvc_channels_set_id(const char *name, uint32 channel_id)
+dvc_channels_set_id(const char *name, uint32_t channel_id)
 {
 	int i;
-	uint32 hash;
+	uint32_t hash;
 
 	hash = utils_djb2_hash(name);
 
@@ -177,7 +177,7 @@ RD_BOOL
 dvc_channels_is_available(const char *name)
 {
 	int i;
-	uint32 hash;
+	uint32_t hash;
 	hash = utils_djb2_hash(name);
 
 	for (i = 0; i < MAX_DVC_CHANNELS; i++)
@@ -199,7 +199,7 @@ dvc_channels_register(const char *name, dvc_channel_process_fn handler)
 
 
 static STREAM
-dvc_init_packet(dvc_hdr_t hdr, uint32 channelid, size_t length)
+dvc_init_packet(dvc_hdr_t hdr, uint32_t channelid, size_t length)
 {
 	STREAM s;
 
@@ -242,7 +242,7 @@ dvc_send(const char *name, STREAM s)
 {
 	STREAM ls;
 	dvc_hdr_t hdr;
-	uint32 channel_id;
+	uint32_t channel_id;
 
 	channel_id = dvc_channels_get_id(name);
 	if (channel_id == INVALID_CHANNEL)
@@ -273,7 +273,7 @@ dvc_send_capabilities_response()
 {
 	STREAM s;
 	dvc_hdr_t hdr;
-	uint16 supportedversion = 0x01;
+	uint16_t supportedversion = 0x01;
 
 	hdr.hdr.cbid = 0x00;
 	hdr.hdr.sp = 0x00;
@@ -294,7 +294,7 @@ dvc_send_capabilities_response()
 static void
 dvc_process_caps_pdu(STREAM s)
 {
-	uint16 version;
+	uint16_t version;
 
 	/* VERSION1 */
 	in_uint8s(s, 1);	/* pad */
@@ -306,7 +306,7 @@ dvc_process_caps_pdu(STREAM s)
 }
 
 static void
-dvc_send_create_response(RD_BOOL success, dvc_hdr_t hdr, uint32 channelid)
+dvc_send_create_response(RD_BOOL success, dvc_hdr_t hdr, uint32_t channelid)
 {
 	STREAM s;
 
@@ -323,7 +323,7 @@ static void
 dvc_process_create_pdu(STREAM s, dvc_hdr_t hdr)
 {
 	char name[512];
-	uint32 channelid;
+	uint32_t channelid;
 
 	channelid = dvc_in_channelid(s, hdr);
 
@@ -346,12 +346,12 @@ dvc_process_create_pdu(STREAM s, dvc_hdr_t hdr)
 
 }
 
-static uint32
+static uint32_t
 dvc_in_channelid(STREAM s, dvc_hdr_t hdr)
 {
-	uint32 id;
+	uint32_t id;
 
-	id = (uint32) - 1;
+	id = INVALID_CHANNEL;
 
 	switch (hdr.hdr.cbid)
 	{
@@ -372,7 +372,7 @@ static void
 dvc_process_data_pdu(STREAM s, dvc_hdr_t hdr)
 {
 	const dvc_channel_t *ch;
-	uint32 channelid;
+	uint32_t channelid;
 
 	channelid = dvc_in_channelid(s, hdr);
 	ch = dvc_channels_get_by_id(channelid);
@@ -390,7 +390,7 @@ dvc_process_data_pdu(STREAM s, dvc_hdr_t hdr)
 static void
 dvc_process_close_pdu(STREAM s, dvc_hdr_t hdr)
 {
-	uint32 channelid;
+	uint32_t channelid;
 
 	channelid = dvc_in_channelid(s, hdr);
 	logger(Protocol, Debug, "dvc_process_close_pdu(), close channel %d", channelid);

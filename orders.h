@@ -57,24 +57,24 @@ enum RDP_SECONDARY_ORDER_TYPE
 
 typedef struct _DESTBLT_ORDER
 {
-	sint16 x;
-	sint16 y;
-	sint16 cx;
-	sint16 cy;
-	uint8 opcode;
+	int16_t x;
+	int16_t y;
+	int16_t cx;
+	int16_t cy;
+	uint8_t opcode;
 
 }
 DESTBLT_ORDER;
 
 typedef struct _PATBLT_ORDER
 {
-	sint16 x;
-	sint16 y;
-	sint16 cx;
-	sint16 cy;
-	uint8 opcode;
-	uint32 bgcolour;
-	uint32 fgcolour;
+	int16_t x;
+	int16_t y;
+	int16_t cx;
+	int16_t cy;
+	uint8_t opcode;
+	uint32_t bgcolour;
+	uint32_t fgcolour;
 	BRUSH brush;
 
 }
@@ -82,26 +82,26 @@ PATBLT_ORDER;
 
 typedef struct _SCREENBLT_ORDER
 {
-	sint16 x;
-	sint16 y;
-	sint16 cx;
-	sint16 cy;
-	uint8 opcode;
-	sint16 srcx;
-	sint16 srcy;
+	int16_t x;
+	int16_t y;
+	int16_t cx;
+	int16_t cy;
+	uint8_t opcode;
+	int16_t srcx;
+	int16_t srcy;
 
 }
 SCREENBLT_ORDER;
 
 typedef struct _LINE_ORDER
 {
-	uint16 mixmode;
-	sint16 startx;
-	sint16 starty;
-	sint16 endx;
-	sint16 endy;
-	uint32 bgcolour;
-	uint8 opcode;
+	uint16_t mixmode;
+	int16_t startx;
+	int16_t starty;
+	int16_t endx;
+	int16_t endy;
+	uint32_t bgcolour;
+	uint8_t opcode;
 	PEN pen;
 
 }
@@ -109,59 +109,59 @@ LINE_ORDER;
 
 typedef struct _RECT_ORDER
 {
-	sint16 x;
-	sint16 y;
-	sint16 cx;
-	sint16 cy;
-	uint32 colour;
+	int16_t x;
+	int16_t y;
+	int16_t cx;
+	int16_t cy;
+	uint32_t colour;
 
 }
 RECT_ORDER;
 
 typedef struct _DESKSAVE_ORDER
 {
-	uint32 offset;
-	sint16 left;
-	sint16 top;
-	sint16 right;
-	sint16 bottom;
-	uint8 action;
+	uint32_t offset;
+	int16_t left;
+	int16_t top;
+	int16_t right;
+	int16_t bottom;
+	uint8_t action;
 
 }
 DESKSAVE_ORDER;
 
 typedef struct _TRIBLT_ORDER
 {
-	uint8 colour_table;
-	uint8 cache_id;
-	sint16 x;
-	sint16 y;
-	sint16 cx;
-	sint16 cy;
-	uint8 opcode;
-	sint16 srcx;
-	sint16 srcy;
-	uint32 bgcolour;
-	uint32 fgcolour;
+	uint8_t colour_table;
+	uint8_t cache_id;
+	int16_t x;
+	int16_t y;
+	int16_t cx;
+	int16_t cy;
+	uint8_t opcode;
+	int16_t srcx;
+	int16_t srcy;
+	uint32_t bgcolour;
+	uint32_t fgcolour;
 	BRUSH brush;
-	uint16 cache_idx;
-	uint16 unknown;
+	uint16_t cache_idx;
+	uint16_t unknown;
 
 }
 TRIBLT_ORDER;
 
 typedef struct _MEMBLT_ORDER
 {
-	uint8 colour_table;
-	uint8 cache_id;
-	sint16 x;
-	sint16 y;
-	sint16 cx;
-	sint16 cy;
-	uint8 opcode;
-	sint16 srcx;
-	sint16 srcy;
-	uint16 cache_idx;
+	uint8_t colour_table;
+	uint8_t cache_id;
+	int16_t x;
+	int16_t y;
+	int16_t cx;
+	int16_t cy;
+	uint8_t opcode;
+	int16_t srcx;
+	int16_t srcy;
+	uint16_t cache_idx;
 
 }
 MEMBLT_ORDER;
@@ -170,71 +170,71 @@ MEMBLT_ORDER;
 
 typedef struct _POLYGON_ORDER
 {
-	sint16 x;
-	sint16 y;
-	uint8 opcode;
-	uint8 fillmode;
-	uint32 fgcolour;
-	uint8 npoints;
-	uint8 datasize;
-	uint8 data[MAX_DATA];
+	int16_t x;
+	int16_t y;
+	uint8_t opcode;
+	uint8_t fillmode;
+	uint32_t fgcolour;
+	uint8_t npoints;
+	uint8_t datasize;
+	uint8_t data[MAX_DATA];
 
 }
 POLYGON_ORDER;
 
 typedef struct _POLYGON2_ORDER
 {
-	sint16 x;
-	sint16 y;
-	uint8 opcode;
-	uint8 fillmode;
-	uint32 bgcolour;
-	uint32 fgcolour;
+	int16_t x;
+	int16_t y;
+	uint8_t opcode;
+	uint8_t fillmode;
+	uint32_t bgcolour;
+	uint32_t fgcolour;
 	BRUSH brush;
-	uint8 npoints;
-	uint8 datasize;
-	uint8 data[MAX_DATA];
+	uint8_t npoints;
+	uint8_t datasize;
+	uint8_t data[MAX_DATA];
 
 }
 POLYGON2_ORDER;
 
 typedef struct _POLYLINE_ORDER
 {
-	sint16 x;
-	sint16 y;
-	uint8 opcode;
-	uint32 fgcolour;
-	uint8 lines;
-	uint8 datasize;
-	uint8 data[MAX_DATA];
+	int16_t x;
+	int16_t y;
+	uint8_t opcode;
+	uint32_t fgcolour;
+	uint8_t lines;
+	uint8_t datasize;
+	uint8_t data[MAX_DATA];
 
 }
 POLYLINE_ORDER;
 
 typedef struct _ELLIPSE_ORDER
 {
-	sint16 left;
-	sint16 top;
-	sint16 right;
-	sint16 bottom;
-	uint8 opcode;
-	uint8 fillmode;
-	uint32 fgcolour;
+	int16_t left;
+	int16_t top;
+	int16_t right;
+	int16_t bottom;
+	uint8_t opcode;
+	uint8_t fillmode;
+	uint32_t fgcolour;
 
 }
 ELLIPSE_ORDER;
 
 typedef struct _ELLIPSE2_ORDER
 {
-	sint16 left;
-	sint16 top;
-	sint16 right;
-	sint16 bottom;
-	uint8 opcode;
-	uint8 fillmode;
+	int16_t left;
+	int16_t top;
+	int16_t right;
+	int16_t bottom;
+	uint8_t opcode;
+	uint8_t fillmode;
 	BRUSH brush;
-	uint32 bgcolour;
-	uint32 fgcolour;
+	uint32_t bgcolour;
+	uint32_t fgcolour;
 
 }
 ELLIPSE2_ORDER;
@@ -243,32 +243,32 @@ ELLIPSE2_ORDER;
 
 typedef struct _TEXT2_ORDER
 {
-	uint8 font;
-	uint8 flags;
-	uint8 opcode;
-	uint8 mixmode;
-	uint32 bgcolour;
-	uint32 fgcolour;
-	sint16 clipleft;
-	sint16 cliptop;
-	sint16 clipright;
-	sint16 clipbottom;
-	sint16 boxleft;
-	sint16 boxtop;
-	sint16 boxright;
-	sint16 boxbottom;
+	uint8_t font;
+	uint8_t flags;
+	uint8_t opcode;
+	uint8_t mixmode;
+	uint32_t bgcolour;
+	uint32_t fgcolour;
+	int16_t clipleft;
+	int16_t cliptop;
+	int16_t clipright;
+	int16_t clipbottom;
+	int16_t boxleft;
+	int16_t boxtop;
+	int16_t boxright;
+	int16_t boxbottom;
 	BRUSH brush;
-	sint16 x;
-	sint16 y;
-	uint8 length;
-	uint8 text[MAX_TEXT];
+	int16_t x;
+	int16_t y;
+	uint8_t length;
+	uint8_t text[MAX_TEXT];
 
 }
 TEXT2_ORDER;
 
 typedef struct _RDP_ORDER_STATE
 {
-	uint8 order_type;
+	uint8_t order_type;
 	BOUNDS bounds;
 
 	DESTBLT_ORDER destblt;
@@ -291,32 +291,32 @@ RDP_ORDER_STATE;
 
 typedef struct _RDP_RAW_BMPCACHE_ORDER
 {
-	uint8 cache_id;
-	uint8 pad1;
-	uint8 width;
-	uint8 height;
-	uint8 bpp;
-	uint16 bufsize;
-	uint16 cache_idx;
-	uint8 *data;
+	uint8_t cache_id;
+	uint8_t pad1;
+	uint8_t width;
+	uint8_t height;
+	uint8_t bpp;
+	uint16_t bufsize;
+	uint16_t cache_idx;
+	uint8_t *data;
 
 }
 RDP_RAW_BMPCACHE_ORDER;
 
 typedef struct _RDP_BMPCACHE_ORDER
 {
-	uint8 cache_id;
-	uint8 pad1;
-	uint8 width;
-	uint8 height;
-	uint8 bpp;
-	uint16 bufsize;
-	uint16 cache_idx;
-	uint16 pad2;
-	uint16 size;
-	uint16 row_size;
-	uint16 final_size;
-	uint8 *data;
+	uint8_t cache_id;
+	uint8_t pad1;
+	uint8_t width;
+	uint8_t height;
+	uint8_t bpp;
+	uint16_t bufsize;
+	uint16_t cache_idx;
+	uint16_t pad2;
+	uint16_t size;
+	uint16_t row_size;
+	uint16_t final_size;
+	uint8_t *data;
 
 }
 RDP_BMPCACHE_ORDER;
@@ -337,12 +337,12 @@ RDP_BMPCACHE_ORDER;
 
 typedef struct _RDP_FONT_GLYPH
 {
-	uint16 character;
-	uint16 unknown;
-	uint16 baseline;
-	uint16 width;
-	uint16 height;
-	uint8 data[MAX_GLYPH];
+	uint16_t character;
+	uint16_t unknown;
+	uint16_t baseline;
+	uint16_t width;
+	uint16_t height;
+	uint8_t data[MAX_GLYPH];
 
 }
 RDP_FONT_GLYPH;
@@ -351,8 +351,8 @@ RDP_FONT_GLYPH;
 
 typedef struct _RDP_FONTCACHE_ORDER
 {
-	uint8 font;
-	uint8 nglyphs;
+	uint8_t font;
+	uint8_t nglyphs;
 	RDP_FONT_GLYPH glyphs[MAX_GLYPHS];
 
 }
@@ -360,7 +360,7 @@ RDP_FONTCACHE_ORDER;
 
 typedef struct _RDP_COLCACHE_ORDER
 {
-	uint8 cache_id;
+	uint8_t cache_id;
 	COLOURMAP map;
 
 }

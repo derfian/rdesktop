@@ -31,7 +31,7 @@
 #include "ssl.h"
 
 
-extern uint16 g_mcs_userid;
+extern uint16_t g_mcs_userid;
 extern char *g_username;
 extern char g_password[64];
 extern char g_codepage[16];
@@ -40,8 +40,8 @@ extern RD_BOOL g_encryption;
 extern RD_BOOL g_desktop_save;
 extern RD_BOOL g_polygon_ellipse_orders;
 extern RDP_VERSION g_rdp_version;
-extern uint16 g_server_rdp_version;
-extern uint32 g_rdp5_performanceflags;
+extern uint16_t g_server_rdp_version;
+extern uint32_t g_rdp5_performanceflags;
 extern int g_server_depth;
 extern int g_width;
 extern int g_height;
@@ -51,44 +51,44 @@ extern RD_BOOL g_numlock_sync;
 extern RD_BOOL g_pending_resize;
 extern RD_BOOL g_network_error;
 
-uint8 *g_next_packet;
-uint32 g_rdp_shareid;
+uint8_t *g_next_packet;
+uint32_t g_rdp_shareid;
 
 extern RDPCOMP g_mppc_dict;
 
 /* Session Directory support */
 extern RD_BOOL g_redirect;
 extern char *g_redirect_server;
-extern uint32 g_redirect_server_len;
+extern uint32_t g_redirect_server_len;
 extern char *g_redirect_domain;
-extern uint32 g_redirect_domain_len;
+extern uint32_t g_redirect_domain_len;
 extern char *g_redirect_username;
-extern uint32 g_redirect_username_len;
-extern uint8 *g_redirect_lb_info;
-extern uint32 g_redirect_lb_info_len;
-extern uint8 *g_redirect_cookie;
-extern uint32 g_redirect_cookie_len;
-extern uint32 g_redirect_flags;
-extern uint32 g_redirect_session_id;
+extern uint32_t g_redirect_username_len;
+extern uint8_t *g_redirect_lb_info;
+extern uint32_t g_redirect_lb_info_len;
+extern uint8_t *g_redirect_cookie;
+extern uint32_t g_redirect_cookie_len;
+extern uint32_t g_redirect_flags;
+extern uint32_t g_redirect_session_id;
 
 /* END Session Directory support */
 
-extern uint32 g_reconnect_logonid;
+extern uint32_t g_reconnect_logonid;
 extern char g_reconnect_random[16];
 extern time_t g_reconnect_random_ts;
 extern RD_BOOL g_has_reconnect_random;
-extern uint8 g_client_random[SEC_RANDOM_SIZE];
-static uint32 g_packetno;
+extern uint8_t g_client_random[SEC_RANDOM_SIZE];
+static uint32_t g_packetno;
 
 static void rdp_out_unistr(STREAM s, char *string, int len);
 
 /* Receive an RDP packet */
 static STREAM
-rdp_recv(uint8 * type)
+rdp_recv(uint8_t * type)
 {
 	static STREAM rdp_s;
-	uint16 length, pdu_type;
-	uint8 rdpver;
+	uint16_t length, pdu_type;
+	uint8_t rdpver;
 
 	if ((rdp_s == NULL) || (g_next_packet >= rdp_s->end) || (g_next_packet == NULL))
 	{
@@ -148,9 +148,9 @@ rdp_init_data(int maxlen)
 
 /* Send an RDP data packet */
 static void
-rdp_send_data(STREAM s, uint8 data_pdu_type)
+rdp_send_data(STREAM s, uint8_t data_pdu_type)
 {
-	uint16 length;
+	uint16_t length;
 
 	s_pop_layer(s, rdp_hdr);
 	length = s->end - s->p;
@@ -241,7 +241,7 @@ rdp_out_unistr(STREAM s, char *string, int len)
  * Returns str_len of string
  */
 void
-rdp_in_unistr(STREAM s, int in_len, char **string, uint32 * str_size)
+rdp_in_unistr(STREAM s, int in_len, char **string, uint32_t * str_size)
 {
 	static iconv_t icv_utf16_to_local;
 	size_t ibl, obl;
@@ -302,7 +302,7 @@ rdp_in_unistr(STREAM s, int in_len, char **string, uint32 * str_size)
 
 /* Parse a logon info packet */
 static void
-rdp_send_logon_info(uint32 flags, char *domain, char *user,
+rdp_send_logon_info(uint32_t flags, char *domain, char *user,
 		    char *password, char *program, char *directory)
 {
 	char *ipaddr = tcp_get_address();
@@ -318,11 +318,11 @@ rdp_send_logon_info(uint32 flags, char *domain, char *user,
 	int len_dll = 2 * strlen("C:\\WINNT\\System32\\mstscax.dll") + 2;
 
 	int packetlen = 0;
-	uint32 sec_flags = g_encryption ? (SEC_INFO_PKT | SEC_ENCRYPT) : SEC_INFO_PKT;
+	uint32_t sec_flags = g_encryption ? (SEC_INFO_PKT | SEC_ENCRYPT) : SEC_INFO_PKT;
 	STREAM s;
 	time_t t = time(NULL);
 	time_t tzone;
-	uint8 security_verifier[16];
+	uint8_t security_verifier[16];
 
 	if (g_rdp_version == RDP_V4 || 1 == g_server_rdp_version)
 	{
@@ -483,7 +483,7 @@ rdp_send_logon_info(uint32 flags, char *domain, char *user,
 
 /* Send a control PDU */
 static void
-rdp_send_control(uint16 action)
+rdp_send_control(uint16_t action)
 {
 	STREAM s;
 
@@ -514,7 +514,7 @@ rdp_send_synchronise(void)
 
 /* Send a single input event */
 void
-rdp_send_input(uint32 time, uint16 message_type, uint16 device_flags, uint16 param1, uint16 param2)
+rdp_send_input(uint32_t time, uint16_t message_type, uint16_t device_flags, uint16_t param1, uint16_t param2)
 {
 	STREAM s;
 
@@ -572,7 +572,7 @@ rdp_enum_bmpcache2(void)
 {
 	STREAM s;
 	HASH_KEY keylist[BMPCACHE2_NUM_PSTCELLS];
-	uint32 num_keys, offset, count, flags;
+	uint32_t num_keys, offset, count, flags;
 
 	offset = 0;
 	num_keys = pstcache_enumerate(2, keylist);
@@ -612,7 +612,7 @@ rdp_enum_bmpcache2(void)
 
 /* Send an (empty) font information PDU */
 static void
-rdp_send_fonts(uint16 seq)
+rdp_send_fonts(uint16_t seq)
 {
 	STREAM s;
 
@@ -631,7 +631,7 @@ rdp_send_fonts(uint16 seq)
 static void
 rdp_out_ts_general_capabilityset(STREAM s)
 {
-	uint16 extraFlags = 0;
+	uint16_t extraFlags = 0;
 	if (g_rdp_version >= RDP_V5)
 	{
 		extraFlags |= NO_BITMAP_COMPRESSION_HDR;
@@ -680,9 +680,9 @@ rdp_out_ts_bitmap_capabilityset(STREAM s)
 static void
 rdp_out_ts_order_capabilityset(STREAM s)
 {
-	uint8 order_caps[32];
-	uint16 orderflags = 0;
-	uint32 cachesize = 0;
+	uint8_t order_caps[32];
+	uint16_t orderflags = 0;
+	uint32_t cachesize = 0;
 
 	orderflags |= (NEGOTIATEORDERSUPPORT | ZEROBOUNDSDELTASSUPPORT); /* mandatory flags */
 	orderflags |= COLORINDEXSUPPORT;
@@ -862,7 +862,7 @@ rdp_out_brushcache_caps(STREAM s)
 static void
 rdp_out_ts_input_capabilityset(STREAM s)
 {
-	uint16 inputflags = 0;
+	uint16_t inputflags = 0;
 	inputflags |= INPUT_FLAG_SCANCODES;
 
 	out_uint16_le(s, RDP_CAPSET_INPUT);
@@ -881,7 +881,7 @@ rdp_out_ts_input_capabilityset(STREAM s)
 static void
 rdp_out_ts_sound_capabilityset(STREAM s)
 {
-	uint16 soundflags = SOUND_BEEPS_FLAG;
+	uint16_t soundflags = SOUND_BEEPS_FLAG;
 
 	out_uint16_le(s, RDP_CAPSET_SOUND);
 	out_uint16_le(s, RDP_CAPLEN_SOUND);
@@ -894,7 +894,7 @@ rdp_out_ts_sound_capabilityset(STREAM s)
 static void
 rdp_out_ts_font_capabilityset(STREAM s)
 {
-	uint16 flags = FONTSUPPORT_FONTLIST;
+	uint16_t flags = FONTSUPPORT_FONTLIST;
 
 	out_uint16_le(s, RDP_CAPSET_FONT);
 	out_uint16_le(s, RDP_CAPLEN_FONT);
@@ -904,7 +904,7 @@ rdp_out_ts_font_capabilityset(STREAM s)
 }
 
 static void
-rdp_out_ts_cache_definition(STREAM s, uint16 entries, uint16 maxcellsize)
+rdp_out_ts_cache_definition(STREAM s, uint16_t entries, uint16_t maxcellsize)
 {
 	out_uint16_le(s, entries);
 	out_uint16_le(s, maxcellsize);
@@ -914,8 +914,8 @@ rdp_out_ts_cache_definition(STREAM s, uint16 entries, uint16 maxcellsize)
 static void
 rdp_out_ts_glyphcache_capabilityset(STREAM s)
 {
-	uint16 supportlvl = GLYPH_SUPPORT_FULL;
-	uint32 fragcache = 0x01000100;
+	uint16_t supportlvl = GLYPH_SUPPORT_FULL;
+	uint32_t fragcache = 0x01000100;
 	out_uint16_le(s, RDP_CAPSET_GLYPHCACHE);
 	out_uint16_le(s, RDP_CAPLEN_GLYPHCACHE);
 
@@ -947,7 +947,7 @@ rdp_out_ts_multifragmentupdate_capabilityset(STREAM s)
 static void
 rdp_out_ts_large_pointer_capabilityset(STREAM s)
 {
-	uint16 flags = LARGE_POINTER_FLAG_96x96;
+	uint16_t flags = LARGE_POINTER_FLAG_96x96;
 
 	out_uint16_le(s, RDP_CAPSET_LARGE_POINTER);
 	out_uint16_le(s, RDP_CAPLEN_LARGE_POINTER);
@@ -960,8 +960,8 @@ static void
 rdp_send_confirm_active(void)
 {
 	STREAM s;
-	uint32 sec_flags = g_encryption ? (RDP5_FLAG | SEC_ENCRYPT) : RDP5_FLAG;
-	uint16 caplen =
+	uint32_t sec_flags = g_encryption ? (RDP5_FLAG | SEC_ENCRYPT) : RDP5_FLAG;
+	uint16_t caplen =
 		RDP_CAPLEN_GENERAL +
 		RDP_CAPLEN_BITMAP +
 		RDP_CAPLEN_ORDER +
@@ -1038,7 +1038,7 @@ rdp_send_confirm_active(void)
 static void
 rdp_process_general_caps(STREAM s)
 {
-	uint16 pad2octetsB;	/* rdp5 flags? */
+	uint16_t pad2octetsB;	/* rdp5 flags? */
 
 	in_uint8s(s, 10);
 	in_uint16_le(s, pad2octetsB);
@@ -1051,7 +1051,7 @@ rdp_process_general_caps(STREAM s)
 static void
 rdp_process_bitmap_caps(STREAM s)
 {
-	uint16 width, height, depth;
+	uint16_t width, height, depth;
 
 	in_uint16_le(s, depth);
 	in_uint8s(s, 6);
@@ -1087,11 +1087,11 @@ rdp_process_bitmap_caps(STREAM s)
 
 /* Process server capabilities */
 static void
-rdp_process_server_caps(STREAM s, uint16 length)
+rdp_process_server_caps(STREAM s, uint16_t length)
 {
 	int n;
-	uint8 *next, *start;
-	uint16 ncapsets, capset_type, capset_length;
+	uint8_t *next, *start;
+	uint16_t ncapsets, capset_type, capset_length;
 
 	start = s->p;
 
@@ -1127,8 +1127,8 @@ rdp_process_server_caps(STREAM s, uint16 length)
 static void
 process_demand_active(STREAM s)
 {
-	uint8 type;
-	uint16 len_src_descriptor, len_combined_caps;
+	uint8_t type;
+	uint16_t len_src_descriptor, len_combined_caps;
 
 	/* at this point we need to ensure that we have ui created */
 	rd_create_ui();
@@ -1172,10 +1172,10 @@ static void
 process_colour_pointer_common(STREAM s, int bpp)
 {
 	extern RD_BOOL g_local_cursor;
-	uint16 width, height, cache_idx, masklen, datalen;
-	uint16 x, y;
-	uint8 *mask;
-	uint8 *data;
+	uint16_t width, height, cache_idx, masklen, datalen;
+	uint16_t x, y;
+	uint8_t *mask;
+	uint8_t *data;
 	RD_HCURSOR cursor;
 
 	in_uint16_le(s, cache_idx);
@@ -1222,7 +1222,7 @@ process_new_pointer_pdu(STREAM s)
 void
 process_cached_pointer_pdu(STREAM s)
 {
-	uint16 cache_idx;
+	uint16_t cache_idx;
 
 	in_uint16_le(s, cache_idx);
 	ui_set_cursor(cache_get_cursor(cache_idx));
@@ -1232,7 +1232,7 @@ process_cached_pointer_pdu(STREAM s)
 void
 process_system_pointer_pdu(STREAM s)
 {
-	uint32 system_pointer_type;
+	uint32_t system_pointer_type;
 	in_uint32_le(s, system_pointer_type);
 
 	set_system_pointer(system_pointer_type);
@@ -1240,7 +1240,7 @@ process_system_pointer_pdu(STREAM s)
 
 /* Set a given system pointer */
 void
-set_system_pointer(uint32 ptr)
+set_system_pointer(uint32_t ptr)
 {
 	switch (ptr)
 	{
@@ -1261,8 +1261,8 @@ set_system_pointer(uint32 ptr)
 static void
 process_pointer_pdu(STREAM s)
 {
-	uint16 message_type;
-	uint16 x, y;
+	uint16_t message_type;
+	uint16_t x, y;
 
 	in_uint16_le(s, message_type);
 	in_uint8s(s, 2);	/* pad */
@@ -1302,10 +1302,10 @@ process_pointer_pdu(STREAM s)
 void
 process_bitmap_updates(STREAM s)
 {
-	uint16 num_updates;
-	uint16 left, top, right, bottom, width, height;
-	uint16 cx, cy, bpp, Bpp, compress, bufsize, size;
-	uint8 *data, *bmpdata;
+	uint16_t num_updates;
+	uint16_t left, top, right, bottom, width, height;
+	uint16_t cx, cy, bpp, Bpp, compress, bufsize, size;
+	uint8_t *data, *bmpdata;
 	int i;
 
 	in_uint16_le(s, num_updates);
@@ -1333,7 +1333,7 @@ process_bitmap_updates(STREAM s)
 		if (!compress)
 		{
 			int y;
-			bmpdata = (uint8 *) xmalloc(width * height * Bpp);
+			bmpdata = (uint8_t *) xmalloc(width * height * Bpp);
 			for (y = 0; y < height; y++)
 			{
 				in_uint8a(s, &bmpdata[(height - y - 1) * (width * Bpp)],
@@ -1356,7 +1356,7 @@ process_bitmap_updates(STREAM s)
 			in_uint8s(s, 4);	/* line_size, final_size */
 		}
 		in_uint8p(s, data, size);
-		bmpdata = (uint8 *) xmalloc(width * height * Bpp);
+		bmpdata = (uint8_t *) xmalloc(width * height * Bpp);
 		if (bitmap_decompress(bmpdata, width, height, data, size, Bpp))
 		{
 			ui_paint_bitmap(left, top, cx, cy, width, height, bmpdata);
@@ -1406,7 +1406,7 @@ process_palette(STREAM s)
 static void
 process_update_pdu(STREAM s)
 {
-	uint16 update_type, count;
+	uint16_t update_type, count;
 
 	in_uint16_le(s, update_type);
 
@@ -1443,9 +1443,9 @@ process_update_pdu(STREAM s)
 static void
 process_ts_logon_info_extended(STREAM s)
 {
-	uint32 fieldspresent;
-	uint32 len;
-	uint32 version;
+	uint32_t fieldspresent;
+	uint32_t len;
+	uint32_t version;
 
 	in_uint8s(s, 2);	/* Length */
 	in_uint32_le(s, fieldspresent);
@@ -1485,7 +1485,7 @@ process_ts_logon_info_extended(STREAM s)
 void
 process_pdu_logon(STREAM s)
 {
-	uint32 infotype;
+	uint32_t infotype;
 	in_uint32_le(s, infotype);
 
 	switch(infotype)
@@ -1508,7 +1508,7 @@ process_pdu_logon(STREAM s)
 
 /* Process a disconnect PDU */
 void
-process_disconnect_pdu(STREAM s, uint32 * ext_disc_reason)
+process_disconnect_pdu(STREAM s, uint32_t * ext_disc_reason)
 {
 	in_uint32_le(s, *ext_disc_reason);
 
@@ -1517,14 +1517,14 @@ process_disconnect_pdu(STREAM s, uint32 * ext_disc_reason)
 
 /* Process data PDU */
 static RD_BOOL
-process_data_pdu(STREAM s, uint32 * ext_disc_reason)
+process_data_pdu(STREAM s, uint32_t * ext_disc_reason)
 {
-	uint8 data_pdu_type;
-	uint8 ctype;
-	uint16 clen;
-	uint32 len;
+	uint8_t data_pdu_type;
+	uint8_t ctype;
+	uint16_t clen;
+	uint32_t len;
 
-	uint32 roff, rlen;
+	uint32_t roff, rlen;
 
 	struct stream *ns = &(g_mppc_dict.ns);
 
@@ -1547,7 +1547,7 @@ process_data_pdu(STREAM s, uint32 * ext_disc_reason)
 		/* len -= 18; */
 
 		/* allocate memory and copy the uncompressed data into the temporary stream */
-		ns->data = (uint8 *) xrealloc(ns->data, rlen);
+		ns->data = (uint8_t *) xrealloc(ns->data, rlen);
 
 		memcpy((ns->data), (unsigned char *) (g_mppc_dict.hist + roff), rlen);
 
@@ -1611,10 +1611,10 @@ process_data_pdu(STREAM s, uint32 * ext_disc_reason)
 
 /* Process redirect PDU from Session Directory */
 static RD_BOOL
-process_redirect_pdu(STREAM s, RD_BOOL enhanced_redirect /*, uint32 * ext_disc_reason */ )
+process_redirect_pdu(STREAM s, RD_BOOL enhanced_redirect /*, uint32_t * ext_disc_reason */ )
 {
-	uint32 len;
-	uint16 redirect_identifier;
+	uint32_t len;
+	uint16_t redirect_identifier;
 
 	/* reset any previous redirection information */
 	g_redirect = True;
@@ -1795,7 +1795,7 @@ process_redirect_pdu(STREAM s, RD_BOOL enhanced_redirect /*, uint32 * ext_disc_r
 
 /* Process incoming packets */
 void
-rdp_main_loop(RD_BOOL * deactivated, uint32 * ext_disc_reason)
+rdp_main_loop(RD_BOOL * deactivated, uint32_t * ext_disc_reason)
 {
 	while (rdp_loop(deactivated, ext_disc_reason))
 	{
@@ -1808,9 +1808,9 @@ rdp_main_loop(RD_BOOL * deactivated, uint32 * ext_disc_reason)
 
 /* used in uiports and rdp_main_loop, processes the RDP packets waiting */
 RD_BOOL
-rdp_loop(RD_BOOL * deactivated, uint32 * ext_disc_reason)
+rdp_loop(RD_BOOL * deactivated, uint32_t * ext_disc_reason)
 {
-	uint8 type;
+	uint8_t type;
 	RD_BOOL cont = True;
 	STREAM s;
 
@@ -1857,11 +1857,11 @@ rdp_loop(RD_BOOL * deactivated, uint32 * ext_disc_reason)
 
 /* Establish a connection up to the RDP layer */
 RD_BOOL
-rdp_connect(char *server, uint32 flags, char *domain, char *password,
+rdp_connect(char *server, uint32_t flags, char *domain, char *password,
 	    char *command, char *directory, RD_BOOL reconnect)
 {
 	RD_BOOL deactivated = False;
-	uint32 ext_disc_reason = 0;
+	uint32_t ext_disc_reason = 0;
 
 	if (!sec_connect(server, g_username, domain, password, reconnect))
 		return False;

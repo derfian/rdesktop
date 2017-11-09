@@ -35,25 +35,25 @@ extern RD_BOOL g_licence_issued;
 extern RD_BOOL g_licence_error_result;
 extern RDP_VERSION g_rdp_version;
 extern RD_BOOL g_console_session;
-extern uint32 g_redirect_session_id;
+extern uint32_t g_redirect_session_id;
 extern int g_server_depth;
 extern VCHANNEL g_channels[];
 extern unsigned int g_num_channels;
-extern uint8 g_client_random[SEC_RANDOM_SIZE];
+extern uint8_t g_client_random[SEC_RANDOM_SIZE];
 
 static int g_rc4_key_len;
 static RDSSL_RC4 g_rc4_decrypt_key;
 static RDSSL_RC4 g_rc4_encrypt_key;
-static uint32 g_server_public_key_len;
+static uint32_t g_server_public_key_len;
 
-static uint8 g_sec_sign_key[16];
-static uint8 g_sec_decrypt_key[16];
-static uint8 g_sec_encrypt_key[16];
-static uint8 g_sec_decrypt_update_key[16];
-static uint8 g_sec_encrypt_update_key[16];
-static uint8 g_sec_crypted_random[SEC_MAX_MODULUS_SIZE];
+static uint8_t g_sec_sign_key[16];
+static uint8_t g_sec_decrypt_key[16];
+static uint8_t g_sec_encrypt_key[16];
+static uint8_t g_sec_decrypt_update_key[16];
+static uint8_t g_sec_encrypt_update_key[16];
+static uint8_t g_sec_crypted_random[SEC_MAX_MODULUS_SIZE];
 
-uint16 g_server_rdp_version = 0;
+uint16_t g_server_rdp_version = 0;
 
 /* These values must be available to reset state - Session Directory */
 static int g_sec_encrypt_use_count = 0;
@@ -74,10 +74,10 @@ static int g_sec_decrypt_use_count = 0;
  * Both SHA1 and MD5 algorithms are used.
  */
 void
-sec_hash_48(uint8 * out, uint8 * in, uint8 * salt1, uint8 * salt2, uint8 salt)
+sec_hash_48(uint8_t * out, uint8_t * in, uint8_t * salt1, uint8_t * salt2, uint8_t salt)
 {
-	uint8 shasig[20];
-	uint8 pad[4];
+	uint8_t shasig[20];
+	uint8_t pad[4];
 	RDSSL_SHA1 sha1;
 	RDSSL_MD5 md5;
 	int i;
@@ -104,7 +104,7 @@ sec_hash_48(uint8 * out, uint8 * in, uint8 * salt1, uint8 * salt2, uint8 salt)
  * 16-byte transformation used to generate export keys (6.2.2).
  */
 void
-sec_hash_16(uint8 * out, uint8 * in, uint8 * salt1, uint8 * salt2)
+sec_hash_16(uint8_t * out, uint8_t * in, uint8_t * salt1, uint8_t * salt2)
 {
 	RDSSL_MD5 md5;
 
@@ -119,7 +119,7 @@ sec_hash_16(uint8 * out, uint8 * in, uint8 * salt1, uint8 * salt2)
  * 16-byte sha1 hash
  */
 void
-sec_hash_sha1_16(uint8 * out, uint8 * in, uint8 * salt1)
+sec_hash_sha1_16(uint8_t * out, uint8_t * in, uint8_t * salt1)
 {
 	RDSSL_SHA1 sha1;
 	rdssl_sha1_init(&sha1);
@@ -130,7 +130,7 @@ sec_hash_sha1_16(uint8 * out, uint8 * in, uint8 * salt1)
 
 /* create string from hash */
 void
-sec_hash_to_string(char *out, int out_size, uint8 * in, int in_size)
+sec_hash_to_string(char *out, int out_size, uint8_t * in, int in_size)
 {
 	int k;
 	memset(out, 0, out_size);
@@ -142,7 +142,7 @@ sec_hash_to_string(char *out, int out_size, uint8 * in, int in_size)
 
 /* Reduce key entropy from 64 to 40 bits */
 static void
-sec_make_40bit(uint8 * key)
+sec_make_40bit(uint8_t * key)
 {
 	key[0] = 0xd1;
 	key[1] = 0x26;
@@ -151,11 +151,11 @@ sec_make_40bit(uint8 * key)
 
 /* Generate encryption keys given client and server randoms */
 static void
-sec_generate_keys(uint8 * client_random, uint8 * server_random, int rc4_key_size)
+sec_generate_keys(uint8_t * client_random, uint8_t * server_random, int rc4_key_size)
 {
-	uint8 pre_master_secret[48];
-	uint8 master_secret[48];
-	uint8 key_block[48];
+	uint8_t pre_master_secret[48];
+	uint8_t master_secret[48];
+	uint8_t key_block[48];
 
 	/* Construct pre-master secret */
 	memcpy(pre_master_secret, client_random, 24);
@@ -197,23 +197,23 @@ sec_generate_keys(uint8 * client_random, uint8 * server_random, int rc4_key_size
 	rdssl_rc4_set_key(&g_rc4_encrypt_key, g_sec_encrypt_key, g_rc4_key_len);
 }
 
-static uint8 pad_54[40] = {
+static uint8_t pad_54[40] = {
 	54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54,
 	54, 54, 54,
 	54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54,
 	54, 54, 54
 };
 
-static uint8 pad_92[48] = {
+static uint8_t pad_92[48] = {
 	92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92,
 	92, 92, 92, 92, 92, 92, 92,
 	92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92,
 	92, 92, 92, 92, 92, 92, 92
 };
 
-/* Output a uint32 into a buffer (little-endian) */
+/* Output a uint32_t into a buffer (little-endian) */
 void
-buf_out_uint32(uint8 * buffer, uint32 value)
+buf_out_uint32(uint8_t * buffer, uint32_t value)
 {
 	buffer[0] = (value) & 0xff;
 	buffer[1] = (value >> 8) & 0xff;
@@ -223,11 +223,11 @@ buf_out_uint32(uint8 * buffer, uint32 value)
 
 /* Generate a MAC hash (5.2.3.1), using a combination of SHA1 and MD5 */
 void
-sec_sign(uint8 * signature, int siglen, uint8 * session_key, int keylen, uint8 * data, int datalen)
+sec_sign(uint8_t * signature, int siglen, uint8_t * session_key, int keylen, uint8_t * data, int datalen)
 {
-	uint8 shasig[20];
-	uint8 md5sig[16];
-	uint8 lenhdr[4];
+	uint8_t shasig[20];
+	uint8_t md5sig[16];
+	uint8_t lenhdr[4];
 	RDSSL_SHA1 sha1;
 	RDSSL_MD5 md5;
 
@@ -251,9 +251,9 @@ sec_sign(uint8 * signature, int siglen, uint8 * session_key, int keylen, uint8 *
 
 /* Update an encryption key */
 static void
-sec_update(uint8 * key, uint8 * update_key)
+sec_update(uint8_t * key, uint8_t * update_key)
 {
-	uint8 shasig[20];
+	uint8_t shasig[20];
 	RDSSL_SHA1 sha1;
 	RDSSL_MD5 md5;
 	RDSSL_RC4 update;
@@ -279,7 +279,7 @@ sec_update(uint8 * key, uint8 * update_key)
 
 /* Encrypt data using RC4 */
 static void
-sec_encrypt(uint8 * data, int length)
+sec_encrypt(uint8_t * data, int length)
 {
 	if (g_sec_encrypt_use_count == 4096)
 	{
@@ -294,7 +294,7 @@ sec_encrypt(uint8 * data, int length)
 
 /* Decrypt data using RC4 */
 void
-sec_decrypt(uint8 * data, int length)
+sec_decrypt(uint8_t * data, int length)
 {
 	if (g_sec_decrypt_use_count == 4096)
 	{
@@ -309,15 +309,15 @@ sec_decrypt(uint8 * data, int length)
 
 /* Perform an RSA public key encryption operation */
 static void
-sec_rsa_encrypt(uint8 * out, uint8 * in, int len, uint32 modulus_size, uint8 * modulus,
-		uint8 * exponent)
+sec_rsa_encrypt(uint8_t * out, uint8_t * in, int len, uint32_t modulus_size, uint8_t * modulus,
+		uint8_t * exponent)
 {
 	rdssl_rsa_encrypt(out, in, len, modulus_size, modulus, exponent);
 }
 
 /* Initialise secure transport packet */
 STREAM
-sec_init(uint32 flags, int maxlen)
+sec_init(uint32_t flags, int maxlen)
 {
 	int hdrlen;
 	STREAM s;
@@ -334,7 +334,7 @@ sec_init(uint32 flags, int maxlen)
 
 /* Transmit secure transport packet over specified channel */
 void
-sec_send_to_channel(STREAM s, uint32 flags, uint16 channel)
+sec_send_to_channel(STREAM s, uint32_t flags, uint16_t channel)
 {
 	int datalen;
 
@@ -364,7 +364,7 @@ sec_send_to_channel(STREAM s, uint32 flags, uint16 channel)
 /* Transmit secure transport packet */
 
 void
-sec_send(STREAM s, uint32 flags)
+sec_send(STREAM s, uint32_t flags)
 {
 	sec_send_to_channel(s, flags, MCS_GLOBAL_CHANNEL);
 }
@@ -374,8 +374,8 @@ sec_send(STREAM s, uint32 flags)
 static void
 sec_establish_key(void)
 {
-	uint32 length = g_server_public_key_len + SEC_PADDING_SIZE;
-	uint32 flags = SEC_EXCHANGE_PKT;
+	uint32_t length = g_server_public_key_len + SEC_PADDING_SIZE;
+	uint32_t flags = SEC_EXCHANGE_PKT;
 	STREAM s;
 
 	s = sec_init(flags, length + 4);
@@ -390,14 +390,14 @@ sec_establish_key(void)
 
 /* Output connect initial data blob */
 static void
-sec_out_mcs_connect_initial_pdu(STREAM s, uint32 selected_protocol)
+sec_out_mcs_connect_initial_pdu(STREAM s, uint32_t selected_protocol)
 {
 	int length = 162 + 76 + 12 + 4 + (g_dpi > 0 ? 18 : 0);
 	unsigned int i;
-	uint32 rdpversion = RDP_40;
-	uint16 capflags = RNS_UD_CS_SUPPORT_ERRINFO_PDU;
-	uint16 colorsupport = RNS_UD_24BPP_SUPPORT | RNS_UD_16BPP_SUPPORT | RNS_UD_32BPP_SUPPORT;
-	uint32 physwidth, physheight, desktopscale, devicescale;
+	uint32_t rdpversion = RDP_40;
+	uint16_t capflags = RNS_UD_CS_SUPPORT_ERRINFO_PDU;
+	uint16_t colorsupport = RNS_UD_24BPP_SUPPORT | RNS_UD_16BPP_SUPPORT | RNS_UD_32BPP_SUPPORT;
+	uint32_t physwidth, physheight, desktopscale, devicescale;
 
 	if (g_rdp_version >= RDP_V5)
 		rdpversion = RDP_50;
@@ -469,7 +469,7 @@ sec_out_mcs_connect_initial_pdu(STREAM s, uint32 selected_protocol)
 	}
 
 	/* Write a Client Cluster Data (TS_UD_CS_CLUSTER) */
-	uint32 cluster_flags = 0;
+	uint32_t cluster_flags = 0;
 	out_uint16_le(s, CS_CLUSTER);	/* header.type */
 	out_uint16_le(s, 12);	/* length */
 
@@ -509,9 +509,9 @@ sec_out_mcs_connect_initial_pdu(STREAM s, uint32 selected_protocol)
 
 /* Parse a public key structure */
 static RD_BOOL
-sec_parse_public_key(STREAM s, uint8 * modulus, uint8 * exponent)
+sec_parse_public_key(STREAM s, uint8_t * modulus, uint8_t * exponent)
 {
-	uint32 magic, modulus_len;
+	uint32_t magic, modulus_len;
 
 	in_uint32_le(s, magic);
 	if (magic != SEC_RSA_MAGIC)
@@ -542,10 +542,10 @@ sec_parse_public_key(STREAM s, uint8 * modulus, uint8 * exponent)
 
 /* Parse a public signature structure */
 static RD_BOOL
-sec_parse_public_sig(STREAM s, uint32 len, uint8 * modulus, uint8 * exponent)
+sec_parse_public_sig(STREAM s, uint32_t len, uint8_t * modulus, uint8_t * exponent)
 {
-	uint8 signature[SEC_MAX_MODULUS_SIZE];
-	uint32 sig_len;
+	uint8_t signature[SEC_MAX_MODULUS_SIZE];
+	uint32_t sig_len;
 
 	if (len != 72)
 	{
@@ -560,15 +560,15 @@ sec_parse_public_sig(STREAM s, uint32 len, uint8 * modulus, uint8 * exponent)
 
 /* Parse a crypto information structure */
 static RD_BOOL
-sec_parse_crypt_info(STREAM s, uint32 * rc4_key_size,
-		     uint8 ** server_random, uint8 * modulus, uint8 * exponent)
+sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
+		     uint8_t ** server_random, uint8_t * modulus, uint8_t * exponent)
 {
-	uint32 crypt_level, random_len, rsa_info_len;
-	uint32 cacert_len, cert_len, flags;
+	uint32_t crypt_level, random_len, rsa_info_len;
+	uint32_t cacert_len, cert_len, flags;
 	RDSSL_CERT *cacert, *server_cert;
 	RDSSL_RKEY *server_public_key;
-	uint16 tag, length;
-	uint8 *next_tag, *end;
+	uint16_t tag, length;
+	uint8_t *next_tag, *end;
 
 	in_uint32_le(s, *rc4_key_size);	/* 1 = 40-bit, 2 = 128-bit */
 	in_uint32_le(s, crypt_level);	/* 1 = low, 2 = medium, 3 = high */
@@ -647,7 +647,7 @@ sec_parse_crypt_info(STREAM s, uint32 * rc4_key_size,
 	}
 	else
 	{
-		uint32 certcount;
+		uint32_t certcount;
 
 		logger(Protocol, Debug,
 		       "sec_parse_crypt_info(), We're going for the RDP5-style encryption");
@@ -660,7 +660,7 @@ sec_parse_crypt_info(STREAM s, uint32 * rc4_key_size,
 		}
 		for (; certcount > 2; certcount--)
 		{		/* ignore all the certificates between the root and the signing CA */
-			uint32 ignorelen;
+			uint32_t ignorelen;
 			RDSSL_CERT *ignorecert;
 
 			in_uint32_le(s, ignorelen);
@@ -749,10 +749,10 @@ sec_parse_crypt_info(STREAM s, uint32 * rc4_key_size,
 static void
 sec_process_crypt_info(STREAM s)
 {
-	uint8 *server_random = NULL;
-	uint8 modulus[SEC_MAX_MODULUS_SIZE];
-	uint8 exponent[SEC_EXPONENT_SIZE];
-	uint32 rc4_key_size;
+	uint8_t *server_random = NULL;
+	uint8_t modulus[SEC_MAX_MODULUS_SIZE];
+	uint8_t exponent[SEC_EXPONENT_SIZE];
+	uint32_t rc4_key_size;
 
 	memset(modulus, 0, sizeof(modulus));
 	memset(exponent, 0, sizeof(exponent));
@@ -786,9 +786,9 @@ sec_process_srv_info(STREAM s)
 void
 sec_process_mcs_data(STREAM s)
 {
-	uint16 tag, length;
-	uint8 *next_tag;
-	uint8 len;
+	uint16_t tag, length;
+	uint8_t *next_tag;
+	uint8_t len;
 
 	in_uint8s(s, 21);	/* header (T.124 ConferenceCreateResponse) */
 	in_uint8(s, len);
@@ -831,10 +831,10 @@ sec_process_mcs_data(STREAM s)
 
 /* Receive secure transport packet */
 STREAM
-sec_recv(uint8 * rdpver)
+sec_recv(uint8_t * rdpver)
 {
-	uint16 sec_flags;
-	uint16 channel;
+	uint16_t sec_flags;
+	uint16_t channel;
 	STREAM s;
 
 	while ((s = mcs_recv(&channel, rdpver)) != NULL)
@@ -873,7 +873,7 @@ sec_recv(uint8 * rdpver)
 
 				if (sec_flags & SEC_REDIRECTION_PKT)
 				{
-					uint8 swapbyte;
+					uint8_t swapbyte;
 
 					in_uint8s(s, 8);	/* signature */
 					sec_decrypt(s->p, s->end - s->p);
@@ -930,7 +930,7 @@ sec_recv(uint8 * rdpver)
 RD_BOOL
 sec_connect(char *server, char *username, char *domain, char *password, RD_BOOL reconnect)
 {
-	uint32 selected_proto;
+	uint32_t selected_proto;
 	struct stream mcs_data;
 
 	/* Start a MCS connect sequence */
@@ -939,7 +939,7 @@ sec_connect(char *server, char *username, char *domain, char *password, RD_BOOL 
 
 	/* We exchange some RDP data during the MCS-Connect */
 	mcs_data.size = 512;
-	mcs_data.p = mcs_data.data = (uint8 *) xmalloc(mcs_data.size);
+	mcs_data.p = mcs_data.data = (uint8_t *) xmalloc(mcs_data.size);
 	sec_out_mcs_connect_initial_pdu(&mcs_data, selected_proto);
 
 	/* finalize the MCS connect sequence */

@@ -80,8 +80,8 @@ static Atom rdesktop_clipboard_formats_atom;
    desired native Windows clipboard format in the associated property. */
 static Atom rdesktop_native_atom;
 /* Local copy of the list of native Windows clipboard formats. */
-static uint8 *formats_data = NULL;
-static uint32 formats_data_length = 0;
+static uint8_t *formats_data = NULL;
+static uint32_t formats_data_length = 0;
 /* We need to know when another rdesktop process gets or loses ownership of a
    selection. Without XFixes we do this by touching a property on the root window
    which will generate PropertyNotify notifications. */
@@ -123,18 +123,18 @@ static int g_waiting_for_INCR = 0;
 /* Denotes the target format of the ongoing INCR ("chunked") transfer. */
 static Atom g_incr_target = 0;
 /* Buffers an INCR transfer. */
-static uint8 *g_clip_buffer = 0;
+static uint8_t *g_clip_buffer = 0;
 /* Denotes the size of g_clip_buffer. */
-static uint32 g_clip_buflen = 0;
+static uint32_t g_clip_buflen = 0;
 
 /* Translates CR-LF to LF.
    Changes the string in-place.
    Does not stop on embedded nulls.
    The length is updated. */
 static void
-crlf2lf(uint8 * data, uint32 * length)
+crlf2lf(uint8_t * data, uint32_t * length)
 {
-	uint8 *dst, *src;
+	uint8_t *dst, *src;
 	src = dst = data;
 	while (src < data + *length)
 	{
@@ -149,11 +149,11 @@ crlf2lf(uint8 * data, uint32 * length)
 /* Translate LF to CR-LF. To do this, we must allocate more memory.
    The returned string is null-terminated, as required by CF_UNICODETEXT.
    The size is updated. */
-static uint8 *
-utf16_lf2crlf(uint8 * data, uint32 * size)
+static uint8_t *
+utf16_lf2crlf(uint8_t * data, uint32_t * size)
 {
-	uint8 *result;
-	uint16 *inptr, *outptr;
+	uint8_t *result;
+	uint16_t *inptr, *outptr;
 	RD_BOOL swap_endianness;
 
 	/* Worst case: Every char is LF */
@@ -161,16 +161,16 @@ utf16_lf2crlf(uint8 * data, uint32 * size)
 	if (result == NULL)
 		return NULL;
 
-	inptr = (uint16 *) data;
-	outptr = (uint16 *) result;
+	inptr = (uint16_t *) data;
+	outptr = (uint16_t *) result;
 
 	/* Check for a reversed BOM */
 	swap_endianness = (*inptr == 0xfffe);
 
-	uint16 uvalue_previous = 0;	/* Kept so we'll avoid translating CR-LF to CR-CR-LF */
-	while ((uint8 *) inptr < data + *size)
+	uint16_t uvalue_previous = 0;	/* Kept so we'll avoid translating CR-LF to CR-CR-LF */
+	while ((uint8_t *) inptr < data + *size)
 	{
-		uint16 uvalue = *inptr;
+		uint16_t uvalue = *inptr;
 		if (swap_endianness)
 			uvalue = ((uvalue << 8) & 0xff00) + (uvalue >> 8);
 		if ((uvalue == 0x0a) && (uvalue_previous != 0x0d))
@@ -179,17 +179,17 @@ utf16_lf2crlf(uint8 * data, uint32 * size)
 		*outptr++ = *inptr++;
 	}
 	*outptr++ = 0;		/* null termination */
-	*size = (uint8 *) outptr - result;
+	*size = (uint8_t *) outptr - result;
 
 	return result;
 }
 #else
 /* Translate LF to CR-LF. To do this, we must allocate more memory.
    The length is updated. */
-static uint8 *
-lf2crlf(uint8 * data, uint32 * length)
+static uint8_t *
+lf2crlf(uint8_t * data, uint32_t * length)
 {
-	uint8 *result, *p, *o;
+	uint8_t *result, *p, *o;
 
 	/* Worst case: Every char is LF */
 	result = xmalloc(*length * 2);
@@ -197,7 +197,7 @@ lf2crlf(uint8 * data, uint32 * length)
 	p = data;
 	o = result;
 
-	uint8 previous = '\0';	/* Kept to avoid translating CR-LF to CR-CR-LF */
+	uint8_t previous = '\0';	/* Kept to avoid translating CR-LF to CR-CR-LF */
 	while (p < data + *length)
 	{
 		if ((*p == '\x0a') && (previous != '\x0d'))
@@ -215,8 +215,8 @@ lf2crlf(uint8 * data, uint32 * length)
 #endif
 
 static void
-xclip_provide_selection(XSelectionRequestEvent * req, Atom type, unsigned int format, uint8 * data,
-			uint32 length)
+xclip_provide_selection(XSelectionRequestEvent * req, Atom type, unsigned int format, uint8_t * data,
+			uint32_t length)
 {
 	XEvent xev;
 
@@ -265,7 +265,7 @@ xclip_refuse_selection(XSelectionRequestEvent * req)
 
 /* Wrapper for cliprdr_send_data which also cleans the request state. */
 static void
-helper_cliprdr_send_response(uint8 * data, uint32 length)
+helper_cliprdr_send_response(uint8_t * data, uint32_t length)
 {
 	if (rdp_clipboard_request_format != 0)
 	{
@@ -289,7 +289,7 @@ helper_cliprdr_send_empty_response()
    to the expected RDP format as necessary. Returns true if data was sent.
  */
 static RD_BOOL
-xclip_send_data_with_convert(uint8 * source, size_t source_size, Atom target)
+xclip_send_data_with_convert(uint8_t * source, size_t source_size, Atom target)
 {
 	logger(Clipboard, Debug, "xclip_send_data_with_convert(), target=%s, size=%u",
 	       XGetAtomName(g_display, target), (unsigned) source_size);
@@ -305,8 +305,8 @@ xclip_send_data_with_convert(uint8 * source, size_t source_size, Atom target)
 		char *unicode_buffer_remaining;
 		char *data_remaining;
 		size_t data_size_remaining;
-		uint32 translated_data_size;
-		uint8 *translated_data;
+		uint32_t translated_data_size;
+		uint8_t *translated_data;
 
 		if (rdp_clipboard_request_format != RDP_CF_TEXT)
 			return False;
@@ -366,7 +366,7 @@ xclip_send_data_with_convert(uint8 * source, size_t source_size, Atom target)
 
 		/* translate linebreaks */
 		translated_data_size = unicode_buffer_size - unicode_buffer_size_remaining;
-		translated_data = utf16_lf2crlf((uint8 *) unicode_buffer, &translated_data_size);
+		translated_data = utf16_lf2crlf((uint8_t *) unicode_buffer, &translated_data_size);
 		if (translated_data != NULL)
 		{
 			logger(Clipboard, Debug,
@@ -383,8 +383,8 @@ xclip_send_data_with_convert(uint8 * source, size_t source_size, Atom target)
 #else
 	if (target == format_string_atom)
 	{
-		uint8 *translated_data;
-		uint32 length = source_size;
+		uint8_t *translated_data;
+		uint32_t length = source_size;
 
 		if (rdp_clipboard_request_format != RDP_CF_TEXT)
 			return False;
@@ -511,7 +511,7 @@ xclip_handle_SelectionNotify(XSelectionEvent * event)
 	Atom type;
 	Atom *supported_targets;
 	int res, format;
-	uint8 *data = NULL;
+	uint8_t *data = NULL;
 
 	if (event->property == None)
 		goto fail;
@@ -789,12 +789,12 @@ xclip_handle_SelectionRequest(XSelectionRequestEvent * event)
 
 	if (event->target == targets_atom)
 	{
-		xclip_provide_selection(event, XA_ATOM, 32, (uint8 *) & targets, num_targets);
+		xclip_provide_selection(event, XA_ATOM, 32, (uint8_t *) & targets, num_targets);
 		return;
 	}
 	else if (event->target == timestamp_atom)
 	{
-		xclip_provide_selection(event, XA_INTEGER, 32, (uint8 *) & acquire_time, 1);
+		xclip_provide_selection(event, XA_INTEGER, 32, (uint8_t *) & acquire_time, 1);
 		return;
 	}
 	else if (event->target == rdesktop_clipboard_formats_atom)
@@ -829,7 +829,7 @@ xclip_handle_SelectionRequest(XSelectionRequestEvent * event)
 				return;
 			}
 
-			format = *(uint32 *) prop_return;
+			format = *(uint32_t *) prop_return;
 			XFree(prop_return);
 		}
 		else if (event->target == format_string_atom || event->target == XA_STRING)
@@ -893,7 +893,7 @@ xclip_handle_PropertyNotify(XPropertyEvent * event)
 	unsigned long bytes_left = 1;
 	int format;
 	XWindowAttributes wa;
-	uint8 *data;
+	uint8_t *data;
 	Atom type;
 
 	if (event->state == PropertyNewValue && g_waiting_for_INCR)
@@ -961,7 +961,7 @@ xclip_handle_PropertyNotify(XPropertyEvent * event)
    - declare those formats in their Windows native form
      to other rdesktop instances on this X server */
 void
-ui_clip_format_announce(uint8 * data, uint32 length)
+ui_clip_format_announce(uint8_t * data, uint32_t length)
 {
 	acquire_time = g_last_gesturetime;
 
@@ -984,7 +984,7 @@ ui_clip_format_announce(uint8 * data, uint32 length)
 
 /* Called when the RDP server responds with clipboard data (after we've requested it). */
 void
-ui_clip_handle_data(uint8 * data, uint32 length)
+ui_clip_handle_data(uint8_t * data, uint32_t length)
 {
 	RD_BOOL free_data = False;
 
@@ -998,13 +998,13 @@ ui_clip_handle_data(uint8 * data, uint32 length)
 	if (selection_request.target == format_string_atom || selection_request.target == XA_STRING)
 	{
 		/* We're expecting a CF_TEXT response */
-		uint8 *firstnull;
+		uint8_t *firstnull;
 
 		/* translate linebreaks */
 		crlf2lf(data, &length);
 
 		/* Only send data up to null byte, if any */
-		firstnull = (uint8 *) strchr((char *) data, '\0');
+		firstnull = (uint8_t *) strchr((char *) data, '\0');
 		if (firstnull)
 		{
 			length = firstnull - data + 1;
@@ -1032,7 +1032,7 @@ ui_clip_handle_data(uint8 * data, uint32 length)
 			      &utf8_data_remaining, &utf8_length_remaining);
 			iconv_close(cd);
 			free_data = True;
-			data = (uint8 *) utf8_data;
+			data = (uint8_t *) utf8_data;
 			length = utf8_length - utf8_length_remaining;
 			/* translate linebreaks (works just as well on UTF-8) */
 			crlf2lf(data, &length);
@@ -1074,7 +1074,7 @@ ui_clip_request_failed()
 }
 
 void
-ui_clip_request_data(uint32 format)
+ui_clip_request_data(uint32_t format)
 {
 	Window primary_owner, clipboard_owner;
 

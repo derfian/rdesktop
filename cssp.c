@@ -452,7 +452,7 @@ cssp_encode_tscredentials(char *username, char *password, char *domain)
 	struct stream message = { 0 };
 
 	// credType [0]
-	s_realloc(&tmp, sizeof(uint8));
+	s_realloc(&tmp, sizeof(uint8_t));
 	s_reset(&tmp);
 	if (g_use_password_as_pin == False)
 	{
@@ -514,7 +514,7 @@ cssp_send_tsrequest(STREAM token, STREAM auth, STREAM pubkey)
 	memset(&tmp, 0, sizeof(tmp));
 
 	// version [0]
-	s_realloc(&tmp, sizeof(uint8));
+	s_realloc(&tmp, sizeof(uint8_t));
 	s_reset(&tmp);
 	out_uint8(&tmp, 2);
 	s_mark_end(&tmp);

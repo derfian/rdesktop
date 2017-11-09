@@ -27,18 +27,18 @@ extern char *g_username;
 extern char g_hostname[16];
 extern RDP_VERSION g_rdp_version;
 
-static uint8 g_licence_key[16];
-static uint8 g_licence_sign_key[16];
+static uint8_t g_licence_key[16];
+static uint8_t g_licence_sign_key[16];
 
 RD_BOOL g_licence_issued = False;
 RD_BOOL g_licence_error_result = False;
 
 /* Generate a session key and RC4 keys, given client and server randoms */
 static void
-licence_generate_keys(uint8 * client_random, uint8 * server_random, uint8 * pre_master_secret)
+licence_generate_keys(uint8_t * client_random, uint8_t * server_random, uint8_t * pre_master_secret)
 {
-	uint8 master_secret[48];
-	uint8 key_block[48];
+	uint8_t master_secret[48];
+	uint8_t key_block[48];
 
 	/* Generate master secret and then key material */
 	sec_hash_48(master_secret, pre_master_secret, client_random, server_random, 'A');
@@ -52,7 +52,7 @@ licence_generate_keys(uint8 * client_random, uint8 * server_random, uint8 * pre_
 }
 
 static void
-licence_generate_hwid(uint8 * hwid)
+licence_generate_hwid(uint8_t * hwid)
 {
 	buf_out_uint32(hwid, 2);
 	strncpy((char *) (hwid + 4), g_hostname, LICENCE_HWID_SIZE - 4);
@@ -60,11 +60,11 @@ licence_generate_hwid(uint8 * hwid)
 
 /* Send a licence info packet to server */
 static void
-licence_info(uint8 * client_random, uint8 * rsa_data,
-	     uint8 * licence_data, int licence_size, uint8 * hwid, uint8 * signature)
+licence_info(uint8_t * client_random, uint8_t * rsa_data,
+	     uint8_t * licence_data, int licence_size, uint8_t * hwid, uint8_t * signature)
 {
-	uint32 sec_flags = SEC_LICENSE_PKT;
-	uint16 length =
+	uint32_t sec_flags = SEC_LICENSE_PKT;
+	uint16_t length =
 		24 + SEC_RANDOM_SIZE + SEC_MODULUS_SIZE + SEC_PADDING_SIZE +
 		licence_size + LICENCE_HWID_SIZE + LICENCE_SIGNATURE_SIZE;
 	STREAM s;
@@ -101,12 +101,12 @@ licence_info(uint8 * client_random, uint8 * rsa_data,
 
 /* Send a new licence request packet */
 static void
-licence_send_new_licence_request(uint8 * client_random, uint8 * rsa_data, char *user, char *host)
+licence_send_new_licence_request(uint8_t * client_random, uint8_t * rsa_data, char *user, char *host)
 {
-	uint32 sec_flags = SEC_LICENSE_PKT;
-	uint16 userlen = strlen(user) + 1;
-	uint16 hostlen = strlen(host) + 1;
-	uint16 length =
+	uint32_t sec_flags = SEC_LICENSE_PKT;
+	uint16_t userlen = strlen(user) + 1;
+	uint16_t hostlen = strlen(host) + 1;
+	uint16_t length =
 		24 + SEC_RANDOM_SIZE + SEC_MODULUS_SIZE + SEC_PADDING_SIZE + userlen + hostlen;
 	STREAM s;
 
@@ -144,11 +144,11 @@ licence_send_new_licence_request(uint8 * client_random, uint8 * rsa_data, char *
 static void
 licence_process_request(STREAM s)
 {
-	uint8 null_data[SEC_MODULUS_SIZE];
-	uint8 *server_random;
-	uint8 signature[LICENCE_SIGNATURE_SIZE];
-	uint8 hwid[LICENCE_HWID_SIZE];
-	uint8 *licence_data;
+	uint8_t null_data[SEC_MODULUS_SIZE];
+	uint8_t *server_random;
+	uint8_t signature[LICENCE_SIGNATURE_SIZE];
+	uint8_t hwid[LICENCE_HWID_SIZE];
+	uint8_t *licence_data;
 	int licence_size;
 	RDSSL_RC4 crypt_key;
 
@@ -190,10 +190,10 @@ licence_process_request(STREAM s)
 
 /* Send a platform challenge response packet */
 static void
-licence_send_platform_challenge_response(uint8 * token, uint8 * crypt_hwid, uint8 * signature)
+licence_send_platform_challenge_response(uint8_t * token, uint8_t * crypt_hwid, uint8_t * signature)
 {
-	uint32 sec_flags = SEC_LICENSE_PKT;
-	uint16 length = 58;
+	uint32_t sec_flags = SEC_LICENSE_PKT;
+	uint16_t length = 58;
 	STREAM s;
 
 	s = sec_init(sec_flags, length + 2);
@@ -218,9 +218,9 @@ licence_send_platform_challenge_response(uint8 * token, uint8 * crypt_hwid, uint
 
 /* Parse an platform challenge request packet */
 static RD_BOOL
-licence_parse_platform_challenge(STREAM s, uint8 ** token, uint8 ** signature)
+licence_parse_platform_challenge(STREAM s, uint8_t ** token, uint8_t ** signature)
 {
-	uint16 tokenlen;
+	uint16_t tokenlen;
 
 	in_uint8s(s, 6);	/* unknown: f8 3d 15 00 04 f6 */
 
@@ -242,11 +242,11 @@ licence_parse_platform_challenge(STREAM s, uint8 ** token, uint8 ** signature)
 static void
 licence_process_platform_challenge(STREAM s)
 {
-	uint8 *in_token = NULL, *in_sig;
-	uint8 out_token[LICENCE_TOKEN_SIZE], decrypt_token[LICENCE_TOKEN_SIZE];
-	uint8 hwid[LICENCE_HWID_SIZE], crypt_hwid[LICENCE_HWID_SIZE];
-	uint8 sealed_buffer[LICENCE_TOKEN_SIZE + LICENCE_HWID_SIZE];
-	uint8 out_sig[LICENCE_SIGNATURE_SIZE];
+	uint8_t *in_token = NULL, *in_sig;
+	uint8_t out_token[LICENCE_TOKEN_SIZE], decrypt_token[LICENCE_TOKEN_SIZE];
+	uint8_t hwid[LICENCE_HWID_SIZE], crypt_hwid[LICENCE_HWID_SIZE];
+	uint8_t sealed_buffer[LICENCE_TOKEN_SIZE + LICENCE_HWID_SIZE];
+	uint8_t out_sig[LICENCE_SIGNATURE_SIZE];
 	RDSSL_RC4 crypt_key;
 
 	/* Parse incoming packet and save the encrypted token */
@@ -275,7 +275,7 @@ static void
 licence_process_new_license(STREAM s)
 {
 	RDSSL_RC4 crypt_key;
-	uint32 length;
+	uint32_t length;
 	int i;
 
 	in_uint8s(s, 2);	// Skip license binary blob type
@@ -308,8 +308,8 @@ licence_process_new_license(STREAM s)
 void
 licence_process_error_alert(STREAM s)
 {
-	uint32 error_code;
-	uint32 state_transition;
+	uint32_t error_code;
+	uint32_t state_transition;
 
 	in_uint32(s, error_code);
 	in_uint32(s, state_transition);
@@ -356,7 +356,7 @@ licence_process_error_alert(STREAM s)
 void
 licence_process(STREAM s)
 {
-	uint8 tag;
+	uint8_t tag;
 
 	in_uint8(s, tag);
 	in_uint8s(s, 3);	/* version, length */

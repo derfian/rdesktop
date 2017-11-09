@@ -62,19 +62,19 @@ static unsigned int current_format;
 unsigned int queue_hi, queue_lo, queue_pending;
 struct audio_packet packet_queue[MAX_QUEUE];
 
-static uint8 packet_opcode;
+static uint8_t packet_opcode;
 static struct stream packet;
 
 void (*wave_out_play) (void);
 
-static void rdpsnd_queue_write(STREAM s, uint16 tick, uint8 index);
+static void rdpsnd_queue_write(STREAM s, uint16_t tick, uint8_t index);
 static void rdpsnd_queue_init(void);
 static void rdpsnd_queue_clear(void);
 static void rdpsnd_queue_complete_pending(void);
 static long rdpsnd_queue_next_completion(void);
 
 static STREAM
-rdpsnd_init_packet(uint8 type, uint16 size)
+rdpsnd_init_packet(uint8_t type, uint16_t size)
 {
 	STREAM s;
 
@@ -92,7 +92,7 @@ rdpsnd_send(STREAM s)
 }
 
 static void
-rdpsnd_send_waveconfirm(uint16 tick, uint8 packet_index)
+rdpsnd_send_waveconfirm(uint16_t tick, uint8_t packet_index)
 {
 	STREAM s;
 
@@ -148,9 +148,9 @@ rdpsnd_auto_select(void)
 static void
 rdpsnd_process_negotiate(STREAM in)
 {
-	uint16 in_format_count, i;
-	uint8 pad;
-	uint16 version;
+	uint16_t in_format_count, i;
+	uint8_t pad;
+	uint16_t version;
 	RD_WAVEFORMATEX *format;
 	STREAM out;
 	RD_BOOL device_available = False;
@@ -221,7 +221,7 @@ rdpsnd_process_negotiate(STREAM in)
 
 	out = rdpsnd_init_packet(SNDC_FORMATS, 20 + 18 * format_count);
 
-	uint32 flags = TSSNDCAPS_VOLUME;
+	uint32_t flags = TSSNDCAPS_VOLUME;
 
 	/* if sound is enabled, set snd caps to alive to enable
 	   transmission of audio from server */
@@ -265,8 +265,8 @@ rdpsnd_process_negotiate(STREAM in)
 static void
 rdpsnd_process_training(STREAM in)
 {
-	uint16 tick;
-	uint16 packsize;
+	uint16_t tick;
+	uint16_t packsize;
 	STREAM out;
 
 	in_uint16_le(in, tick);
@@ -282,11 +282,11 @@ rdpsnd_process_training(STREAM in)
 }
 
 static void
-rdpsnd_process_packet(uint8 opcode, STREAM s)
+rdpsnd_process_packet(uint8_t opcode, STREAM s)
 {
-	uint16 vol_left, vol_right;
-	static uint16 tick, format;
-	static uint8 packet_index;
+	uint16_t vol_left, vol_right;
+	static uint16_t tick, format;
+	static uint8_t packet_index;
 
 	switch (opcode)
 	{
@@ -372,7 +372,7 @@ rdpsnd_process_packet(uint8 opcode, STREAM s)
 static void
 rdpsnd_process(STREAM s)
 {
-	uint16 len;
+	uint16_t len;
 
 	while (!s_check_end(s))
 	{
@@ -498,7 +498,7 @@ rdpsnd_init(char *optarg)
 
 	drivers = NULL;
 
-	packet.data = (uint8 *) xmalloc(65536);
+	packet.data = (uint8_t *) xmalloc(65536);
 	packet.p = packet.end = packet.data;
 	packet.size = 0;
 
@@ -613,7 +613,7 @@ rdpsnd_check_fds(fd_set * rfds, fd_set * wfds)
 }
 
 static void
-rdpsnd_queue_write(STREAM s, uint16 tick, uint8 index)
+rdpsnd_queue_write(STREAM s, uint16_t tick, uint8_t index)
 {
 	struct audio_packet *packet = &packet_queue[queue_hi];
 	unsigned int next_hi = (queue_hi + 1) % MAX_QUEUE;

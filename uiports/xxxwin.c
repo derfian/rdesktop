@@ -32,9 +32,9 @@ RD_BOOL g_polygon_ellipse_orders = False;
 RD_BOOL g_bitmap_cache = True;
 RD_BOOL g_bitmap_cache_persist_enable = False;
 RD_BOOL g_bitmap_cache_precache = True;
-uint32 g_rdp5_performanceflags = 0;
+uint32_t g_rdp5_performanceflags = 0;
 RD_BOOL g_console_session = False;
-uint32 g_keylayout = 0x409; /* Defaults to US keyboard layout */
+uint32_t g_keylayout = 0x409; /* Defaults to US keyboard layout */
 int g_keyboard_type = 0x4; /* Defaults to US keyboard layout */
 int g_keyboard_subtype = 0x0; /* Defaults to US keyboard layout */
 int g_keyboard_functionkeys = 0xc; /* Defaults to US keyboard layout */
@@ -46,7 +46,7 @@ char g_redirect_domain[16];
 char g_redirect_password[64];
 char g_redirect_username[64];
 char g_redirect_cookie[128];
-uint32 g_redirect_flags = 0;
+uint32_t g_redirect_flags = 0;
 char g_codepage[16] = "";
 
 /*****************************************************************************/
@@ -66,7 +66,7 @@ void ui_destroy_cursor(void* cursor)
 }
 
 /*****************************************************************************/
-void* ui_create_glyph(int width, int height, uint8* data)
+void* ui_create_glyph(int width, int height, uint8_t* data)
 {
   return 0;
 }
@@ -103,46 +103,46 @@ void ui_set_colourmap(void* map)
 }
 
 /*****************************************************************************/
-RD_HBITMAP ui_create_bitmap(int width, int height, uint8* data)
+RD_HBITMAP ui_create_bitmap(int width, int height, uint8_t* data)
 {
   return 0;
 }
 
 /*****************************************************************************/
-void ui_draw_text(uint8 font, uint8 flags, uint8 opcode, int mixmode,
+void ui_draw_text(uint8_t font, uint8_t flags, uint8_t opcode, int mixmode,
                   int x, int y,
                   int clipx, int clipy, int clipcx, int clipcy,
                   int boxx, int boxy, int boxcx, int boxcy, BRUSH * brush,
-                  int bgcolour, int fgcolour, uint8* text, uint8 length)
+                  int bgcolour, int fgcolour, uint8_t* text, uint8_t length)
 {
 }
 
 /*****************************************************************************/
-void ui_line(uint8 opcode, int startx, int starty, int endx, int endy,
+void ui_line(uint8_t opcode, int startx, int starty, int endx, int endy,
              PEN * pen)
 {
 }
 
 /*****************************************************************************/
-void ui_triblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_triblt(uint8_t opcode, int x, int y, int cx, int cy,
                RD_HBITMAP src, int srcx, int srcy,
                BRUSH* brush, int bgcolour, int fgcolour)
 {
 }
 
 /*****************************************************************************/
-void ui_memblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_memblt(uint8_t opcode, int x, int y, int cx, int cy,
                RD_HBITMAP src, int srcx, int srcy)
 {
 }
 
 /*****************************************************************************/
-void ui_desktop_restore(uint32 offset, int x, int y, int cx, int cy)
+void ui_desktop_restore(uint32_t offset, int x, int y, int cx, int cy)
 {
 }
 
 /*****************************************************************************/
-void ui_desktop_save(uint32 offset, int x, int y, int cx, int cy)
+void ui_desktop_save(uint32_t offset, int x, int y, int cx, int cy)
 {
 }
 
@@ -152,19 +152,19 @@ void ui_rect(int x, int y, int cx, int cy, int colour)
 }
 
 /*****************************************************************************/
-void ui_screenblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_screenblt(uint8_t opcode, int x, int y, int cx, int cy,
                   int srcx, int srcy)
 {
 }
 
 /*****************************************************************************/
-void ui_patblt(uint8 opcode, int x, int y, int cx, int cy,
+void ui_patblt(uint8_t opcode, int x, int y, int cx, int cy,
                BRUSH * brush, int bgcolour, int fgcolour)
 {
 }
 
 /*****************************************************************************/
-void ui_destblt(uint8 opcode, int x, int y, int cx, int cy)
+void ui_destblt(uint8_t opcode, int x, int y, int cx, int cy)
 {
 }
 
@@ -180,7 +180,7 @@ void ui_set_null_cursor(void)
 
 /*****************************************************************************/
 void ui_paint_bitmap(int x, int y, int cx, int cy,
-                     int width, int height, uint8* data)
+                     int width, int height, uint8_t* data)
 {
 }
 
@@ -192,13 +192,13 @@ void ui_set_cursor(RD_HCURSOR cursor)
 /*****************************************************************************/
 RD_HCURSOR ui_create_cursor(unsigned int x, unsigned int y,
                             int width, int height,
-                            uint8* andmask, uint8* xormask)
+                            uint8_t* andmask, uint8_t* xormask)
 {
   return 0;
 }
 
 /*****************************************************************************/
-uint16 ui_get_numlock_state(unsigned int state)
+uint16_t ui_get_numlock_state(unsigned int state)
 {
   return 0;
 }
@@ -225,14 +225,14 @@ void ui_end_update(void)
 }
 
 /*****************************************************************************/
-void ui_polygon(uint8 opcode, uint8 fillmode, RD_POINT * point, int npoints,
+void ui_polygon(uint8_t opcode, uint8_t fillmode, RD_POINT * point, int npoints,
                 BRUSH * brush, int bgcolour, int fgcolour)
 {
 }
 
 /*****************************************************************************/
 /* todo, use qt function for this (QPainter::drawPolyline) */
-void ui_polyline(uint8 opcode, RD_POINT * points, int npoints, PEN * pen)
+void ui_polyline(uint8_t opcode, RD_POINT * points, int npoints, PEN * pen)
 {
   int i, x, y, dx, dy;
   if (npoints > 0)
@@ -251,24 +251,24 @@ void ui_polyline(uint8 opcode, RD_POINT * points, int npoints, PEN * pen)
 }
 
 /*****************************************************************************/
-void ui_ellipse(uint8 opcode, uint8 fillmode,
+void ui_ellipse(uint8_t opcode, uint8_t fillmode,
                 int x, int y, int cx, int cy,
                 BRUSH * brush, int bgcolour, int fgcolour)
 {
 }
 
 /*****************************************************************************/
-void generate_random(uint8* random)
+void generate_random(uint8_t* random)
 {
 }
 
 /*****************************************************************************/
-void save_licence(uint8* data, int length)
+void save_licence(uint8_t* data, int length)
 {
 }
 
 /*****************************************************************************/
-int load_licence(uint8** data)
+int load_licence(uint8_t** data)
 {
   return 0;
 }

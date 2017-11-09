@@ -25,13 +25,13 @@ static VCHANNEL *lspci_channel;
 
 typedef struct _pci_device
 {
-	uint16 klass;
-	uint16 vendor;
-	uint16 device;
-	uint16 subvendor;
-	uint16 subdevice;
-	uint8 revision;
-	uint8 progif;
+	uint16_t klass;
+	uint16_t vendor;
+	uint16_t device;
+	uint16_t subvendor;
+	uint16_t subdevice;
+	uint8_t revision;
+	uint8_t progif;
 } pci_device;
 
 static pci_device current_device;

@@ -154,7 +154,7 @@ typedef struct
 	char type[PATH_MAX];
 } FsInfoType;
 
-static RD_NTSTATUS NotifyInfo(RD_NTHANDLE handle, uint32 info_class, NOTIFY * p);
+static RD_NTSTATUS NotifyInfo(RD_NTHANDLE handle, uint32_t info_class, NOTIFY * p);
 
 static time_t
 get_create_time(struct stat *filestat)
@@ -172,18 +172,18 @@ get_create_time(struct stat *filestat)
 
 /* Convert seconds since 1970 to a filetime */
 static void
-seconds_since_1970_to_filetime(time_t seconds, uint32 * high, uint32 * low)
+seconds_since_1970_to_filetime(time_t seconds, uint32_t * high, uint32_t * low)
 {
 	unsigned long long ticks;
 
 	ticks = (seconds + 11644473600LL) * 10000000;
-	*low = (uint32) ticks;
-	*high = (uint32) (ticks >> 32);
+	*low = (uint32_t) ticks;
+	*high = (uint32_t) (ticks >> 32);
 }
 
 /* Convert seconds since 1970 back to filetime */
 static time_t
-convert_1970_to_filetime(uint32 high, uint32 low)
+convert_1970_to_filetime(uint32_t high, uint32_t low)
 {
 	unsigned long long ticks;
 	time_t val;
@@ -313,7 +313,7 @@ open_weak_exclusive(const char *pathname, int flags, mode_t mode)
 /* optarg looks like ':h=/mnt/floppy,b=/mnt/usbdevice1' */
 /* when it arrives to this function.             */
 int
-disk_enum_devices(uint32 * id, char *optarg)
+disk_enum_devices(uint32_t * id, char *optarg)
 {
 	char *pos = optarg;
 	char *pos2;
@@ -346,8 +346,8 @@ disk_enum_devices(uint32 * id, char *optarg)
 
 /* Opens or creates a file or directory */
 static RD_NTSTATUS
-disk_create(uint32 device_id, uint32 accessmask, uint32 sharemode, uint32 create_disposition,
-	    uint32 flags_and_attributes, char *filename, RD_NTHANDLE * phandle)
+disk_create(uint32_t device_id, uint32_t accessmask, uint32_t sharemode, uint32_t create_disposition,
+	    uint32_t flags_and_attributes, char *filename, RD_NTHANDLE * phandle)
 {
 	int handle;
 	DIR *dirp;
@@ -581,7 +581,7 @@ disk_close(RD_NTHANDLE handle)
 }
 
 static RD_NTSTATUS
-disk_read(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+disk_read(RD_NTHANDLE handle, uint8_t * data, uint32_t length, uint32_t offset, uint32_t * result)
 {
 	int n;
 
@@ -622,7 +622,7 @@ disk_read(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32
 }
 
 static RD_NTSTATUS
-disk_write(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+disk_write(RD_NTHANDLE handle, uint8_t * data, uint32_t length, uint32_t offset, uint32_t * result)
 {
 	int n;
 
@@ -649,9 +649,9 @@ disk_write(RD_NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint3
 }
 
 RD_NTSTATUS
-disk_query_information(RD_NTHANDLE handle, uint32 info_class, STREAM out)
+disk_query_information(RD_NTHANDLE handle, uint32_t info_class, STREAM out)
 {
-	uint32 file_attributes, ft_high, ft_low;
+	uint32_t file_attributes, ft_high, ft_low;
 	struct stat filestat;
 	char *path, *filename;
 
@@ -737,10 +737,10 @@ disk_query_information(RD_NTHANDLE handle, uint32 info_class, STREAM out)
 }
 
 RD_NTSTATUS
-disk_set_information(RD_NTHANDLE handle, uint32 info_class, STREAM in, STREAM out)
+disk_set_information(RD_NTHANDLE handle, uint32_t info_class, STREAM in, STREAM out)
 {
 	UNUSED(out);
-	uint32 length, file_attributes, ft_high, ft_low;
+	uint32_t length, file_attributes, ft_high, ft_low;
 	char *newname, fullpath[PATH_MAX];
 	struct fileinfo *pfinfo;
 	int mode;
@@ -980,7 +980,7 @@ disk_check_notify(RD_NTHANDLE handle)
 }
 
 RD_NTSTATUS
-disk_create_notify(RD_NTHANDLE handle, uint32 info_class)
+disk_create_notify(RD_NTHANDLE handle, uint32_t info_class)
 {
 	struct fileinfo *pfinfo;
 	RD_NTSTATUS ret = RD_STATUS_PENDING;
@@ -1006,7 +1006,7 @@ disk_create_notify(RD_NTHANDLE handle, uint32 info_class)
 }
 
 static RD_NTSTATUS
-NotifyInfo(RD_NTHANDLE handle, uint32 info_class, NOTIFY * p)
+NotifyInfo(RD_NTHANDLE handle, uint32_t info_class, NOTIFY * p)
 {
 	UNUSED(info_class);
 	struct fileinfo *pfinfo;
@@ -1124,7 +1124,7 @@ FsVolumeInfo(char *fpath)
 
 
 RD_NTSTATUS
-disk_query_volume_information(RD_NTHANDLE handle, uint32 info_class, STREAM out)
+disk_query_volume_information(RD_NTHANDLE handle, uint32_t info_class, STREAM out)
 {
 	struct STATFS_T stat_fs;
 	struct fileinfo *pfinfo;
@@ -1213,9 +1213,9 @@ disk_query_volume_information(RD_NTHANDLE handle, uint32 info_class, STREAM out)
 }
 
 RD_NTSTATUS
-disk_query_directory(RD_NTHANDLE handle, uint32 info_class, char *pattern, STREAM out)
+disk_query_directory(RD_NTHANDLE handle, uint32_t info_class, char *pattern, STREAM out)
 {
-	uint32 file_attributes, ft_low, ft_high;
+	uint32_t file_attributes, ft_low, ft_high;
 	char *dirname, fullpath[PATH_MAX];
 	DIR *pdir;
 	struct dirent *pdirent;
@@ -1419,7 +1419,7 @@ disk_query_directory(RD_NTHANDLE handle, uint32 info_class, char *pattern, STREA
 
 
 static RD_NTSTATUS
-disk_device_control(RD_NTHANDLE handle, uint32 request, STREAM in, STREAM out)
+disk_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out)
 {
 	UNUSED(in);
 	UNUSED(out);

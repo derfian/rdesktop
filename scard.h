@@ -152,11 +152,11 @@ typedef struct _TSCHCardRec
 
 typedef struct _TSCThreadData
 {
-	uint32 device;
-	uint32 id;
-	uint32 epoch;
+	uint32_t device;
+	uint32_t id;
+	uint32_t epoch;
 	RD_NTHANDLE handle;
-	uint32 request;
+	uint32_t request;
 	STREAM in;
 	STREAM out;
 	PMEM_HANDLE memHandle;

@@ -34,14 +34,14 @@ extern int g_height;
 
 static RD_BOOL g_iconv_works = True;
 
-uint32
+uint32_t
 utils_djb2_hash(const char *str)
 {
-	uint8 c;
-	uint8 *pstr;
-	uint32 hash = 5381;
+	uint8_t c;
+	uint8_t *pstr;
+	uint32_t hash = 5381;
 
-	pstr = (uint8*)str;
+	pstr = (uint8_t *)str;
 	while ((c = *pstr++))
 	{
 		hash = ((hash << 5) + hash) + c;
@@ -240,8 +240,8 @@ utils_locale_to_utf8(const char *src, size_t is, char *dest, size_t os)
 
 
 void
-utils_calculate_dpi_scale_factors(uint32 *physwidth, uint32 *physheight,
-				  uint32 *desktopscale, uint32 *devicescale)
+utils_calculate_dpi_scale_factors(uint32_t *physwidth, uint32_t *physheight,
+				  uint32_t *desktopscale, uint32_t *devicescale)
 {
 	*physwidth = *physheight = *desktopscale = *devicescale = 0;
 

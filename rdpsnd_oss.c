@@ -56,7 +56,7 @@ static RD_BOOL dsp_broken;
 
 static int stereo;
 static int format;
-static uint32 snd_rate;
+static uint32_t snd_rate;
 static short samplewidth;
 static char *dsp_dev;
 static RD_BOOL in_esddsp;
@@ -314,8 +314,8 @@ oss_set_format(RD_WAVEFORMATEX * pwfx)
 	snd_rate = pwfx->nSamplesPerSec;
 	if (ioctl(dsp_fd, SNDCTL_DSP_SPEED, &snd_rate) == -1)
 	{
-		uint32 rates[] = { 44100, 48000, 0 };
-		uint32 *prates = rates;
+		uint32_t rates[] = { 44100, 48000, 0 };
+		uint32_t *prates = rates;
 
 		while (*prates != 0)
 		{
@@ -379,9 +379,9 @@ oss_set_format(RD_WAVEFORMATEX * pwfx)
 }
 
 static void
-oss_volume(uint16 left, uint16 right)
+oss_volume(uint16_t left, uint16_t right)
 {
-	uint32 volume;
+	uint32_t volume;
 
 	volume = left / (65536 / 100);
 	volume |= right / (65536 / 100) << 8;

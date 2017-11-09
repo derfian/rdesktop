@@ -31,12 +31,12 @@ extern RD_BOOL g_bitmap_cache_precache;
 int g_pstcache_fd[8];
 int g_pstcache_Bpp;
 RD_BOOL g_pstcache_enumerated = False;
-uint8 zero_key[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t zero_key[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 
 /* Update mru stamp/index for a bitmap */
 void
-pstcache_touch_bitmap(uint8 cache_id, uint16 cache_idx, uint32 stamp)
+pstcache_touch_bitmap(uint8_t cache_id, uint16_t cache_idx, uint32_t stamp)
 {
 	int fd;
 
@@ -50,9 +50,9 @@ pstcache_touch_bitmap(uint8 cache_id, uint16 cache_idx, uint32 stamp)
 
 /* Load a bitmap from the persistent cache */
 RD_BOOL
-pstcache_load_bitmap(uint8 cache_id, uint16 cache_idx)
+pstcache_load_bitmap(uint8_t cache_id, uint16_t cache_idx)
 {
-	uint8 *celldata;
+	uint8_t *celldata;
 	int fd;
 	CELLHEADER cellhdr;
 	RD_HBITMAP bitmap;
@@ -66,7 +66,7 @@ pstcache_load_bitmap(uint8 cache_id, uint16 cache_idx)
 	fd = g_pstcache_fd[cache_id];
 	rd_lseek_file(fd, cache_idx * (g_pstcache_Bpp * MAX_CELL_SIZE + sizeof(CELLHEADER)));
 	rd_read_file(fd, &cellhdr, sizeof(CELLHEADER));
-	celldata = (uint8 *) xmalloc(cellhdr.length);
+	celldata = (uint8_t *) xmalloc(cellhdr.length);
 	rd_read_file(fd, celldata, cellhdr.length);
 
 	bitmap = ui_create_bitmap(cellhdr.width, cellhdr.height, celldata);
@@ -80,8 +80,8 @@ pstcache_load_bitmap(uint8 cache_id, uint16 cache_idx)
 
 /* Store a bitmap in the persistent cache */
 RD_BOOL
-pstcache_save_bitmap(uint8 cache_id, uint16 cache_idx, uint8 * key,
-		     uint8 width, uint8 height, uint16 length, uint8 * data)
+pstcache_save_bitmap(uint8_t cache_id, uint16_t cache_idx, uint8_t * key,
+		     uint8_t width, uint8_t height, uint16_t length, uint8_t * data)
 {
 	int fd;
 	CELLHEADER cellhdr;
@@ -105,12 +105,12 @@ pstcache_save_bitmap(uint8 cache_id, uint16 cache_idx, uint8 * key,
 
 /* List the bitmap keys from the persistent cache file */
 int
-pstcache_enumerate(uint8 id, HASH_KEY * keylist)
+pstcache_enumerate(uint8_t id, HASH_KEY * keylist)
 {
 	int fd, n;
-	uint16 idx;
-	sint16 mru_idx[0xa00];
-	uint32 mru_stamp[0xa00];
+	uint16_t idx;
+	int16_t mru_idx[0xa00];
+	uint32_t mru_stamp[0xa00];
 	CELLHEADER cellhdr;
 
 	if (!(g_bitmap_cache && g_bitmap_cache_persist_enable && IS_PERSISTENT(id)))
@@ -161,7 +161,7 @@ pstcache_enumerate(uint8 id, HASH_KEY * keylist)
 
 /* initialise the persistent bitmap cache */
 RD_BOOL
-pstcache_init(uint8 cache_id)
+pstcache_init(uint8_t cache_id)
 {
 	int fd;
 	char filename[256];
