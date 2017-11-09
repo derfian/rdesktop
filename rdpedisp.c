@@ -116,7 +116,7 @@ rdpedisp_send(STREAM s)
 	dvc_send(RDPEDISP_CHANNEL_NAME, s);
 }
 
-static RD_BOOL
+static bool
 rdpedisp_is_available()
 {
 	return dvc_channels_is_available(RDPEDISP_CHANNEL_NAME);
@@ -125,7 +125,7 @@ rdpedisp_is_available()
 void
 rdpedisp_set_session_size(uint32_t width, uint32_t height)
 {
-	if (rdpedisp_is_available() == False)
+	if (rdpedisp_is_available() == false)
 		return;
 
 	rdpedisp_send_monitor_layout_pdu(width, height);

@@ -32,7 +32,7 @@ extern int g_dpi;
 extern int g_width;
 extern int g_height;
 
-static RD_BOOL g_iconv_works = True;
+static bool g_iconv_works = true;
 
 uint32_t
 utils_djb2_hash(const char *str)
@@ -197,7 +197,7 @@ utils_locale_to_utf8(const char *src, size_t is, char *dest, size_t os)
 	if (strncmp(g_codepage, "UTF-8", strlen("UTF-8")) == 0)
 		goto pass_trough_as_is;
 
-	if (g_iconv_works == False)
+	if (g_iconv_works == false)
 		goto pass_trough_as_is;
 
 	/* if not already initialize */
@@ -209,7 +209,7 @@ utils_locale_to_utf8(const char *src, size_t is, char *dest, size_t os)
 			       "utils_string_to_utf8(), iconv_open[%s -> %s] fail %p", g_codepage,
 			       "UTF-8", iconv_h);
 
-			g_iconv_works = False;
+			g_iconv_works = false;
 			goto pass_trough_as_is;
 		}
 	}
@@ -221,7 +221,7 @@ utils_locale_to_utf8(const char *src, size_t is, char *dest, size_t os)
 		iconv_h = (iconv_t) - 1;
 		logger(Core, Warning, "utils_string_to_utf8, iconv(1) fail, errno %d", errno);
 
-		g_iconv_works = False;
+		g_iconv_works = false;
 		goto pass_trough_as_is;
 	}
 

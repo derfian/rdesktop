@@ -33,7 +33,7 @@
 
 static ao_device *o_device = NULL;
 static int default_driver;
-static RD_BOOL reopened;
+static bool reopened;
 static char *libao_device = NULL;
 
 void libao_play(void);
@@ -56,7 +56,7 @@ libao_check_fds(fd_set * rfds, fd_set * wfds)
 		libao_play();
 }
 
-RD_BOOL
+bool
 libao_open(void)
 {
 	ao_sample_format format;
@@ -81,12 +81,12 @@ libao_open(void)
 	o_device = ao_open_live(default_driver, &format, NULL);
 	if (o_device == NULL)
 	{
-		return False;
+		return false;
 	}
 
-	reopened = True;
+	reopened = true;
 
-	return True;
+	return true;
 }
 
 void
@@ -106,7 +106,7 @@ libao_close(void)
 	ao_shutdown();
 }
 
-RD_BOOL
+bool
 libao_set_format(RD_WAVEFORMATEX * pwfx)
 {
 	ao_sample_format format;
@@ -123,17 +123,17 @@ libao_set_format(RD_WAVEFORMATEX * pwfx)
 	o_device = ao_open_live(default_driver, &format, NULL);
 	if (o_device == NULL)
 	{
-		return False;
+		return false;
 	}
 
-	if (rdpsnd_dsp_resample_set(44100, pwfx->wBitsPerSample, pwfx->nChannels) == False)
+	if (rdpsnd_dsp_resample_set(44100, pwfx->wBitsPerSample, pwfx->nChannels) == false)
 	{
-		return False;
+		return false;
 	}
 
-	reopened = True;
+	reopened = true;
 
-	return True;
+	return true;
 }
 
 void
@@ -149,7 +149,7 @@ libao_play(void)
 
 	if (reopened)
 	{
-		reopened = False;
+		reopened = false;
 		gettimeofday(&tv, NULL);
 		prev_s = tv.tv_sec;
 		prev_us = tv.tv_usec;

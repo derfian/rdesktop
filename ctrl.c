@@ -38,11 +38,11 @@
 #define ERR_RESULT_OK 0x00
 #define ERR_RESULT_NO_SUCH_COMMAND 0xffffffff
 
-extern RD_BOOL g_seamless_rdp;
+extern bool g_seamless_rdp;
 extern uint8_t g_static_rdesktop_salt_16[];
 extern char g_codepage[16];
 
-static RD_BOOL _ctrl_is_slave;
+static bool _ctrl_is_slave;
 static int ctrlsock;
 static char ctrlsock_name[PATH_MAX];
 static struct _ctrl_slave_t *_ctrl_slaves;
@@ -177,7 +177,7 @@ _ctrl_dispatch_command(_ctrl_slave_t * slave)
 	_ctrl_command_result(slave, res);
 }
 
-static RD_BOOL
+static bool
 _ctrl_verify_unix_socket()
 {
 	int s, len;
@@ -198,11 +198,11 @@ _ctrl_verify_unix_socket()
 
 	/* test connection */
 	if (connect(s, (struct sockaddr *) &saun, len) != 0)
-		return False;
+		return false;
 
 	shutdown(s, SHUT_RDWR);
 	close(s);
-	return True;
+	return true;
 }
 
 
@@ -284,9 +284,9 @@ ctrl_init(const char *user, const char *domain, const char *host)
 	if (stat(ctrlsock_name, &st) == 0)
 	{
 		/* verify that unix socket is not stale */
-		if (_ctrl_verify_unix_socket() == True)
+		if (_ctrl_verify_unix_socket() == true)
 		{
-			_ctrl_is_slave = True;
+			_ctrl_is_slave = true;
 			return 1;
 		}
 		else
@@ -334,7 +334,7 @@ ctrl_cleanup()
 	}
 }
 
-RD_BOOL
+bool
 ctrl_is_slave()
 {
 	return _ctrl_is_slave;

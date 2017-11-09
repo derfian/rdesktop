@@ -54,7 +54,7 @@ get_property_value(Window wnd, char *propname, long max_length,
 	int actual_format_return;
 	unsigned long bytes_after_return;
 
-	property = XInternAtom(g_display, propname, True);
+	property = XInternAtom(g_display, propname, true);
 	if (property == None)
 	{
 		logger(GUI, Error, "get_property_value(), atom '%s' does not exist", propname);
@@ -63,7 +63,7 @@ get_property_value(Window wnd, char *propname, long max_length,
 
 	result = XGetWindowProperty(g_display, wnd, property, 0,	/* long_offset */
 				    max_length,	/* long_length */
-				    False,	/* delete */
+				    false,	/* delete */
 				    AnyPropertyType,	/* req_type */
 				    &actual_type_return,
 				    &actual_format_return,
@@ -179,22 +179,22 @@ ewmh_init()
 {
 	/* FIXME: Use XInternAtoms */
 	g_net_wm_state_maximized_vert_atom =
-		XInternAtom(g_display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+		XInternAtom(g_display, "_NET_WM_STATE_MAXIMIZED_VERT", false);
 	g_net_wm_state_maximized_horz_atom =
-		XInternAtom(g_display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
-	g_net_wm_state_hidden_atom = XInternAtom(g_display, "_NET_WM_STATE_HIDDEN", False);
+		XInternAtom(g_display, "_NET_WM_STATE_MAXIMIZED_HORZ", false);
+	g_net_wm_state_hidden_atom = XInternAtom(g_display, "_NET_WM_STATE_HIDDEN", false);
 	g_net_wm_state_skip_taskbar_atom =
-		XInternAtom(g_display, "_NET_WM_STATE_SKIP_TASKBAR", False);
-	g_net_wm_state_skip_pager_atom = XInternAtom(g_display, "_NET_WM_STATE_SKIP_PAGER", False);
-	g_net_wm_state_modal_atom = XInternAtom(g_display, "_NET_WM_STATE_MODAL", False);
-	g_net_wm_state_above_atom = XInternAtom(g_display, "_NET_WM_STATE_ABOVE", False);
-	g_net_wm_state_atom = XInternAtom(g_display, "_NET_WM_STATE", False);
-	g_net_wm_desktop_atom = XInternAtom(g_display, "_NET_WM_DESKTOP", False);
-	g_net_wm_name_atom = XInternAtom(g_display, "_NET_WM_NAME", False);
-	g_net_wm_icon_atom = XInternAtom(g_display, "_NET_WM_ICON", False);
-	g_net_wm_pid_atom = XInternAtom(g_display, "_NET_WM_PID", False);
-	g_net_wm_ping_atom = XInternAtom(g_display, "_NET_WM_PING", False);
-	g_utf8_string_atom = XInternAtom(g_display, "UTF8_STRING", False);
+		XInternAtom(g_display, "_NET_WM_STATE_SKIP_TASKBAR", false);
+	g_net_wm_state_skip_pager_atom = XInternAtom(g_display, "_NET_WM_STATE_SKIP_PAGER", false);
+	g_net_wm_state_modal_atom = XInternAtom(g_display, "_NET_WM_STATE_MODAL", false);
+	g_net_wm_state_above_atom = XInternAtom(g_display, "_NET_WM_STATE_ABOVE", false);
+	g_net_wm_state_atom = XInternAtom(g_display, "_NET_WM_STATE", false);
+	g_net_wm_desktop_atom = XInternAtom(g_display, "_NET_WM_DESKTOP", false);
+	g_net_wm_name_atom = XInternAtom(g_display, "_NET_WM_NAME", false);
+	g_net_wm_icon_atom = XInternAtom(g_display, "_NET_WM_ICON", false);
+	g_net_wm_pid_atom = XInternAtom(g_display, "_NET_WM_PID", false);
+	g_net_wm_ping_atom = XInternAtom(g_display, "_NET_WM_PING", false);
+	g_utf8_string_atom = XInternAtom(g_display, "UTF8_STRING", false);
 }
 
 
@@ -209,9 +209,9 @@ ewmh_get_window_state(Window w)
 	unsigned char *prop_return;
 	unsigned long *return_words;
 	unsigned long item;
-	RD_BOOL maximized_vert, maximized_horz, hidden;
+	bool maximized_vert, maximized_horz, hidden;
 
-	maximized_vert = maximized_horz = hidden = False;
+	maximized_vert = maximized_horz = hidden = false;
 
 	if (get_property_value(w, "_NET_WM_STATE", 64, &nitems_return, &prop_return, 0) < 0)
 		return SEAMLESSRDP_NORMAL;
@@ -221,11 +221,11 @@ ewmh_get_window_state(Window w)
 	for (item = 0; item < nitems_return; item++)
 	{
 		if (return_words[item] == g_net_wm_state_maximized_vert_atom)
-			maximized_vert = True;
+			maximized_vert = true;
 		if (return_words[item] == g_net_wm_state_maximized_horz_atom)
-			maximized_horz = True;
+			maximized_horz = true;
 		if (return_words[item] == g_net_wm_state_hidden_atom)
-			hidden = True;
+			hidden = true;
 	}
 
 	XFree(prop_return);
@@ -320,7 +320,7 @@ ewmh_modify_state(Window wnd, int add, Atom atom1, Atom atom2)
 	xevent.xclient.data.l[2] = atom2;
 	xevent.xclient.data.l[3] = 0;
 	xevent.xclient.data.l[4] = 0;
-	status = XSendEvent(g_display, DefaultRootWindow(g_display), False,
+	status = XSendEvent(g_display, DefaultRootWindow(g_display), false,
 			    SubstructureNotifyMask | SubstructureRedirectMask, &xevent);
 	if (!status)
 		return -1;
@@ -394,7 +394,7 @@ ewmh_move_to_desktop(Window wnd, unsigned int desktop)
 	xevent.xclient.data.l[2] = 0;
 	xevent.xclient.data.l[3] = 0;
 	xevent.xclient.data.l[4] = 0;
-	status = XSendEvent(g_display, DefaultRootWindow(g_display), False,
+	status = XSendEvent(g_display, DefaultRootWindow(g_display), false,
 			    SubstructureNotifyMask | SubstructureRedirectMask, &xevent);
 	if (!status)
 		return -1;
@@ -552,26 +552,26 @@ ewmh_set_window_above(Window wnd)
 	return 0;
 }
 
-RD_BOOL
+bool
 ewmh_is_window_above(Window w)
 {
 	unsigned long nitems_return;
 	unsigned char *prop_return;
 	unsigned long *return_words;
 	unsigned long item;
-	RD_BOOL above;
+	bool above;
 
-	above = False;
+	above = false;
 
 	if (get_property_value(w, "_NET_WM_STATE", 64, &nitems_return, &prop_return, 0) < 0)
-		return False;
+		return false;
 
 	return_words = (unsigned long *) prop_return;
 
 	for (item = 0; item < nitems_return; item++)
 	{
 		if (return_words[item] == g_net_wm_state_above_atom)
-			above = True;
+			above = true;
 	}
 
 	XFree(prop_return);
@@ -591,7 +591,7 @@ ewmh_net_moveresize_window(Window wnd, int x, int y, int width, int height)
 	XEvent xevent;
 	Atom moveresize;
 
-	moveresize = XInternAtom(g_display, "_NET_MOVERESIZE_WINDOW", False);
+	moveresize = XInternAtom(g_display, "_NET_MOVERESIZE_WINDOW", false);
 	if (!moveresize)
 	{
 		return -1;
@@ -607,7 +607,7 @@ ewmh_net_moveresize_window(Window wnd, int x, int y, int width, int height)
 	xevent.xclient.data.l[3] = width;
 	xevent.xclient.data.l[4] = height;
 
-	status = XSendEvent(g_display, DefaultRootWindow(g_display), False,
+	status = XSendEvent(g_display, DefaultRootWindow(g_display), false,
 			    SubstructureNotifyMask | SubstructureRedirectMask, &xevent);
 	if (!status)
 		return -1;

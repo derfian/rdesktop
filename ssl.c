@@ -248,7 +248,7 @@ rdssl_cert_to_rkey(RDSSL_CERT * cert, uint32_t * key_len)
 }
 
 /* returns boolean */
-RD_BOOL
+bool
 rdssl_certs_ok(RDSSL_CERT * server_cert, RDSSL_CERT * cacert)
 {
 	UNUSED(server_cert);
@@ -262,7 +262,7 @@ rdssl_certs_ok(RDSSL_CERT * server_cert, RDSSL_CERT * cacert)
 	   when we connect the next time, in order to prevent
 	   MITM-attacks.
 	 */
-	return True;
+	return true;
 }
 
 int
@@ -306,7 +306,7 @@ rdssl_rkey_get_exp_mod(RDSSL_RKEY * rkey, uint8_t * exponent, uint32_t max_exp_l
 }
 
 /* returns boolean */
-RD_BOOL
+bool
 rdssl_sig_ok(uint8_t * exponent, uint32_t exp_len, uint8_t * modulus, uint32_t mod_len,
 	     uint8_t * signature, uint32_t sig_len)
 {
@@ -319,7 +319,7 @@ rdssl_sig_ok(uint8_t * exponent, uint32_t exp_len, uint8_t * modulus, uint32_t m
 	/* Currently, we don't check the signature
 	   FIXME:
 	 */
-	return True;
+	return true;
 }
 
 

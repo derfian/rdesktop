@@ -35,21 +35,21 @@ extern uint16_t g_mcs_userid;
 extern char *g_username;
 extern char g_password[64];
 extern char g_codepage[16];
-extern RD_BOOL g_orders;
-extern RD_BOOL g_encryption;
-extern RD_BOOL g_desktop_save;
-extern RD_BOOL g_polygon_ellipse_orders;
+extern bool g_orders;
+extern bool g_encryption;
+extern bool g_desktop_save;
+extern bool g_polygon_ellipse_orders;
 extern RDP_VERSION g_rdp_version;
 extern uint16_t g_server_rdp_version;
 extern uint32_t g_rdp5_performanceflags;
 extern int g_server_depth;
 extern int g_width;
 extern int g_height;
-extern RD_BOOL g_bitmap_cache;
-extern RD_BOOL g_bitmap_cache_persist_enable;
-extern RD_BOOL g_numlock_sync;
-extern RD_BOOL g_pending_resize;
-extern RD_BOOL g_network_error;
+extern bool g_bitmap_cache;
+extern bool g_bitmap_cache_persist_enable;
+extern bool g_numlock_sync;
+extern bool g_pending_resize;
+extern bool g_network_error;
 
 uint8_t *g_next_packet;
 uint32_t g_rdp_shareid;
@@ -57,7 +57,7 @@ uint32_t g_rdp_shareid;
 extern RDPCOMP g_mppc_dict;
 
 /* Session Directory support */
-extern RD_BOOL g_redirect;
+extern bool g_redirect;
 extern char *g_redirect_server;
 extern uint32_t g_redirect_server_len;
 extern char *g_redirect_domain;
@@ -76,7 +76,7 @@ extern uint32_t g_redirect_session_id;
 extern uint32_t g_reconnect_logonid;
 extern char g_reconnect_random[16];
 extern time_t g_reconnect_random_ts;
-extern RD_BOOL g_has_reconnect_random;
+extern bool g_has_reconnect_random;
 extern uint8_t g_client_random[SEC_RANDOM_SIZE];
 static uint32_t g_packetno;
 
@@ -350,7 +350,7 @@ rdp_send_logon_info(uint32_t flags, char *domain, char *user,
 
 		logger(Protocol, Debug, "rdp_send_logon_info(), sending RDP5-style Logon packet");
 
-		if (g_redirect == True && g_redirect_cookie_len > 0)
+		if (g_redirect == true && g_redirect_cookie_len > 0)
 		{
 			flags |= RDP_INFO_AUTOLOGON;
 			len_password = g_redirect_cookie_len;
@@ -412,7 +412,7 @@ rdp_send_logon_info(uint32_t flags, char *domain, char *user,
 		rdp_out_unistr_mandatory_null(s, domain, len_domain);
 		rdp_out_unistr_mandatory_null(s, user, len_user);
 
-		if (g_redirect == True && 0 < g_redirect_cookie_len)
+		if (g_redirect == true && 0 < g_redirect_cookie_len)
 		{
 			out_uint8p(s, g_redirect_cookie, g_redirect_cookie_len);
 		}
@@ -476,7 +476,7 @@ rdp_send_logon_info(uint32_t flags, char *domain, char *user,
 	s_mark_end(s);
 
 	/* clear the redirect flag */
-	g_redirect = False;
+	g_redirect = false;
 
 	sec_send(s, sec_flags);
 }
@@ -1171,7 +1171,7 @@ process_demand_active(STREAM s)
 static void
 process_colour_pointer_common(STREAM s, int bpp)
 {
-	extern RD_BOOL g_local_cursor;
+	extern bool g_local_cursor;
 	uint16_t width, height, cache_idx, masklen, datalen;
 	uint16_t x, y;
 	uint8_t *mask;
@@ -1473,7 +1473,7 @@ process_ts_logon_info_extended(STREAM s)
 
 		in_uint32_le(s, g_reconnect_logonid);
 		in_uint8a(s, g_reconnect_random, 16);
-		g_has_reconnect_random = True;
+		g_has_reconnect_random = true;
 		g_reconnect_random_ts = time(NULL);
 		logger(Protocol, Debug,
 		       "process_ts_logon_info_extended(), saving Auto-Reconnect cookie, id=%u",
@@ -1516,7 +1516,7 @@ process_disconnect_pdu(STREAM s, uint32_t * ext_disc_reason)
 }
 
 /* Process data PDU */
-static RD_BOOL
+static bool
 process_data_pdu(STREAM s, uint32_t * ext_disc_reason)
 {
 	uint8_t data_pdu_type;
@@ -1606,18 +1606,18 @@ process_data_pdu(STREAM s, uint32_t * ext_disc_reason)
 			logger(Protocol, Warning, "process_data_pdu(), unhandled data PDU type %d",
 			       data_pdu_type);
 	}
-	return False;
+	return false;
 }
 
 /* Process redirect PDU from Session Directory */
-static RD_BOOL
-process_redirect_pdu(STREAM s, RD_BOOL enhanced_redirect /*, uint32_t * ext_disc_reason */ )
+static bool
+process_redirect_pdu(STREAM s, bool enhanced_redirect /*, uint32_t * ext_disc_reason */ )
 {
 	uint32_t len;
 	uint16_t redirect_identifier;
 
 	/* reset any previous redirection information */
-	g_redirect = True;
+	g_redirect = true;
 	free(g_redirect_server);
 	free(g_redirect_username);
 	free(g_redirect_domain);
@@ -1734,7 +1734,7 @@ process_redirect_pdu(STREAM s, RD_BOOL enhanced_redirect /*, uint32_t * ext_disc
 	{
 		/* By spec this is only for information and doesn't mean that an actual
 		   redirect should be performed. How it should be used is not mentioned. */
-		g_redirect = False;
+		g_redirect = false;
 	}
 
 	if (g_redirect_flags & LB_TARGET_FQDN)
@@ -1790,12 +1790,12 @@ process_redirect_pdu(STREAM s, RD_BOOL enhanced_redirect /*, uint32_t * ext_disc
 		       "process_redirect_pdu(), unhandled LB_TARGET_CERTIFICATE");
 	}
 
-	return True;
+	return true;
 }
 
 /* Process incoming packets */
 void
-rdp_main_loop(RD_BOOL * deactivated, uint32_t * ext_disc_reason)
+rdp_main_loop(bool * deactivated, uint32_t * ext_disc_reason)
 {
 	while (rdp_loop(deactivated, ext_disc_reason))
 	{
@@ -1807,34 +1807,34 @@ rdp_main_loop(RD_BOOL * deactivated, uint32_t * ext_disc_reason)
 }
 
 /* used in uiports and rdp_main_loop, processes the RDP packets waiting */
-RD_BOOL
-rdp_loop(RD_BOOL * deactivated, uint32_t * ext_disc_reason)
+bool
+rdp_loop(bool * deactivated, uint32_t * ext_disc_reason)
 {
 	uint8_t type;
-	RD_BOOL cont = True;
+	bool cont = true;
 	STREAM s;
 
 	while (cont)
 	{
 		s = rdp_recv(&type);
 		if (s == NULL)
-			return False;
+			return false;
 		switch (type)
 		{
 			case RDP_PDU_DEMAND_ACTIVE:
 				process_demand_active(s);
-				*deactivated = False;
+				*deactivated = false;
 				break;
 			case RDP_PDU_DEACTIVATE:
 				logger(Protocol, Debug,
 				       "rdp_loop(), RDP_PDU_DEACTIVATE packet received");
-				*deactivated = True;
+				*deactivated = true;
 				break;
 			case RDP_PDU_REDIRECT:
-				return process_redirect_pdu(s, False);
+				return process_redirect_pdu(s, false);
 				break;
 			case RDP_PDU_ENHANCED_REDIRECT:
-				return process_redirect_pdu(s, True);
+				return process_redirect_pdu(s, true);
 				break;
 			case RDP_PDU_DATA:
 				/* If we got a data PDU, we don't need to keep the password in memory
@@ -1852,19 +1852,19 @@ rdp_loop(RD_BOOL * deactivated, uint32_t * ext_disc_reason)
 		}
 		cont = g_next_packet < s->end;
 	}
-	return True;
+	return true;
 }
 
 /* Establish a connection up to the RDP layer */
-RD_BOOL
+bool
 rdp_connect(char *server, uint32_t flags, char *domain, char *password,
-	    char *command, char *directory, RD_BOOL reconnect)
+	    char *command, char *directory, bool reconnect)
 {
-	RD_BOOL deactivated = False;
+	bool deactivated = false;
 	uint32_t ext_disc_reason = 0;
 
 	if (!sec_connect(server, g_username, domain, password, reconnect))
-		return False;
+		return false;
 
 	rdp_send_logon_info(flags, domain, g_username, password, command, directory);
 
@@ -1872,15 +1872,15 @@ rdp_connect(char *server, uint32_t flags, char *domain, char *password,
 	while (!g_rdp_shareid)
 	{
 		if (g_network_error)
-			return False;
+			return false;
 
 		if (!rdp_loop(&deactivated, &ext_disc_reason))
-			return False;
+			return false;
 
 		if (g_redirect)
-			return True;
+			return true;
 	}
-	return True;
+	return true;
 }
 
 /* Called during redirection to reset the state to support redirection */

@@ -23,7 +23,7 @@
 #include <stdarg.h>
 #include <assert.h>
 
-extern RD_BOOL g_seamless_rdp;
+extern bool g_seamless_rdp;
 static VCHANNEL *seamless_channel;
 static unsigned int seamless_serial;
 static char *seamless_rest = NULL;
@@ -53,7 +53,7 @@ seamless_get_token(char **s)
 }
 
 
-static RD_BOOL
+static bool
 seamless_process_line(const char *line, void *data)
 {
 	UNUSED(data);
@@ -80,38 +80,38 @@ seamless_process_line(const char *line, void *data)
 	{
 		unsigned long group, parent;
 		if (!tok6)
-			return False;
+			return false;
 
 		id = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		group = strtoul(tok4, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		parent = strtoul(tok5, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		flags = strtoul(tok6, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_create_window(id, group, parent, flags);
 	}
 	else if (!strcmp("DESTROY", tok1))
 	{
 		if (!tok4)
-			return False;
+			return false;
 
 		id = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		flags = strtoul(tok4, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_destroy_window(id, flags);
 
@@ -119,15 +119,15 @@ seamless_process_line(const char *line, void *data)
 	else if (!strcmp("DESTROYGRP", tok1))
 	{
 		if (!tok4)
-			return False;
+			return false;
 
 		id = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		flags = strtoul(tok4, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_destroy_group(id, flags);
 	}
@@ -137,23 +137,23 @@ seamless_process_line(const char *line, void *data)
 		char byte[3];
 
 		if (!tok8)
-			return False;
+			return false;
 
 		id = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		chunk = strtoul(tok4, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		width = strtoul(tok6, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		height = strtoul(tok7, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		byte[2] = '\0';
 		len = 0;
@@ -162,7 +162,7 @@ seamless_process_line(const char *line, void *data)
 			byte[0] = *tok8;
 			tok8++;
 			if (*tok8 == '\0')
-				return False;
+				return false;
 			byte[1] = *tok8;
 			tok8++;
 
@@ -177,19 +177,19 @@ seamless_process_line(const char *line, void *data)
 		int width, height;
 
 		if (!tok6)
-			return False;
+			return false;
 
 		id = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		width = strtoul(tok5, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		height = strtoul(tok6, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_delicon(id, tok4, width, height);
 	}
@@ -198,29 +198,29 @@ seamless_process_line(const char *line, void *data)
 		int x, y, width, height;
 
 		if (!tok8)
-			return False;
+			return false;
 
 		id = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		x = strtol(tok4, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 		y = strtol(tok5, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		width = strtol(tok6, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 		height = strtol(tok7, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		flags = strtoul(tok8, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_move_window(id, x, y, width, height, flags);
 	}
@@ -230,30 +230,30 @@ seamless_process_line(const char *line, void *data)
 
 		id = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		behind = strtoul(tok4, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		flags = strtoul(tok5, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_restack_window(id, behind, flags);
 	}
 	else if (!strcmp("TITLE", tok1))
 	{
 		if (!tok5)
-			return False;
+			return false;
 
 		id = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		flags = strtoul(tok5, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_settitle(id, tok4, flags);
 	}
@@ -262,19 +262,19 @@ seamless_process_line(const char *line, void *data)
 		unsigned int state;
 
 		if (!tok5)
-			return False;
+			return false;
 
 		id = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		state = strtoul(tok4, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		flags = strtoul(tok5, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_setstate(id, state, flags);
 	}
@@ -285,33 +285,33 @@ seamless_process_line(const char *line, void *data)
 	else if (!strcmp("SYNCBEGIN", tok1))
 	{
 		if (!tok3)
-			return False;
+			return false;
 
 		flags = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_syncbegin(flags);
 	}
 	else if (!strcmp("SYNCEND", tok1))
 	{
 		if (!tok3)
-			return False;
+			return false;
 
 		flags = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		/* do nothing, currently */
 	}
 	else if (!strcmp("HELLO", tok1))
 	{
 		if (!tok3)
-			return False;
+			return false;
 
 		flags = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_begin(! !(flags & SEAMLESSRDP_HELLO_HIDDEN));
 	}
@@ -321,47 +321,47 @@ seamless_process_line(const char *line, void *data)
 
 		serial = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_ack(serial);
 	}
 	else if (!strcmp("HIDE", tok1))
 	{
 		if (!tok3)
-			return False;
+			return false;
 
 		flags = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_hide_desktop();
 	}
 	else if (!strcmp("UNHIDE", tok1))
 	{
 		if (!tok3)
-			return False;
+			return false;
 
 		flags = strtoul(tok3, &endptr, 0);
 		if (*endptr)
-			return False;
+			return false;
 
 		ui_seamless_unhide_desktop();
 	}
 
 
 	xfree(l);
-	return True;
+	return true;
 }
 
 
-static RD_BOOL
+static bool
 seamless_line_handler(const char *line, void *data)
 {
 	if (!seamless_process_line(line, data))
 	{
 		logger(Core, Warning, "seamless_line_handler(), invalid request '%s'", line);
 	}
-	return True;
+	return true;
 }
 
 
@@ -381,11 +381,11 @@ seamless_process(STREAM s)
 }
 
 
-RD_BOOL
+bool
 seamless_init(void)
 {
 	if (!g_seamless_rdp)
-		return False;
+		return false;
 
 	seamless_serial = 0;
 
@@ -529,7 +529,7 @@ seamless_send_spawn(char *cmdline)
 }
 
 unsigned int
-seamless_send_persistent(RD_BOOL enable)
+seamless_send_persistent(bool enable)
 {
 	unsigned int res;
 	if (!g_seamless_rdp)

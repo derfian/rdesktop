@@ -44,16 +44,16 @@
 #define MAX_FORMATS		10
 #define MAX_QUEUE		50
 
-extern RD_BOOL g_rdpsnd;
+extern bool g_rdpsnd;
 
 static VCHANNEL *rdpsnd_channel;
 static VCHANNEL *rdpsnddbg_channel;
 static struct audio_driver *drivers = NULL;
 struct audio_driver *current_driver = NULL;
 
-static RD_BOOL rdpsnd_negotiated;
+static bool rdpsnd_negotiated;
 
-static RD_BOOL device_open;
+static bool device_open;
 
 static RD_WAVEFORMATEX formats[MAX_FORMATS];
 static unsigned int format_count;
@@ -115,10 +115,10 @@ rdpsnd_record(const void *data, unsigned int size)
 	/* TODO: Send audio over RDP */
 }
 
-static RD_BOOL
+static bool
 rdpsnd_auto_select(void)
 {
-	static RD_BOOL failed = False;
+	static bool failed = false;
 
 	if (!failed)
 	{
@@ -132,17 +132,17 @@ rdpsnd_auto_select(void)
 				logger(Sound, Verbose, "rdpsnd_auto_select(), using driver '%s'",
 				       current_driver->name);
 				current_driver->wave_out_close();
-				return True;
+				return true;
 			}
 			current_driver = current_driver->next;
 		}
 
 		logger(Sound, Debug, "no working audio-driver found");
-		failed = True;
+		failed = true;
 		current_driver = NULL;
 	}
 
-	return False;
+	return false;
 }
 
 static void
@@ -153,7 +153,7 @@ rdpsnd_process_negotiate(STREAM in)
 	uint16_t version;
 	RD_WAVEFORMATEX *format;
 	STREAM out;
-	RD_BOOL device_available = False;
+	bool device_available = false;
 	int readcnt;
 	int discardcnt;
 
@@ -179,7 +179,7 @@ rdpsnd_process_negotiate(STREAM in)
 	if (current_driver && !device_available && current_driver->wave_out_open())
 	{
 		current_driver->wave_out_close();
-		device_available = True;
+		device_available = true;
 	}
 
 	format_count = 0;
@@ -259,7 +259,7 @@ rdpsnd_process_negotiate(STREAM in)
 
 	rdpsnd_send(out);
 
-	rdpsnd_negotiated = True;
+	rdpsnd_negotiated = true;
 }
 
 static void
@@ -328,10 +328,10 @@ rdpsnd_process_packet(uint8_t opcode, STREAM s)
 				{
 					rdpsnd_send_waveconfirm(tick, packet_index);
 					current_driver->wave_out_close();
-					device_open = False;
+					device_open = false;
 					break;
 				}
-				device_open = True;
+				device_open = true;
 				current_format = format;
 			}
 
@@ -344,7 +344,7 @@ rdpsnd_process_packet(uint8_t opcode, STREAM s)
 			logger(Sound, Debug, "rdpsnd_process_packet(), SNDC_CLOSE()");
 			if (device_open)
 				current_driver->wave_out_close();
-			device_open = False;
+			device_open = false;
 			break;
 		case SNDC_FORMATS:
 			rdpsnd_process_negotiate(s);
@@ -429,12 +429,12 @@ rdpsnd_process(STREAM s)
 	}
 }
 
-static RD_BOOL
+static bool
 rdpsnddbg_line_handler(const char *line, void *data)
 {
 	UNUSED(data);
 	logger(Sound, Debug, "rdpsnddbg_line_handler(), \"%s\"", line);
-	return True;
+	return true;
 }
 
 static void
@@ -490,7 +490,7 @@ rdpsnd_register_drivers(char *options)
 	*reg = NULL;
 }
 
-RD_BOOL
+bool
 rdpsnd_init(char *optarg)
 {
 	struct audio_driver *pos;
@@ -514,7 +514,7 @@ rdpsnd_init(char *optarg)
 	{
 		logger(Sound, Error,
 		       "rdpsnd_init(), failed to register rdpsnd / snddbg virtual channels");
-		return False;
+		return false;
 	}
 
 	rdpsnd_queue_init();
@@ -539,7 +539,7 @@ rdpsnd_init(char *optarg)
 	rdpsnd_register_drivers(options);
 
 	if (!driver)
-		return True;
+		return true;
 
 	pos = drivers;
 	while (pos != NULL)
@@ -548,11 +548,11 @@ rdpsnd_init(char *optarg)
 		{
 			logger(Sound, Debug, "rdpsnd_init(), using driver '%s'", pos->name);
 			current_driver = pos;
-			return True;
+			return true;
 		}
 		pos = pos->next;
 	}
-	return False;
+	return false;
 }
 
 void
@@ -560,9 +560,9 @@ rdpsnd_reset_state(void)
 {
 	if (device_open)
 		current_driver->wave_out_close();
-	device_open = False;
+	device_open = false;
 	rdpsnd_queue_clear();
-	rdpsnd_negotiated = False;
+	rdpsnd_negotiated = false;
 }
 
 
@@ -639,7 +639,7 @@ rdpsnd_queue_current_packet(void)
 	return &packet_queue[queue_lo];
 }
 
-RD_BOOL
+bool
 rdpsnd_queue_empty(void)
 {
 	return (queue_lo == queue_hi);

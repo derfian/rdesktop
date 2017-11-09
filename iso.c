@@ -21,12 +21,12 @@
 
 #include "rdesktop.h"
 
-extern RD_BOOL g_encryption;
-extern RD_BOOL g_encryption_initial;
+extern bool g_encryption;
+extern bool g_encryption_initial;
 extern RDP_VERSION g_rdp_version;
-extern RD_BOOL g_use_password_as_pin;
+extern bool g_use_password_as_pin;
 
-static RD_BOOL g_negotiate_rdp_protocol = True;
+static bool g_negotiate_rdp_protocol = true;
 
 extern char *g_sc_csp_name;
 extern char *g_sc_reader_name;
@@ -200,16 +200,16 @@ iso_recv(uint8_t * rdpver)
 }
 
 /* Establish a connection up to the ISO layer */
-RD_BOOL
+bool
 iso_connect(char *server, char *username, char *domain, char *password,
-	    RD_BOOL reconnect, uint32_t * selected_protocol)
+	    bool reconnect, uint32_t * selected_protocol)
 {
 	UNUSED(reconnect);
 	STREAM s;
 	uint8_t code;
 	uint32_t neg_proto;
 
-	g_negotiate_rdp_protocol = True;
+	g_negotiate_rdp_protocol = true;
 
 	neg_proto = PROTOCOL_SSL;
 
@@ -232,19 +232,19 @@ iso_connect(char *server, char *username, char *domain, char *password,
 	code = 0;
 
 	if (!tcp_connect(server))
-		return False;
+		return false;
 
 	iso_send_connection_request(username, neg_proto);
 
 	s = iso_recv_msg(&code, NULL);
 	if (s == NULL)
-		return False;
+		return false;
 
 	if (code != ISO_PDU_CC)
 	{
 		logger(Protocol, Error, "iso_connect(), expected ISO_PDU_CC, got 0x%x", code);
 		tcp_disconnect();
-		return False;
+		return false;
 	}
 
 	if (g_rdp_version >= RDP_V5 && s_check_rem(s, 8))
@@ -262,7 +262,7 @@ iso_connect(char *server, char *username, char *domain, char *password,
 
 		if (type == RDP_NEG_FAILURE)
 		{
-			RD_BOOL retry_without_neg = False;
+			bool retry_without_neg = false;
 
 			switch (data)
 			{
@@ -271,11 +271,11 @@ iso_connect(char *server, char *username, char *domain, char *password,
 					break;
 				case SSL_NOT_ALLOWED_BY_SERVER:
 					reason = "SSL not allowed by server";
-					retry_without_neg = True;
+					retry_without_neg = true;
 					break;
 				case SSL_CERT_NOT_ON_SERVER:
 					reason = "no valid authentication certificate on server";
-					retry_without_neg = True;
+					retry_without_neg = true;
 					break;
 				case INCONSISTENT_FLAGS:
 					reason = "inconsistent negotiation flags";
@@ -302,12 +302,12 @@ iso_connect(char *server, char *username, char *domain, char *password,
 				}
 
 				logger(Core, Notice, "Retrying with plain RDP.");
-				g_negotiate_rdp_protocol = False;
+				g_negotiate_rdp_protocol = false;
 				goto retry;
 			}
 
 			logger(Core, Notice, "Failed to connect, %s.\n", reason);
-			return False;
+			return false;
 		}
 
 		if (type != RDP_NEG_RSP)
@@ -315,7 +315,7 @@ iso_connect(char *server, char *username, char *domain, char *password,
 			tcp_disconnect();
 			logger(Protocol, Error, "iso_connect(), expected RDP_NEG_RSP, got 0x%x",
 			       type);
-			return False;
+			return false;
 		}
 
 		/* handle negotiation response */
@@ -331,7 +331,7 @@ iso_connect(char *server, char *username, char *domain, char *password,
 				goto retry;
 			}
 			/* do not use encryption when using TLS */
-			g_encryption = False;
+			g_encryption = false;
 			logger(Core, Notice, "Connection established using SSL.");
 		}
 #ifdef WITH_CREDSSP
@@ -349,7 +349,7 @@ iso_connect(char *server, char *username, char *domain, char *password,
 
 			/* do not use encryption when using TLS */
 			logger(Core, Notice, "Connection established using CredSSP.");
-			g_encryption = False;
+			g_encryption = false;
 		}
 #endif
 		else if (data == PROTOCOL_RDP)
@@ -362,12 +362,12 @@ iso_connect(char *server, char *username, char *domain, char *password,
 			logger(Protocol, Error,
 			       "iso_connect(), unexpected protocol in negotiation response, got 0x%x",
 			       data);
-			return False;
+			return false;
 		}
 
 		*selected_protocol = data;
 	}
-	return True;
+	return true;
 }
 
 /* Disconnect from the ISO layer */

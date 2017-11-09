@@ -63,13 +63,13 @@
 }
 
 /* 1 byte bitmap decompress */
-static RD_BOOL
+static bool
 bitmap_decompress1(uint8_t * output, int width, int height, uint8_t * input, int size)
 {
 	uint8_t *end = input + size;
 	uint8_t *prevline = NULL, *line = NULL;
 	int opcode, count, offset, isfillormix, x = width;
-	int lastopcode = -1, insertmix = False, bicolour = False;
+	int lastopcode = -1, insertmix = false, bicolour = false;
 	uint8_t code;
 	uint8_t colour1 = 0, colour2 = 0;
 	uint8_t mixmask, mask = 0;
@@ -131,7 +131,7 @@ bitmap_decompress1(uint8_t * output, int width, int height, uint8_t * input, int
 		{
 			case 0:	/* Fill */
 				if ((lastopcode == opcode) && !((x == width) && (prevline == NULL)))
-					insertmix = True;
+					insertmix = true;
 				break;
 			case 8:	/* Bicolour */
 				colour1 = CVAL(input);
@@ -162,7 +162,7 @@ bitmap_decompress1(uint8_t * output, int width, int height, uint8_t * input, int
 			if (x >= width)
 			{
 				if (height <= 0)
-					return False;
+					return false;
 				x = 0;
 				height--;
 				prevline = line;
@@ -177,7 +177,7 @@ bitmap_decompress1(uint8_t * output, int width, int height, uint8_t * input, int
 							line[x] = mix;
 						else
 							line[x] = prevline[x] ^ mix;
-						insertmix = False;
+						insertmix = false;
 						count--;
 						x++;
 					}
@@ -236,12 +236,12 @@ bitmap_decompress1(uint8_t * output, int width, int height, uint8_t * input, int
 						if (bicolour)
 						{
 							line[x] = colour2;
-							bicolour = False;
+							bicolour = false;
 						}
 						else
 						{
 							line[x] = colour1;
-							bicolour = True; count++;
+							bicolour = true; count++;
 						}
 					)
 					break;
@@ -253,21 +253,21 @@ bitmap_decompress1(uint8_t * output, int width, int height, uint8_t * input, int
 					break;
 				default:
 					logger(Core, Warning, "bitmap_decompress(), unhandled bitmap opcode 0x%x", opcode);
-					return False;
+					return false;
 			}
 		}
 	}
-	return True;
+	return true;
 }
 
 /* 2 byte bitmap decompress */
-static RD_BOOL
+static bool
 bitmap_decompress2(uint8_t * output, int width, int height, uint8_t * input, int size)
 {
 	uint8_t *end = input + size;
 	uint16_t *prevline = NULL, *line = NULL;
 	int opcode, count, offset, isfillormix, x = width;
-	int lastopcode = -1, insertmix = False, bicolour = False;
+	int lastopcode = -1, insertmix = false, bicolour = false;
 	uint8_t code;
 	uint16_t colour1 = 0, colour2 = 0;
 	uint8_t mixmask, mask = 0;
@@ -329,7 +329,7 @@ bitmap_decompress2(uint8_t * output, int width, int height, uint8_t * input, int
 		{
 			case 0:	/* Fill */
 				if ((lastopcode == opcode) && !((x == width) && (prevline == NULL)))
-					insertmix = True;
+					insertmix = true;
 				break;
 			case 8:	/* Bicolour */
 				CVAL2(input, colour1);
@@ -360,7 +360,7 @@ bitmap_decompress2(uint8_t * output, int width, int height, uint8_t * input, int
 			if (x >= width)
 			{
 				if (height <= 0)
-					return False;
+					return false;
 				x = 0;
 				height--;
 				prevline = line;
@@ -375,7 +375,7 @@ bitmap_decompress2(uint8_t * output, int width, int height, uint8_t * input, int
 							line[x] = mix;
 						else
 							line[x] = prevline[x] ^ mix;
-						insertmix = False;
+						insertmix = false;
 						count--;
 						x++;
 					}
@@ -434,12 +434,12 @@ bitmap_decompress2(uint8_t * output, int width, int height, uint8_t * input, int
 						if (bicolour)
 						{
 							line[x] = colour2;
-							bicolour = False;
+							bicolour = false;
 						}
 						else
 						{
 							line[x] = colour1;
-							bicolour = True;
+							bicolour = true;
 							count++;
 						}
 					)
@@ -452,21 +452,21 @@ bitmap_decompress2(uint8_t * output, int width, int height, uint8_t * input, int
 					break;
 				default:
 					logger(Core, Warning, "bitmap_decompress2(), unhandled bitmap opcode 0x%x", opcode);
-					return False;
+					return false;
 			}
 		}
 	}
-	return True;
+	return true;
 }
 
 /* 3 byte bitmap decompress */
-static RD_BOOL
+static bool
 bitmap_decompress3(uint8_t * output, int width, int height, uint8_t * input, int size)
 {
 	uint8_t *end = input + size;
 	uint8_t *prevline = NULL, *line = NULL;
 	int opcode, count, offset, isfillormix, x = width;
-	int lastopcode = -1, insertmix = False, bicolour = False;
+	int lastopcode = -1, insertmix = false, bicolour = false;
 	uint8_t code;
 	uint8_t colour1[3] = {0, 0, 0}, colour2[3] = {0, 0, 0};
 	uint8_t mixmask, mask = 0;
@@ -529,7 +529,7 @@ bitmap_decompress3(uint8_t * output, int width, int height, uint8_t * input, int
 		{
 			case 0:	/* Fill */
 				if ((lastopcode == opcode) && !((x == width) && (prevline == NULL)))
-					insertmix = True;
+					insertmix = true;
 				break;
 			case 8:	/* Bicolour */
 				colour1[0] = CVAL(input);
@@ -566,7 +566,7 @@ bitmap_decompress3(uint8_t * output, int width, int height, uint8_t * input, int
 			if (x >= width)
 			{
 				if (height <= 0)
-					return False;
+					return false;
 				x = 0;
 				height--;
 				prevline = line;
@@ -592,7 +592,7 @@ bitmap_decompress3(uint8_t * output, int width, int height, uint8_t * input, int
 							line[x * 3 + 2] =
 							 prevline[x * 3 + 2] ^ mix[2];
 						}
-						insertmix = False;
+						insertmix = false;
 						count--;
 						x++;
 					}
@@ -708,14 +708,14 @@ bitmap_decompress3(uint8_t * output, int width, int height, uint8_t * input, int
 							line[x * 3] = colour2[0];
 							line[x * 3 + 1] = colour2[1];
 							line[x * 3 + 2] = colour2[2];
-							bicolour = False;
+							bicolour = false;
 						}
 						else
 						{
 							line[x * 3] = colour1[0];
 							line[x * 3 + 1] = colour1[1];
 							line[x * 3 + 2] = colour1[2];
-							bicolour = True;
+							bicolour = true;
 							count++;
 						}
 					)
@@ -738,11 +738,11 @@ bitmap_decompress3(uint8_t * output, int width, int height, uint8_t * input, int
 					break;
 				default:
 					logger(Core, Warning, "bitmap_decompress3(), unhandled bitmap opcode 0x%x", opcode);
-					return False;
+					return false;
 			}
 		}
 	}
-	return True;
+	return true;
 }
 
 /* decompress a colour plane */
@@ -853,7 +853,7 @@ process_plane(uint8_t * in, int width, int height, uint8_t * out, int size)
 }
 
 /* 4 byte bitmap decompress */
-static RD_BOOL
+static bool
 bitmap_decompress4(uint8_t * output, int width, int height, uint8_t * input, int size)
 {
 	int code;
@@ -863,7 +863,7 @@ bitmap_decompress4(uint8_t * output, int width, int height, uint8_t * input, int
 	code = CVAL(input);
 	if (code != 0x10)
 	{
-		return False;
+		return false;
 	}
 	total_pro = 1;
 	bytes_pro = process_plane(input, width, height, output + 3, size - total_pro);
@@ -881,10 +881,10 @@ bitmap_decompress4(uint8_t * output, int width, int height, uint8_t * input, int
 }
 
 /* main decompress function */
-RD_BOOL
+bool
 bitmap_decompress(uint8_t * output, int width, int height, uint8_t * input, int size, int Bpp)
 {
-	RD_BOOL rv = False;
+	bool rv = false;
 
 	switch (Bpp)
 	{

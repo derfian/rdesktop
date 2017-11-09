@@ -85,40 +85,40 @@ int g_pos = 0;			/* 0 position unspecified,
 extern int g_tcp_port_rdp;
 int g_server_depth = -1;
 int g_win_button_size = 0;	/* If zero, disable single app mode */
-RD_BOOL g_network_error = False;
-RD_BOOL g_sendmotion = True;
-RD_BOOL g_bitmap_cache = True;
-RD_BOOL g_bitmap_cache_persist_enable = False;
-RD_BOOL g_bitmap_cache_precache = True;
-RD_BOOL g_use_ctrl = True;
-RD_BOOL g_encryption = True;
-RD_BOOL g_encryption_initial = True;
-RD_BOOL g_packet_encryption = True;
-RD_BOOL g_desktop_save = True;	/* desktop save order */
-RD_BOOL g_polygon_ellipse_orders = True;	/* polygon / ellipse orders */
-RD_BOOL g_fullscreen = False;
-RD_BOOL g_grab_keyboard = True;
-RD_BOOL g_local_cursor = False;
-RD_BOOL g_hide_decorations = False;
+bool g_network_error = false;
+bool g_sendmotion = true;
+bool g_bitmap_cache = true;
+bool g_bitmap_cache_persist_enable = false;
+bool g_bitmap_cache_precache = true;
+bool g_use_ctrl = true;
+bool g_encryption = true;
+bool g_encryption_initial = true;
+bool g_packet_encryption = true;
+bool g_desktop_save = true;	/* desktop save order */
+bool g_polygon_ellipse_orders = true;	/* polygon / ellipse orders */
+bool g_fullscreen = false;
+bool g_grab_keyboard = true;
+bool g_local_cursor = false;
+bool g_hide_decorations = false;
 RDP_VERSION g_rdp_version = RDP_V5;	/* Default to version 5 */
-RD_BOOL g_rdpclip = True;
-RD_BOOL g_console_session = False;
-RD_BOOL g_numlock_sync = False;
-RD_BOOL g_lspci_enabled = False;
-RD_BOOL g_owncolmap = False;
-RD_BOOL g_ownbackstore = True;	/* We can't rely on external BackingStore */
-RD_BOOL g_seamless_rdp = False;
-RD_BOOL g_use_password_as_pin = False;
+bool g_rdpclip = true;
+bool g_console_session = false;
+bool g_numlock_sync = false;
+bool g_lspci_enabled = false;
+bool g_owncolmap = false;
+bool g_ownbackstore = true;	/* We can't rely on external BackingStore */
+bool g_seamless_rdp = false;
+bool g_use_password_as_pin = false;
 char g_seamless_shell[512];
 char g_seamless_spawn_cmd[512];
-RD_BOOL g_seamless_persistent_mode = True;
-RD_BOOL g_user_quit = False;
+bool g_seamless_persistent_mode = true;
+bool g_user_quit = false;
 uint32_t g_embed_wnd;
 uint32_t g_rdp5_performanceflags = (PERF_DISABLE_FULLWINDOWDRAG |
 				  PERF_DISABLE_MENUANIMATIONS |
 				  PERF_ENABLE_FONT_SMOOTHING);
 /* Session Directory redirection */
-RD_BOOL g_redirect = False;
+bool g_redirect = false;
 char *g_redirect_server;
 uint32_t g_redirect_server_len;
 char *g_redirect_domain;
@@ -135,13 +135,13 @@ uint32_t g_redirect_session_id = 0;
 uint32_t g_reconnect_logonid = 0;
 char g_reconnect_random[16];
 time_t g_reconnect_random_ts;
-RD_BOOL g_has_reconnect_random = False;
-RD_BOOL g_reconnect_loop = False;
+bool g_has_reconnect_random = false;
+bool g_reconnect_loop = false;
 uint8_t g_client_random[SEC_RANDOM_SIZE];
-RD_BOOL g_pending_resize = False;
+bool g_pending_resize = false;
 
 #ifdef WITH_RDPSND
-RD_BOOL g_rdpsnd = False;
+bool g_rdpsnd = false;
 #endif
 
 char g_codepage[16] = "";
@@ -263,7 +263,7 @@ usage(char *program)
 }
 
 static int
-handle_disconnect_reason(RD_BOOL deactivated, uint16_t reason)
+handle_disconnect_reason(bool deactivated, uint16_t reason)
 {
 	char *text;
 	int retval;
@@ -494,11 +494,11 @@ rdesktop_reset_state(void)
 #endif
 }
 
-static RD_BOOL
+static bool
 read_password(char *password, int size)
 {
 	struct termios tios;
-	RD_BOOL ret = False;
+	bool ret = false;
 	int istty = 0;
 	const char *prompt;
 	char *p;
@@ -523,7 +523,7 @@ read_password(char *password, int size)
 
 	if (fgets(password, size, stdin) != NULL)
 	{
-		ret = True;
+		ret = true;
 
 		/* strip final newline */
 		p = strchr(password, '\n');
@@ -598,14 +598,14 @@ main(int argc, char *argv[])
 	char domain[256];
 	char shell[256];
 	char directory[256];
-	RD_BOOL deactivated;
+	bool deactivated;
 	struct passwd *pw;
 	uint32_t flags, ext_disc_reason = 0;
 	char *p;
 	int c;
 	char *locale = NULL;
 	int username_option = 0;
-	RD_BOOL geometry_option = False;
+	bool geometry_option = false;
 #ifdef WITH_RDPSND
 	char *rdpsnd_optarg = NULL;
 #endif
@@ -646,7 +646,7 @@ main(int argc, char *argv[])
 		switch (c)
 		{
 			case 'A':
-				g_seamless_rdp = True;
+				g_seamless_rdp = true;
 				STRNCPY(g_seamless_shell, optarg, sizeof(g_seamless_shell));
 				break;
 
@@ -666,7 +666,7 @@ main(int argc, char *argv[])
 
 			case 's':
 				STRNCPY(shell, optarg, sizeof(shell));
-				g_seamless_persistent_mode = False;
+				g_seamless_persistent_mode = false;
 				break;
 
 			case 'c':
@@ -688,11 +688,11 @@ main(int argc, char *argv[])
 #ifdef WITH_SCARD
 			case 'i':
 				flags |= RDP_INFO_PASSWORD_IS_SC_PIN;
-				g_use_password_as_pin = True;
+				g_use_password_as_pin = true;
 				break;
 #endif
 			case 't':
-				g_use_ctrl = False;
+				g_use_ctrl = false;
 				break;
 
 			case 'n':
@@ -704,8 +704,8 @@ main(int argc, char *argv[])
 				break;
 
 			case 'g':
-				geometry_option = True;
-				g_fullscreen = False;
+				geometry_option = true;
+				g_fullscreen = false;
 				if (!strcmp(optarg, "workarea"))
 				{
 					g_sizeopt = 1;
@@ -773,40 +773,40 @@ main(int argc, char *argv[])
 				break;
 
 			case 'f':
-				g_fullscreen = True;
+				g_fullscreen = true;
 				break;
 
 			case 'b':
-				g_bitmap_cache = False;
+				g_bitmap_cache = false;
 				break;
 
 			case 'B':
-				g_ownbackstore = False;
+				g_ownbackstore = false;
 				break;
 
 			case 'e':
-				g_encryption_initial = g_encryption = False;
+				g_encryption_initial = g_encryption = false;
 				break;
 			case 'E':
-				g_packet_encryption = False;
+				g_packet_encryption = false;
 				break;
 			case 'm':
-				g_sendmotion = False;
+				g_sendmotion = false;
 				break;
 			case 'M':
-				g_local_cursor = True;
+				g_local_cursor = true;
 				break;
 
 			case 'C':
-				g_owncolmap = True;
+				g_owncolmap = true;
 				break;
 
 			case 'D':
-				g_hide_decorations = True;
+				g_hide_decorations = true;
 				break;
 
 			case 'K':
-				g_grab_keyboard = False;
+				g_grab_keyboard = false;
 				break;
 
 			case 'S':
@@ -831,7 +831,7 @@ main(int argc, char *argv[])
 				break;
 
 			case 'N':
-				g_numlock_sync = True;
+				g_numlock_sync = true;
 				break;
 
 			case 'X':
@@ -881,7 +881,7 @@ main(int argc, char *argv[])
 				break;
 
 			case 'P':
-				g_bitmap_cache_persist_enable = True;
+				g_bitmap_cache_persist_enable = true;
 				break;
 
 			case 'r':
@@ -903,7 +903,7 @@ main(int argc, char *argv[])
 							{
 								rdpsnd_optarg =
 									next_arg(optarg, ':');
-								g_rdpsnd = True;
+								g_rdpsnd = true;
 							}
 
 #else
@@ -913,7 +913,7 @@ main(int argc, char *argv[])
 
 							if (str_startswith(optarg, "off"))
 #ifdef WITH_RDPSND
-								g_rdpsnd = False;
+								g_rdpsnd = false;
 #else
 								logger(Core, Warning,
 								       "Not compiled with sound support");
@@ -925,7 +925,7 @@ main(int argc, char *argv[])
 					else
 					{
 #ifdef WITH_RDPSND
-						g_rdpsnd = True;
+						g_rdpsnd = true;
 #else
 						logger(Core, Warning,
 						       "Not compiled with sound support");
@@ -943,7 +943,7 @@ main(int argc, char *argv[])
 				}
 				else if (str_startswith(optarg, "lspci"))
 				{
-					g_lspci_enabled = True;
+					g_lspci_enabled = true;
 				}
 				else if (str_startswith(optarg, "lptport"))
 				{
@@ -967,12 +967,12 @@ main(int argc, char *argv[])
 						optarg++;
 
 						if (str_startswith(optarg, "off"))
-							g_rdpclip = False;
+							g_rdpclip = false;
 						else
 							cliprdr_set_mode(optarg);
 					}
 					else
-						g_rdpclip = True;
+						g_rdpclip = true;
 				}
 				else if (strncmp("scard", optarg, 5) == 0)
 				{
@@ -992,7 +992,7 @@ main(int argc, char *argv[])
 				break;
 
 			case '0':
-				g_console_session = True;
+				g_console_session = true;
 				break;
 
 			case '4':
@@ -1098,7 +1098,7 @@ main(int argc, char *argv[])
 			return EX_USAGE;
 		}
 		g_sizeopt = -100;
-		g_grab_keyboard = False;
+		g_grab_keyboard = false;
 	}
 
 	if (!username_option)
@@ -1216,7 +1216,7 @@ main(int argc, char *argv[])
 	dvc_init();
 	rdpedisp_init();
 
-	g_reconnect_loop = False;
+	g_reconnect_loop = false;
 	while (1)
 	{
 		rdesktop_reset_state();
@@ -1236,7 +1236,7 @@ main(int argc, char *argv[])
 			/* A redirect on SSL from a 2003 WTS will result in a 'connection reset by peer'
 			   and therefor we just clear this error before we connect to redirected server.
 			 */
-			g_network_error = False;
+			g_network_error = false;
 		}
 
 		ui_init_connection();
@@ -1244,9 +1244,9 @@ main(int argc, char *argv[])
 		    (server, flags, domain, g_password, shell, directory, g_reconnect_loop))
 		{
 
-			g_network_error = False;
+			g_network_error = false;
 
-			if (g_reconnect_loop == False)
+			if (g_reconnect_loop == false)
 				return EX_PROTOCOL;
 
 			/* check if auto reconnect cookie has timed out */
@@ -1268,21 +1268,21 @@ main(int argc, char *argv[])
 			continue;
 		}
 
-		/* By setting encryption to False here, we have an encrypted login
+		/* By setting encryption to false here, we have an encrypted login
 		   packet but unencrypted transfer of other packets */
 		if (!g_packet_encryption)
-			g_encryption_initial = g_encryption = False;
+			g_encryption_initial = g_encryption = false;
 
 		logger(Core, Verbose, "Connection successful");
 
 		rd_create_ui();
-		tcp_run_ui(True);
+		tcp_run_ui(true);
 
-		deactivated = False;
-		g_reconnect_loop = False;
+		deactivated = false;
+		g_reconnect_loop = false;
 		rdp_main_loop(&deactivated, &ext_disc_reason);
 
-		tcp_run_ui(False);
+		tcp_run_ui(false);
 
 		logger(Core, Verbose, "Disconnecting...");
 		rdp_disconnect();
@@ -1296,8 +1296,8 @@ main(int argc, char *argv[])
 			logger(Core, Notice,
 			       "Disconnected due to network error, retrying to reconnect for %d minutes.",
 			       RECONNECT_TIMEOUT / 60);
-			g_network_error = False;
-			g_reconnect_loop = True;
+			g_network_error = false;
+			g_reconnect_loop = true;
 			continue;
 		}
 
@@ -1307,8 +1307,8 @@ main(int argc, char *argv[])
 		/* Enter a reconnect loop if we have a pending resize request */
 		if (g_pending_resize)
 		{
-			g_pending_resize = False;
-			g_reconnect_loop = True;
+			g_pending_resize = false;
+			g_reconnect_loop = true;
 			continue;
 		}
 		break;
@@ -1330,16 +1330,16 @@ main(int argc, char *argv[])
 
 #ifdef EGD_SOCKET
 /* Read 32 random bytes from PRNGD or EGD socket (based on OpenSSL RAND_egd) */
-static RD_BOOL
+static bool
 generate_random_egd(uint8_t * buf)
 {
 	struct sockaddr_un addr;
-	RD_BOOL ret = False;
+	bool ret = false;
 	int fd;
 
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (fd == -1)
-		return False;
+		return false;
 
 	addr.sun_family = AF_UNIX;
 	memcpy(addr.sun_path, EGD_SOCKET, sizeof(EGD_SOCKET));
@@ -1358,7 +1358,7 @@ generate_random_egd(uint8_t * buf)
 	if (read(fd, buf, 32) != 32)
 		goto err;
 
-	ret = True;
+	ret = true;
 
       err:
 	close(fd);
@@ -1583,7 +1583,7 @@ toupper_str(char *p)
 }
 
 
-RD_BOOL
+bool
 str_startswith(const char *s, const char *prefix)
 {
 	return (strncmp(s, prefix, strlen(prefix)) == 0);
@@ -1592,9 +1592,9 @@ str_startswith(const char *s, const char *prefix)
 
 /* Split input into lines, and call linehandler for each
    line. Incomplete lines are saved in the rest variable, which should
-   initially point to NULL. When linehandler returns False, stop and
-   return False. Otherwise, return True.  */
-RD_BOOL
+   initially point to NULL. When linehandler returns false, stop and
+   return false. Otherwise, return true.  */
+bool
 str_handle_lines(const char *input, char **rest, str_handle_lines_t linehandler, void *data)
 {
 	char *buf, *p;
@@ -1602,7 +1602,7 @@ str_handle_lines(const char *input, char **rest, str_handle_lines_t linehandler,
 	size_t inputlen;
 	size_t buflen;
 	size_t restlen = 0;
-	RD_BOOL ret = True;
+	bool ret = true;
 
 	/* Copy data to buffer */
 	inputlen = strlen(input);
@@ -1625,7 +1625,7 @@ str_handle_lines(const char *input, char **rest, str_handle_lines_t linehandler,
 			if (!linehandler(p, data))
 			{
 				p = newline + 1;
-				ret = False;
+				ret = false;
 				break;
 			}
 			p = newline + 1;
@@ -1650,7 +1650,7 @@ str_handle_lines(const char *input, char **rest, str_handle_lines_t linehandler,
 
 /* Execute the program specified by argv. For each line in
    stdout/stderr output, call linehandler. Returns false on failure. */
-RD_BOOL
+bool
 subprocess(char *const argv[], str_handle_lines_t linehandler, void *data)
 {
 	pid_t child;
@@ -1662,13 +1662,13 @@ subprocess(char *const argv[], str_handle_lines_t linehandler, void *data)
 	if (pipe(fd) < 0)
 	{
 		logger(Core, Error, "subprocess(), pipe() failed: %s", strerror(errno));
-		return False;
+		return false;
 	}
 
 	if ((child = fork()) < 0)
 	{
 		logger(Core, Error, "subprocess(), fork() failed: %s", strerror(errno));
-		return False;
+		return false;
 	}
 
 	/* Child */
@@ -1697,7 +1697,7 @@ subprocess(char *const argv[], str_handle_lines_t linehandler, void *data)
 	}
 	xfree(rest);
 
-	return True;
+	return true;
 }
 
 
@@ -1850,7 +1850,7 @@ rd_create_ui()
 }
 
 /* Create the bitmap cache directory */
-RD_BOOL
+bool
 rd_pstcache_mkdir(void)
 {
 	char *home;
@@ -1859,14 +1859,14 @@ rd_pstcache_mkdir(void)
 	home = getenv("HOME");
 
 	if (home == NULL)
-		return False;
+		return false;
 
 	sprintf(bmpcache_dir, "%s/%s", home, ".rdesktop");
 
 	if ((mkdir(bmpcache_dir, S_IRWXU) == -1) && errno != EEXIST)
 	{
 		logger(Core, Error, "rd_pstcache_mkdir(), mkdir() failed: %s", strerror(errno));
-		return False;
+		return false;
 	}
 
 	sprintf(bmpcache_dir, "%s/%s", home, ".rdesktop/cache");
@@ -1874,10 +1874,10 @@ rd_pstcache_mkdir(void)
 	if ((mkdir(bmpcache_dir, S_IRWXU) == -1) && errno != EEXIST)
 	{
 		logger(Core, Error, "rd_pstcache_mkdir(), mkdir() failed: %s", strerror(errno));
-		return False;
+		return false;
 	}
 
-	return True;
+	return true;
 }
 
 /* open a file in the .rdesktop directory */
@@ -1928,7 +1928,7 @@ rd_lseek_file(int fd, int offset)
 }
 
 /* do a write lock on a file */
-RD_BOOL
+bool
 rd_lock_file(int fd, int start, int len)
 {
 	struct flock lock;
@@ -1938,6 +1938,6 @@ rd_lock_file(int fd, int start, int len)
 	lock.l_start = start;
 	lock.l_len = len;
 	if (fcntl(fd, F_SETLK, &lock) == -1)
-		return False;
-	return True;
+		return false;
+	return true;
 }

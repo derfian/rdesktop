@@ -27,7 +27,7 @@
 #define CHANNEL_FLAG_SHOW_PROTOCOL	0x10
 
 extern RDP_VERSION g_rdp_version;
-extern RD_BOOL g_encryption;
+extern bool g_encryption;
 
 VCHANNEL g_channels[MAX_CHANNELS];
 unsigned int g_num_channels;

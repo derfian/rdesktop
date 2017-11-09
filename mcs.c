@@ -41,7 +41,7 @@ mcs_out_domain_params(STREAM s, int max_channels, int max_users, int max_tokens,
 }
 
 /* Parse a DOMAIN_PARAMS structure (ASN.1 BER) */
-static RD_BOOL
+static bool
 mcs_parse_domain_params(STREAM s)
 {
 	int length;
@@ -83,7 +83,7 @@ mcs_send_connect_initial(STREAM mcs_data)
 }
 
 /* Expect a MCS_CONNECT_RESPONSE message (ASN.1 BER) */
-static RD_BOOL
+static bool
 mcs_recv_connect_response(STREAM mcs_data)
 {
 	UNUSED(mcs_data);
@@ -93,7 +93,7 @@ mcs_recv_connect_response(STREAM mcs_data)
 
 	s = iso_recv(NULL);
 	if (s == NULL)
-		return False;
+		return false;
 
 	ber_parse_header(s, MCS_CONNECT_RESPONSE, &length);
 
@@ -102,7 +102,7 @@ mcs_recv_connect_response(STREAM mcs_data)
 	if (result != 0)
 	{
 		logger(Protocol, Error, "mcs_recv_connect_response(), result=%d", result);
-		return False;
+		return false;
 	}
 
 	ber_parse_header(s, BER_TAG_INTEGER, &length);
@@ -157,7 +157,7 @@ mcs_send_aurq(void)
 }
 
 /* Expect a AUcf message (ASN.1 PER) */
-static RD_BOOL
+static bool
 mcs_recv_aucf(uint16_t * mcs_userid)
 {
 	uint8_t opcode, result;
@@ -165,20 +165,20 @@ mcs_recv_aucf(uint16_t * mcs_userid)
 
 	s = iso_recv(NULL);
 	if (s == NULL)
-		return False;
+		return false;
 
 	in_uint8(s, opcode);
 	if ((opcode >> 2) != MCS_AUCF)
 	{
 		logger(Protocol, Error, "mcs_recv_aucf(), expected opcode AUcf, got %d", opcode);
-		return False;
+		return false;
 	}
 
 	in_uint8(s, result);
 	if (result != 0)
 	{
 		logger(Protocol, Error, "mcs_recv_aucf(), expected result 0, got %d", result);
-		return False;
+		return false;
 	}
 
 	if (opcode & 2)
@@ -206,7 +206,7 @@ mcs_send_cjrq(uint16_t chanid)
 }
 
 /* Expect a CJcf message (ASN.1 PER) */
-static RD_BOOL
+static bool
 mcs_recv_cjcf(void)
 {
 	uint8_t opcode, result;
@@ -214,20 +214,20 @@ mcs_recv_cjcf(void)
 
 	s = iso_recv(NULL);
 	if (s == NULL)
-		return False;
+		return false;
 
 	in_uint8(s, opcode);
 	if ((opcode >> 2) != MCS_CJCF)
 	{
 		logger(Protocol, Error, "mcs_recv_cjcf(), expected opcode CJcf, got %d", opcode);
-		return False;
+		return false;
 	}
 
 	in_uint8(s, result);
 	if (result != 0)
 	{
 		logger(Protocol, Error, "mcs_recv_cjcf(), expected result 0, got %d", result);
-		return False;
+		return false;
 	}
 
 	in_uint8s(s, 4);	/* mcs_userid, req_chanid */
@@ -307,14 +307,14 @@ mcs_recv(uint16_t * channel, uint8_t * rdpver)
 	return s;
 }
 
-RD_BOOL
+bool
 mcs_connect_start(char *server, char *username, char *domain, char *password,
-		  RD_BOOL reconnect, uint32_t * selected_protocol)
+		  bool reconnect, uint32_t * selected_protocol)
 {
 	return iso_connect(server, username, domain, password, reconnect, selected_protocol);
 }
 
-RD_BOOL
+bool
 mcs_connect_finalize(STREAM mcs_data)
 {
 	unsigned int i;
@@ -344,11 +344,11 @@ mcs_connect_finalize(STREAM mcs_data)
 		if (!mcs_recv_cjcf())
 			goto error;
 	}
-	return True;
+	return true;
 
       error:
 	iso_disconnect();
-	return False;
+	return false;
 }
 
 /* Disconnect from the MCS layer */

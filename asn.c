@@ -21,7 +21,7 @@
 
 
 /* Parse an ASN.1 BER header */
-RD_BOOL
+bool
 ber_parse_header(STREAM s, int tagval, int *length)
 {
 	int tag, len;
@@ -38,7 +38,7 @@ ber_parse_header(STREAM s, int tagval, int *length)
 	if (tag != tagval)
 	{
 		logger(Core, Error, "ber_parse_header(), expected tag %d, got %d", tagval, tag);
-		return False;
+		return false;
 	}
 
 	in_uint8(s, len);
@@ -86,24 +86,24 @@ ber_out_integer(STREAM s, int value)
 	out_uint16_be(s, value);
 }
 
-RD_BOOL
+bool
 ber_in_header(STREAM s, int *tagval, int *decoded_len)
 {
 	in_uint8(s, *tagval);
 	in_uint8(s, *decoded_len);
 
 	if (*decoded_len < 0x80)
-		return True;
+		return true;
 	else if (*decoded_len == 0x81)
 	{
 		in_uint8(s, *decoded_len);
-		return True;
+		return true;
 	}
 	else if (*decoded_len == 0x82)
 	{
 		in_uint16_be(s, *decoded_len);
-		return True;
+		return true;
 	}
 
-	return False;
+	return false;
 }

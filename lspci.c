@@ -40,7 +40,7 @@ static void lspci_send(const char *output);
 
 
 /* Handle one line of output from the lspci subprocess */
-static RD_BOOL
+static bool
 handle_child_line(const char *line, void *data)
 {
 	UNUSED(data);
@@ -101,12 +101,12 @@ handle_child_line(const char *line, void *data)
 	{
 		logger(Core, Warning, "handle_child_line(), Unrecognized lspci line '%s'", line);
 	}
-	return True;
+	return true;
 }
 
 
 /* Process one line of input from virtual channel */
-static RD_BOOL
+static bool
 lspci_process_line(const char *line, void *data)
 {
 	UNUSED(data);
@@ -123,7 +123,7 @@ lspci_process_line(const char *line, void *data)
 	{
 		logger(Core, Error, "lspci_process_line(), invalid line '%s'", line);
 	}
-	return True;
+	return true;
 }
 
 
@@ -144,7 +144,7 @@ lspci_process(STREAM s)
 }
 
 /* Initialize this module: Register the lspci channel */
-RD_BOOL
+bool
 lspci_init(void)
 {
 	lspci_channel =

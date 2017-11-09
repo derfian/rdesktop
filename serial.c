@@ -156,7 +156,7 @@ get_serial_info(RD_NTHANDLE handle)
 	return NULL;
 }
 
-static RD_BOOL
+static bool
 get_termios(SERIAL_DEVICE * pser_inf, RD_NTHANDLE serial_fd)
 {
 	speed_t speed;
@@ -165,7 +165,7 @@ get_termios(SERIAL_DEVICE * pser_inf, RD_NTHANDLE serial_fd)
 	ptermios = pser_inf->ptermios;
 
 	if (tcgetattr(serial_fd, ptermios) == -1)
-		return False;
+		return false;
 
 	speed = cfgetispeed(ptermios);
 	switch (speed)
@@ -305,7 +305,7 @@ get_termios(SERIAL_DEVICE * pser_inf, RD_NTHANDLE serial_fd)
 	pser_inf->chars[SERIAL_CHAR_BREAK] = ptermios->c_cc[VINTR];
 	pser_inf->chars[SERIAL_CHAR_ERROR] = ptermios->c_cc[VKILL];
 
-	return True;
+	return true;
 }
 
 static void
@@ -958,18 +958,18 @@ serial_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM ou
 	return RD_STATUS_SUCCESS;
 }
 
-RD_BOOL
+bool
 serial_get_event(RD_NTHANDLE handle, uint32_t * result)
 {
 	int index;
 	SERIAL_DEVICE *pser_inf;
 	int bytes;
-	RD_BOOL ret = False;
+	bool ret = false;
 
 	*result = 0;
 	index = get_device_index(handle);
 	if (index < 0)
-		return False;
+		return false;
 
 #ifdef TIOCINQ
 	pser_inf = (SERIAL_DEVICE *) g_rdpdr_device[index].pdevice_data;
@@ -987,7 +987,7 @@ serial_get_event(RD_NTHANDLE handle, uint32_t * result)
 				logger(Protocol, Debug,
 				       "serial_get_event(), SERIAL_EV_RLSD is set");
 				*result |= SERIAL_EV_RLSD;
-				ret = True;
+				ret = true;
 			}
 
 		}
@@ -997,14 +997,14 @@ serial_get_event(RD_NTHANDLE handle, uint32_t * result)
 			logger(Protocol, Debug,
 			       "serial_get_event(), SERIAL_EV_RXFLAG is set, %d bytes", bytes);
 			*result |= SERIAL_EV_RXFLAG;
-			ret = True;
+			ret = true;
 		}
 		if ((pser_inf->wait_mask & SERIAL_EV_RXCHAR))
 		{
 			logger(Protocol, Debug,
 			       "serial_get_event(), SERIAL_EV_RXCHAR is set, %d bytes", bytes);
 			*result |= SERIAL_EV_RXCHAR;
-			ret = True;
+			ret = true;
 		}
 
 	}
@@ -1021,7 +1021,7 @@ serial_get_event(RD_NTHANDLE handle, uint32_t * result)
 	{
 		logger(Protocol, Debug, "serial_get_event(), SERIAL_EV_TXEMPT is set");
 		*result |= SERIAL_EV_TXEMPTY;
-		ret = True;
+		ret = true;
 	}
 	pser_inf->event_txempty = bytes;
 #endif
@@ -1035,7 +1035,7 @@ serial_get_event(RD_NTHANDLE handle, uint32_t * result)
 			logger(Protocol, Debug, "serial_get_event(), SERIAL_EV_DSR=%s",
 			       (bytes & TIOCM_DSR) ? "ON" : "OFF");
 			*result |= SERIAL_EV_DSR;
-			ret = True;
+			ret = true;
 		}
 	}
 
@@ -1047,7 +1047,7 @@ serial_get_event(RD_NTHANDLE handle, uint32_t * result)
 			logger(Protocol, Debug, "serial_get_event(), SERIAL_EV_CTS=%s",
 			       (bytes & TIOCM_CTS) ? "ON" : "OFF");
 			*result |= SERIAL_EV_CTS;
-			ret = True;
+			ret = true;
 		}
 	}
 
@@ -1058,7 +1058,7 @@ serial_get_event(RD_NTHANDLE handle, uint32_t * result)
 }
 
 /* Read timeout for a given file descriptor (device) when adding FDs to select() */
-RD_BOOL
+bool
 serial_get_timeout(RD_NTHANDLE handle, uint32_t length, uint32_t * timeout, uint32_t * itv_timeout)
 {
 	int index;
@@ -1066,11 +1066,11 @@ serial_get_timeout(RD_NTHANDLE handle, uint32_t length, uint32_t * timeout, uint
 
 	index = get_device_index(handle);
 	if (index < 0)
-		return True;
+		return true;
 
 	if (g_rdpdr_device[index].device_type != DEVICE_TYPE_SERIAL)
 	{
-		return False;
+		return false;
 	}
 
 	pser_inf = (SERIAL_DEVICE *) g_rdpdr_device[index].pdevice_data;
@@ -1079,7 +1079,7 @@ serial_get_timeout(RD_NTHANDLE handle, uint32_t length, uint32_t * timeout, uint
 		pser_inf->read_total_timeout_multiplier * length +
 		pser_inf->read_total_timeout_constant;
 	*itv_timeout = pser_inf->read_interval_timeout;
-	return True;
+	return true;
 }
 
 DEVICE_FNS serial_fns = {

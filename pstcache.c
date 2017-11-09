@@ -24,13 +24,13 @@
 #define IS_PERSISTENT(id) (id < 8 && g_pstcache_fd[id] > 0)
 
 extern int g_server_depth;
-extern RD_BOOL g_bitmap_cache;
-extern RD_BOOL g_bitmap_cache_persist_enable;
-extern RD_BOOL g_bitmap_cache_precache;
+extern bool g_bitmap_cache;
+extern bool g_bitmap_cache_persist_enable;
+extern bool g_bitmap_cache_precache;
 
 int g_pstcache_fd[8];
 int g_pstcache_Bpp;
-RD_BOOL g_pstcache_enumerated = False;
+bool g_pstcache_enumerated = false;
 uint8_t zero_key[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 
@@ -49,7 +49,7 @@ pstcache_touch_bitmap(uint8_t cache_id, uint16_t cache_idx, uint32_t stamp)
 }
 
 /* Load a bitmap from the persistent cache */
-RD_BOOL
+bool
 pstcache_load_bitmap(uint8_t cache_id, uint16_t cache_idx)
 {
 	uint8_t *celldata;
@@ -58,10 +58,10 @@ pstcache_load_bitmap(uint8_t cache_id, uint16_t cache_idx)
 	RD_HBITMAP bitmap;
 
 	if (!g_bitmap_cache_persist_enable)
-		return False;
+		return false;
 
 	if (!IS_PERSISTENT(cache_id) || cache_idx >= BMPCACHE2_NUM_PSTCELLS)
-		return False;
+		return false;
 
 	fd = g_pstcache_fd[cache_id];
 	rd_lseek_file(fd, cache_idx * (g_pstcache_Bpp * MAX_CELL_SIZE + sizeof(CELLHEADER)));
@@ -75,11 +75,11 @@ pstcache_load_bitmap(uint8_t cache_id, uint16_t cache_idx)
 	cache_put_bitmap(cache_id, cache_idx, bitmap);
 
 	xfree(celldata);
-	return True;
+	return true;
 }
 
 /* Store a bitmap in the persistent cache */
-RD_BOOL
+bool
 pstcache_save_bitmap(uint8_t cache_id, uint16_t cache_idx, uint8_t * key,
 		     uint8_t width, uint8_t height, uint16_t length, uint8_t * data)
 {
@@ -87,7 +87,7 @@ pstcache_save_bitmap(uint8_t cache_id, uint16_t cache_idx, uint8_t * key,
 	CELLHEADER cellhdr;
 
 	if (!IS_PERSISTENT(cache_id) || cache_idx >= BMPCACHE2_NUM_PSTCELLS)
-		return False;
+		return false;
 
 	memcpy(cellhdr.key, key, sizeof(HASH_KEY));
 	cellhdr.width = width;
@@ -100,7 +100,7 @@ pstcache_save_bitmap(uint8_t cache_id, uint16_t cache_idx, uint8_t * key,
 	rd_write_file(fd, &cellhdr, sizeof(CELLHEADER));
 	rd_write_file(fd, data, length);
 
-	return True;
+	return true;
 }
 
 /* List the bitmap keys from the persistent cache file */
@@ -155,30 +155,30 @@ pstcache_enumerate(uint8_t id, HASH_KEY * keylist)
 	logger(Core, Debug, "pstcache_enumerate(), %d cached bitmaps", idx);
 
 	cache_rebuild_bmpcache_linked_list(id, mru_idx, idx);
-	g_pstcache_enumerated = True;
+	g_pstcache_enumerated = true;
 	return idx;
 }
 
 /* initialise the persistent bitmap cache */
-RD_BOOL
+bool
 pstcache_init(uint8_t cache_id)
 {
 	int fd;
 	char filename[256];
 
 	if (g_pstcache_enumerated)
-		return True;
+		return true;
 
 	g_pstcache_fd[cache_id] = 0;
 
 	if (!(g_bitmap_cache && g_bitmap_cache_persist_enable))
-		return False;
+		return false;
 
 	if (!rd_pstcache_mkdir())
 	{
 		logger(Core, Error,
 		       "pstcache_init(), failed to get/make cache directory, disabling feature");
-		return False;
+		return false;
 	}
 
 	g_pstcache_Bpp = (g_server_depth + 7) / 8;
@@ -187,16 +187,16 @@ pstcache_init(uint8_t cache_id)
 
 	fd = rd_open_file(filename);
 	if (fd == -1)
-		return False;
+		return false;
 
 	if (!rd_lock_file(fd, 0, 0))
 	{
 		logger(Core, Error,
 		       "pstcache_init(), failed to lock persistent cache file, disabling feature");
 		rd_close_file(fd);
-		return False;
+		return false;
 	}
 
 	g_pstcache_fd[cache_id] = fd;
-	return True;
+	return true;
 }

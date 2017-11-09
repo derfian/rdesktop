@@ -131,7 +131,7 @@ rdpsnd_dsp_swapbytes(unsigned char *buffer, unsigned int size, RD_WAVEFORMATEX *
 	}
 }
 
-RD_BOOL
+bool
 rdpsnd_dsp_resample_set(uint32_t device_srate, uint16_t device_bitspersample, uint16_t device_channels)
 {
 #ifdef HAVE_LIBSAMPLERATE
@@ -139,10 +139,10 @@ rdpsnd_dsp_resample_set(uint32_t device_srate, uint16_t device_bitspersample, ui
 #endif
 
 	if (device_bitspersample != 16 && device_bitspersample != 8)
-		return False;
+		return false;
 
 	if (device_channels != 1 && device_channels != 2)
-		return False;
+		return false;
 
 	resample_to_srate = device_srate;
 	resample_to_bitspersample = device_bitspersample;
@@ -155,29 +155,29 @@ rdpsnd_dsp_resample_set(uint32_t device_srate, uint16_t device_bitspersample, ui
 	if ((src_converter = src_new(SRC_CONVERTER, device_channels, &err)) == NULL)
 	{
 		logger(Sound, Warning, "rdpsnd_dsp_resample_set(), src_new() failed with %d", err);
-		return False;
+		return false;
 	}
 #endif
 
-	return True;
+	return true;
 }
 
-RD_BOOL
+bool
 rdpsnd_dsp_resample_supported(RD_WAVEFORMATEX * format)
 {
 	if (format->wFormatTag != WAVE_FORMAT_PCM)
-		return False;
+		return false;
 	if ((format->nChannels != 1) && (format->nChannels != 2))
-		return False;
+		return false;
 	if ((format->wBitsPerSample != 8) && (format->wBitsPerSample != 16))
-		return False;
+		return false;
 
-	return True;
+	return true;
 }
 
 uint32_t
 rdpsnd_dsp_resample(unsigned char **out, unsigned char *in, unsigned int size,
-		    RD_WAVEFORMATEX * format, RD_BOOL stream_be)
+		    RD_WAVEFORMATEX * format, bool stream_be)
 {
 	UNUSED(stream_be);
 #ifdef HAVE_LIBSAMPLERATE
@@ -396,7 +396,7 @@ rdpsnd_dsp_process(unsigned char *data, unsigned int size, struct audio_driver *
 		   RD_WAVEFORMATEX * format)
 {
 	static struct stream out;
-	RD_BOOL stream_be = False;
+	bool stream_be = false;
 
 	/* softvol and byteswap do not change the amount of data they
 	   return, so they can operate on the input-stream */
@@ -407,7 +407,7 @@ rdpsnd_dsp_process(unsigned char *data, unsigned int size, struct audio_driver *
 	if (current_driver->need_byteswap_on_be)
 	{
 		rdpsnd_dsp_swapbytes(data, size, format);
-		stream_be = True;
+		stream_be = true;
 	}
 #endif
 

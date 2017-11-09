@@ -30,8 +30,8 @@ extern RDP_VERSION g_rdp_version;
 static uint8_t g_licence_key[16];
 static uint8_t g_licence_sign_key[16];
 
-RD_BOOL g_licence_issued = False;
-RD_BOOL g_licence_error_result = False;
+bool g_licence_issued = false;
+bool g_licence_error_result = false;
 
 /* Generate a session key and RC4 keys, given client and server randoms */
 static void
@@ -217,7 +217,7 @@ licence_send_platform_challenge_response(uint8_t * token, uint8_t * crypt_hwid, 
 }
 
 /* Parse an platform challenge request packet */
-static RD_BOOL
+static bool
 licence_parse_platform_challenge(STREAM s, uint8_t ** token, uint8_t ** signature)
 {
 	uint16_t tokenlen;
@@ -229,7 +229,7 @@ licence_parse_platform_challenge(STREAM s, uint8_t ** token, uint8_t ** signatur
 	{
 		logger(Protocol, Error,
 		       "license_parse_platform_challenge(), tokenlen != LICENSE_TOKEN_SIZE");
-		return False;
+		return false;
 	}
 
 	in_uint8p(s, *token, tokenlen);
@@ -300,7 +300,7 @@ licence_process_new_license(STREAM s)
 			return;
 	}
 
-	g_licence_issued = True;
+	g_licence_issued = true;
 	save_licence(s->p, length);
 }
 
@@ -323,7 +323,7 @@ licence_process_error_alert(STREAM s)
 	 */
 	if (error_code == 0x07)
 	{
-		g_licence_issued = True;
+		g_licence_issued = true;
 		return;
 	}
 
@@ -348,7 +348,7 @@ licence_process_error_alert(STREAM s)
 			break;
 	}
 
-	g_licence_error_result = True;
+	g_licence_error_result = true;
 }
 
 

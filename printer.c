@@ -66,9 +66,9 @@ printer_enum_devices(uint32_t * id, char *optarg)
 
 		/* first printer is set as default printer */
 		if ((already + count) == 0)
-			pprinter_data->default_printer = True;
+			pprinter_data->default_printer = true;
 		else
-			pprinter_data->default_printer = False;
+			pprinter_data->default_printer = false;
 
 		pos2 = next_arg(optarg, '=');
 		if (*optarg == (char) 0x00)

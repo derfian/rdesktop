@@ -44,15 +44,15 @@ int g_encryption = 1;
 int g_desktop_save = 1;
 int g_polygon_ellipse_orders = 0;
 int g_bitmap_cache = 1;
-int g_bitmap_cache_persist_enable = False;
-int g_bitmap_cache_precache = True;
+int g_bitmap_cache_persist_enable = false;
+int g_bitmap_cache_precache = true;
 int g_rdp5_performanceflags = 0;
 int g_console_session = 0;
 int g_keylayout = 0x409; /* Defaults to US keyboard layout */
 int g_keyboard_type = 0x4; /* Defaults to US keyboard layout */
 int g_keyboard_subtype = 0x0; /* Defaults to US keyboard layout */
 int g_keyboard_functionkeys = 0xc; /* Defaults to US keyboard layout */
-RD_BOOL g_numlock_sync = False;
+bool g_numlock_sync = false;
 
 /* hack globals */
 int g_argc = 0;
@@ -111,7 +111,7 @@ static tcursor mcursor;
 static int g_draw_mouse = 1;
 
 /* Session Directory redirection */
-RD_BOOL g_redirect = False;
+bool g_redirect = false;
 char g_redirect_server[64];
 char g_redirect_domain[16];
 char g_redirect_password[64];
@@ -277,7 +277,7 @@ uint8_t* get_ptr(int x, int y, uint8_t* data, int width, int bpp)
 
 //*****************************************************************************
 // check if a certain pixel is set in a bitmap
-RD_BOOL is_pixel_on(uint8_t* data, int x, int y, int width, int bpp)
+bool is_pixel_on(uint8_t* data, int x, int y, int width, int bpp)
 {
   int start;
   int shift;
@@ -300,7 +300,7 @@ RD_BOOL is_pixel_on(uint8_t* data, int x, int y, int width, int bpp)
            data[(y * 3) * width + (x * 3) + 2] != 0;
   }
   else
-    return False;
+    return false;
 }
 
 //*****************************************************************************
@@ -334,9 +334,9 @@ int warp_coords(int* x, int* y, int* cx, int* cy, int* srcx, int* srcy)
   *cx = *cx - dx;
   *cy = *cy - dy;
   if (*cx <= 0)
-    return False;
+    return false;
   if (*cy <= 0)
-    return False;
+    return false;
   *x = *x + dx;
   *y = *y + dy;
   if (srcx != NULL)
@@ -347,7 +347,7 @@ int warp_coords(int* x, int* y, int* cx, int* cy, int* srcx, int* srcy)
 //  if (*x != lx || *y != ly || *cx != lcx || *cy != lcy)
 //    printf("%d %d %d %d to %d %d %d %d\n", lx, ly, lcx, lcy, *x, *y, *cx, *cy);
 
-  return True;
+  return true;
 }
 
 //*****************************************************************************
@@ -998,13 +998,13 @@ void process_keyboard(void)
 }
 
 /*****************************************************************************/
-RD_BOOL ui_main_loop(void)
+bool ui_main_loop(void)
 {
   int sel;
   fd_set rfds;
 
   if (!rdp_connect(g_servername, RDP_LOGON_NORMAL, "", "", "", ""))
-    return False;
+    return false;
   UpAndRunning = 1;
   FD_ZERO(&rfds);
   FD_SET(g_sock, &rfds);
@@ -1022,13 +1022,13 @@ RD_BOOL ui_main_loop(void)
     else
     {
       if (!rdp_loop(&deactivated, &ext_disc_reason))
-        return True; /* ok */
+        return true; /* ok */
     }
     FD_ZERO(&rfds);
     FD_SET(g_sock, &rfds);
     sel = vga_waitevent(3, &rfds, NULL, NULL, NULL);
   }
-  return True;
+  return true;
 }
 
 /*****************************************************************************/
@@ -1277,9 +1277,9 @@ void ui_draw_text(uint8_t font, uint8_t flags, uint8_t opcode, int mixmode,
     }
   }
   if (boxcx > 1)
-    cache_rect(boxx, boxy, boxcx, boxcy, True);
+    cache_rect(boxx, boxy, boxcx, boxcy, true);
   else
-    cache_rect(clipx, clipy, clipcx, clipcy, True);
+    cache_rect(clipx, clipy, clipcx, clipcy, true);
 }
 
 //*****************************************************************************
@@ -1371,7 +1371,7 @@ void ui_line(uint8_t opcode, int startx, int starty, int endx,
       }
     }
   }
-  cache_rect(left, top, (right - left) + 1, (bottom - top) + 1, True);
+  cache_rect(left, top, (right - left) + 1, (bottom - top) + 1, true);
 }
 
 /*****************************************************************************/
@@ -1410,7 +1410,7 @@ void ui_memblt(uint8_t opcode, int x, int y, int cx, int cy,
         }
       }
     }
-    cache_rect(x, y, cx, cy, False);
+    cache_rect(x, y, cx, cy, false);
   }
 }
 
@@ -1450,7 +1450,7 @@ void ui_rect(int x, int y, int cx, int cy, int colour)
     if (contains_mouse(x, y, cx, cy))
       draw_cursor_under(mousex, mousey);
     accel_fill_rect(x, y, cx, cy, colour);
-    cache_rect(x, y, cx, cy, False);
+    cache_rect(x, y, cx, cy, false);
   }
 }
 
@@ -1481,7 +1481,7 @@ void ui_screenblt(uint8_t opcode, int x, int y, int cx, int cy,
           set_pixel(x + j, y + i, get_pixel2(j, i, temp, cx, g_server_depth), opcode);
       xfree(temp);
     }
-    cache_rect(x, y, cx, cy, False);
+    cache_rect(x, y, cx, cy, false);
     draw_cache_rects(); // draw them all so screen is not jumpy
   }
 }
@@ -1515,7 +1515,7 @@ void ui_patblt(uint8_t opcode, int x, int y, int cx, int cy,
               set_pixel(x + j, y + i, bgcolour, opcode);
         break;
     }
-    cache_rect(x, y, cx, cy, False);
+    cache_rect(x, y, cx, cy, false);
   }
 }
 
@@ -1527,7 +1527,7 @@ void ui_destblt(uint8_t opcode, int x, int y, int cx, int cy)
     if (contains_mouse(x, y, cx, cy))
       draw_cursor_under(mousex, mousey);
     fill_rect(x, y, cx, cy, -1, opcode);
-    cache_rect(x, y, cx, cy, False);
+    cache_rect(x, y, cx, cy, false);
   }
 }
 
@@ -1557,7 +1557,7 @@ void ui_paint_bitmap(int x, int y, int cx, int cy,
     if (contains_mouse(x, y, cx, cy))
       draw_cursor_under(mousex, mousey);
     accel_draw_box(x, y, cx, cy, data, width * g_server_Bpp);
-    cache_rect(x, y, cx, cy, False);
+    cache_rect(x, y, cx, cy, false);
   }
 }
 
@@ -1742,7 +1742,7 @@ void error(char* format, ...)
   va_end(ap);
 }
 
-RD_BOOL rd_pstcache_mkdir(void)
+bool rd_pstcache_mkdir(void)
 {
   return 0;
 }
@@ -1778,9 +1778,9 @@ int rd_lseek_file(int fd, int offset)
 }
 
 /*****************************************************************************/
-RD_BOOL rd_lock_file(int fd, int start, int len)
+bool rd_lock_file(int fd, int start, int len)
 {
-  return False;
+  return false;
 }
 
 /*****************************************************************************/

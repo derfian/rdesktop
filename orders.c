@@ -54,7 +54,7 @@ rdp_in_present(STREAM s, uint32_t * present, uint8_t flags, int size)
 
 /* Read a co-ordinate (16-bit, or 8-bit delta) */
 static void
-rdp_in_coord(STREAM s, int16_t * coord, RD_BOOL delta)
+rdp_in_coord(STREAM s, int16_t * coord, bool delta)
 {
 	int8_t change;
 
@@ -101,7 +101,7 @@ rdp_in_colour(STREAM s, uint32_t * colour)
 }
 
 /* Parse bounds information */
-static RD_BOOL
+static bool
 rdp_parse_bounds(STREAM s, BOUNDS * bounds)
 {
 	uint8_t present;
@@ -109,30 +109,30 @@ rdp_parse_bounds(STREAM s, BOUNDS * bounds)
 	in_uint8(s, present);
 
 	if (present & 1)
-		rdp_in_coord(s, &bounds->left, False);
+		rdp_in_coord(s, &bounds->left, false);
 	else if (present & 16)
-		rdp_in_coord(s, &bounds->left, True);
+		rdp_in_coord(s, &bounds->left, true);
 
 	if (present & 2)
-		rdp_in_coord(s, &bounds->top, False);
+		rdp_in_coord(s, &bounds->top, false);
 	else if (present & 32)
-		rdp_in_coord(s, &bounds->top, True);
+		rdp_in_coord(s, &bounds->top, true);
 
 	if (present & 4)
-		rdp_in_coord(s, &bounds->right, False);
+		rdp_in_coord(s, &bounds->right, false);
 	else if (present & 64)
-		rdp_in_coord(s, &bounds->right, True);
+		rdp_in_coord(s, &bounds->right, true);
 
 	if (present & 8)
-		rdp_in_coord(s, &bounds->bottom, False);
+		rdp_in_coord(s, &bounds->bottom, false);
 	else if (present & 128)
-		rdp_in_coord(s, &bounds->bottom, True);
+		rdp_in_coord(s, &bounds->bottom, true);
 
 	return s_check(s);
 }
 
 /* Parse a pen */
-static RD_BOOL
+static bool
 rdp_parse_pen(STREAM s, PEN * pen, uint32_t present)
 {
 	if (present & 1)
@@ -176,7 +176,7 @@ setup_brush(BRUSH * out_brush, BRUSH * in_brush)
 }
 
 /* Parse a brush */
-static RD_BOOL
+static bool
 rdp_parse_brush(STREAM s, BRUSH * brush, uint32_t present)
 {
 	if (present & 1)
@@ -199,7 +199,7 @@ rdp_parse_brush(STREAM s, BRUSH * brush, uint32_t present)
 
 /* Process a destination blt order */
 static void
-process_destblt(STREAM s, DESTBLT_ORDER * os, uint32_t present, RD_BOOL delta)
+process_destblt(STREAM s, DESTBLT_ORDER * os, uint32_t present, bool delta)
 {
 	if (present & 0x01)
 		rdp_in_coord(s, &os->x, delta);
@@ -224,7 +224,7 @@ process_destblt(STREAM s, DESTBLT_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process a pattern blt order */
 static void
-process_patblt(STREAM s, PATBLT_ORDER * os, uint32_t present, RD_BOOL delta)
+process_patblt(STREAM s, PATBLT_ORDER * os, uint32_t present, bool delta)
 {
 	BRUSH brush;
 
@@ -264,7 +264,7 @@ process_patblt(STREAM s, PATBLT_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process a screen blt order */
 static void
-process_screenblt(STREAM s, SCREENBLT_ORDER * os, uint32_t present, RD_BOOL delta)
+process_screenblt(STREAM s, SCREENBLT_ORDER * os, uint32_t present, bool delta)
 {
 	if (present & 0x0001)
 		rdp_in_coord(s, &os->x, delta);
@@ -296,7 +296,7 @@ process_screenblt(STREAM s, SCREENBLT_ORDER * os, uint32_t present, RD_BOOL delt
 
 /* Process a line order */
 static void
-process_line(STREAM s, LINE_ORDER * os, uint32_t present, RD_BOOL delta)
+process_line(STREAM s, LINE_ORDER * os, uint32_t present, bool delta)
 {
 	if (present & 0x0001)
 		in_uint16_le(s, os->mixmode);
@@ -335,7 +335,7 @@ process_line(STREAM s, LINE_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process an opaque rectangle order */
 static void
-process_rect(STREAM s, RECT_ORDER * os, uint32_t present, RD_BOOL delta)
+process_rect(STREAM s, RECT_ORDER * os, uint32_t present, bool delta)
 {
 	uint32_t i;
 	if (present & 0x01)
@@ -376,7 +376,7 @@ process_rect(STREAM s, RECT_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process a desktop save order */
 static void
-process_desksave(STREAM s, DESKSAVE_ORDER * os, uint32_t present, RD_BOOL delta)
+process_desksave(STREAM s, DESKSAVE_ORDER * os, uint32_t present, bool delta)
 {
 	int width, height;
 
@@ -412,7 +412,7 @@ process_desksave(STREAM s, DESKSAVE_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process a memory blt order */
 static void
-process_memblt(STREAM s, MEMBLT_ORDER * os, uint32_t present, RD_BOOL delta)
+process_memblt(STREAM s, MEMBLT_ORDER * os, uint32_t present, bool delta)
 {
 	RD_HBITMAP bitmap;
 
@@ -459,7 +459,7 @@ process_memblt(STREAM s, MEMBLT_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process a 3-way blt order */
 static void
-process_triblt(STREAM s, TRIBLT_ORDER * os, uint32_t present, RD_BOOL delta)
+process_triblt(STREAM s, TRIBLT_ORDER * os, uint32_t present, bool delta)
 {
 	RD_HBITMAP bitmap;
 	BRUSH brush;
@@ -522,7 +522,7 @@ process_triblt(STREAM s, TRIBLT_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process a polygon order */
 static void
-process_polygon(STREAM s, POLYGON_ORDER * os, uint32_t present, RD_BOOL delta)
+process_polygon(STREAM s, POLYGON_ORDER * os, uint32_t present, bool delta)
 {
 	int index, data, next;
 	uint8_t flags = 0;
@@ -595,7 +595,7 @@ process_polygon(STREAM s, POLYGON_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process a polygon2 order */
 static void
-process_polygon2(STREAM s, POLYGON2_ORDER * os, uint32_t present, RD_BOOL delta)
+process_polygon2(STREAM s, POLYGON2_ORDER * os, uint32_t present, bool delta)
 {
 	int index, data, next;
 	uint8_t flags = 0;
@@ -677,7 +677,7 @@ process_polygon2(STREAM s, POLYGON2_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process a polyline order */
 static void
-process_polyline(STREAM s, POLYLINE_ORDER * os, uint32_t present, RD_BOOL delta)
+process_polyline(STREAM s, POLYLINE_ORDER * os, uint32_t present, bool delta)
 {
 	int index, next, data;
 	uint8_t flags = 0;
@@ -748,7 +748,7 @@ process_polyline(STREAM s, POLYLINE_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process an ellipse order */
 static void
-process_ellipse(STREAM s, ELLIPSE_ORDER * os, uint32_t present, RD_BOOL delta)
+process_ellipse(STREAM s, ELLIPSE_ORDER * os, uint32_t present, bool delta)
 {
 	if (present & 0x01)
 		rdp_in_coord(s, &os->left, delta);
@@ -781,7 +781,7 @@ process_ellipse(STREAM s, ELLIPSE_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process an ellipse2 order */
 static void
-process_ellipse2(STREAM s, ELLIPSE2_ORDER * os, uint32_t present, RD_BOOL delta)
+process_ellipse2(STREAM s, ELLIPSE2_ORDER * os, uint32_t present, bool delta)
 {
 	BRUSH brush;
 
@@ -824,7 +824,7 @@ process_ellipse2(STREAM s, ELLIPSE2_ORDER * os, uint32_t present, RD_BOOL delta)
 
 /* Process a text order */
 static void
-process_text2(STREAM s, TEXT2_ORDER * os, uint32_t present, RD_BOOL delta)
+process_text2(STREAM s, TEXT2_ORDER * os, uint32_t present, bool delta)
 {
 	UNUSED(delta);
 	BRUSH brush;
@@ -994,7 +994,7 @@ process_bmpcache(STREAM s)
 
 /* Process a bitmap cache v2 order */
 static void
-process_bmpcache2(STREAM s, uint16_t flags, RD_BOOL compressed)
+process_bmpcache2(STREAM s, uint16_t flags, bool compressed)
 {
 	RD_HBITMAP bitmap;
 	int y;
@@ -1285,11 +1285,11 @@ process_secondary_order(STREAM s)
 			break;
 
 		case RDP_ORDER_RAW_BMPCACHE2:
-			process_bmpcache2(s, flags, False);	/* uncompressed */
+			process_bmpcache2(s, flags, false);	/* uncompressed */
 			break;
 
 		case RDP_ORDER_BMPCACHE2:
-			process_bmpcache2(s, flags, True);	/* compressed */
+			process_bmpcache2(s, flags, true);	/* compressed */
 			break;
 
 		case RDP_ORDER_BRUSHCACHE:
@@ -1312,7 +1312,7 @@ process_orders(STREAM s, uint16_t num_orders)
 	uint32_t present;
 	uint8_t order_flags;
 	int size, processed = 0;
-	RD_BOOL delta;
+	bool delta;
 
 	while (processed < num_orders)
 	{

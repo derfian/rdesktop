@@ -41,7 +41,7 @@ static size_t num_fds_in;
 static snd_pcm_t *out_handle = NULL;
 static snd_pcm_t *in_handle = NULL;
 
-static RD_BOOL reopened;
+static bool reopened;
 
 static short samplewidth_out;
 static int audiochannels_out;
@@ -163,7 +163,7 @@ alsa_check_fds(fd_set * rfds, fd_set * wfds)
 	}
 }
 
-static RD_BOOL
+static bool
 alsa_set_format(snd_pcm_t * pcm, RD_WAVEFORMATEX * pwfx)
 {
 	snd_pcm_hw_params_t *hwparams = NULL;
@@ -175,21 +175,21 @@ alsa_set_format(snd_pcm_t * pcm, RD_WAVEFORMATEX * pwfx)
 	{
 		logger(Sound, Error, "alsa_set_format(), snd_pcm_hw_params_malloc() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
 	if ((err = snd_pcm_hw_params_any(pcm, hwparams)) < 0)
 	{
 		logger(Sound, Error, "alsa_set_format(), snd_pcm_hw_params_any() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
 	if ((err = snd_pcm_hw_params_set_access(pcm, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0)
 	{
 		logger(Sound, Error, "alsa_set_format(), snd_pcm_hw_params_set_access() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
 	if (pwfx->wBitsPerSample == 16)
@@ -199,7 +199,7 @@ alsa_set_format(snd_pcm_t * pcm, RD_WAVEFORMATEX * pwfx)
 			logger(Sound, Error,
 			       "alsa_set_format(), snd_pcm_hw_params_set_format() failed: %s",
 			       snd_strerror(err));
-			return False;
+			return false;
 		}
 	}
 	else
@@ -209,7 +209,7 @@ alsa_set_format(snd_pcm_t * pcm, RD_WAVEFORMATEX * pwfx)
 			logger(Sound, Error,
 			       "alsa_set_format(), snd_pcm_hw_params_set_format() failed: %s",
 			       snd_strerror(err));
-			return False;
+			return false;
 		}
 	}
 
@@ -219,7 +219,7 @@ alsa_set_format(snd_pcm_t * pcm, RD_WAVEFORMATEX * pwfx)
 		logger(Sound, Error,
 		       "alsa_set_format(), snd_pcm_hw_params_set_rate_resample() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 #endif
 
@@ -229,7 +229,7 @@ alsa_set_format(snd_pcm_t * pcm, RD_WAVEFORMATEX * pwfx)
 		logger(Sound, Error,
 		       "alsa_set_format(), snd_pcm_hw_params_set_rate_near() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
 	if ((err = snd_pcm_hw_params_set_channels(pcm, hwparams, pwfx->nChannels)) < 0)
@@ -237,7 +237,7 @@ alsa_set_format(snd_pcm_t * pcm, RD_WAVEFORMATEX * pwfx)
 		logger(Sound, Error,
 		       "alsa_set_format(), snd_pcm_hw_params_set_channels() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
 
@@ -247,14 +247,14 @@ alsa_set_format(snd_pcm_t * pcm, RD_WAVEFORMATEX * pwfx)
 		logger(Sound, Error,
 		       "alsa_set_format(), snd_pcm_hw_params_set_buffer_time_near() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
 	if ((err = snd_pcm_hw_params(pcm, hwparams)) < 0)
 	{
 		logger(Sound, Error, "alsa_set_format(), snd_pcm_hw_params(): %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
 	snd_pcm_hw_params_free(hwparams);
@@ -263,15 +263,15 @@ alsa_set_format(snd_pcm_t * pcm, RD_WAVEFORMATEX * pwfx)
 	{
 		logger(Sound, Error, "alsa_set_format(), snd_pcm_prepare() failed: %s\n",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
-	reopened = True;
+	reopened = true;
 
-	return True;
+	return true;
 }
 
-RD_BOOL
+bool
 alsa_open_out(void)
 {
 	int err;
@@ -280,12 +280,12 @@ alsa_open_out(void)
 	{
 		logger(Sound, Error, "alsa_open_out(), snd_pcm_open() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
-	reopened = True;
+	reopened = true;
 
-	return True;
+	return true;
 }
 
 void
@@ -302,7 +302,7 @@ alsa_close_out(void)
 	}
 }
 
-RD_BOOL
+bool
 alsa_format_supported(RD_WAVEFORMATEX * pwfx)
 {
 #if 0
@@ -314,7 +314,7 @@ alsa_format_supported(RD_WAVEFORMATEX * pwfx)
 		logger(Sound, Error,
 		       "alsa_format_supported(), snd_pcm_hw_params_malloc() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
 	if ((err = snd_pcm_hw_params_any(pcm_handle, hwparams)) < 0)
@@ -322,34 +322,34 @@ alsa_format_supported(RD_WAVEFORMATEX * pwfx)
 		logger(Sound, Error,
 		       "alsa_format_supported(), snd_pcm_hw_params_any() failed: %s\n",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 	snd_pcm_hw_params_free(hwparams);
 #endif
 
 	if (pwfx->wFormatTag != WAVE_FORMAT_PCM)
-		return False;
+		return false;
 	if ((pwfx->nChannels != 1) && (pwfx->nChannels != 2))
-		return False;
+		return false;
 	if ((pwfx->wBitsPerSample != 8) && (pwfx->wBitsPerSample != 16))
-		return False;
+		return false;
 	if ((pwfx->nSamplesPerSec != 44100) && (pwfx->nSamplesPerSec != 22050))
-		return False;
+		return false;
 
-	return True;
+	return true;
 }
 
-RD_BOOL
+bool
 alsa_set_format_out(RD_WAVEFORMATEX * pwfx)
 {
 	if (!alsa_set_format(out_handle, pwfx))
-		return False;
+		return false;
 
 	samplewidth_out = pwfx->wBitsPerSample / 8;
 	audiochannels_out = pwfx->nChannels;
 	rate_out = pwfx->nSamplesPerSec;
 
-	return True;
+	return true;
 }
 
 void
@@ -365,7 +365,7 @@ alsa_play(void)
 
 	if (reopened)
 	{
-		reopened = False;
+		reopened = false;
 		gettimeofday(&tv, NULL);
 		prev_s = tv.tv_sec;
 		prev_us = tv.tv_usec;
@@ -422,7 +422,7 @@ alsa_play(void)
 	}
 }
 
-RD_BOOL
+bool
 alsa_open_in(void)
 {
 	int err;
@@ -432,10 +432,10 @@ alsa_open_in(void)
 	{
 		logger(Sound, Error, "alsa_open_in(), snd_pcm_open() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
-	return True;
+	return true;
 }
 
 void
@@ -448,26 +448,26 @@ alsa_close_in(void)
 	}
 }
 
-RD_BOOL
+bool
 alsa_set_format_in(RD_WAVEFORMATEX * pwfx)
 {
 	int err;
 
 	if (!alsa_set_format(in_handle, pwfx))
-		return False;
+		return false;
 
 	if ((err = snd_pcm_start(in_handle)) < 0)
 	{
 		logger(Sound, Error, "alsa_open_in(), snd_pcm_start() failed: %s",
 		       snd_strerror(err));
-		return False;
+		return false;
 	}
 
 	samplewidth_in = pwfx->wBitsPerSample / 8;
 	audiochannels_in = pwfx->nChannels;
 	rate_in = pwfx->nSamplesPerSec;
 
-	return True;
+	return true;
 }
 
 void

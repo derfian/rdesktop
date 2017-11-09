@@ -30,11 +30,11 @@ extern unsigned int g_keylayout;
 extern int g_keyboard_type;
 extern int g_keyboard_subtype;
 extern int g_keyboard_functionkeys;
-extern RD_BOOL g_encryption;
-extern RD_BOOL g_licence_issued;
-extern RD_BOOL g_licence_error_result;
+extern bool g_encryption;
+extern bool g_licence_issued;
+extern bool g_licence_error_result;
 extern RDP_VERSION g_rdp_version;
-extern RD_BOOL g_console_session;
+extern bool g_console_session;
 extern uint32_t g_redirect_session_id;
 extern int g_server_depth;
 extern VCHANNEL g_channels[];
@@ -508,7 +508,7 @@ sec_out_mcs_connect_initial_pdu(STREAM s, uint32_t selected_protocol)
 }
 
 /* Parse a public key structure */
-static RD_BOOL
+static bool
 sec_parse_public_key(STREAM s, uint8_t * modulus, uint8_t * exponent)
 {
 	uint32_t magic, modulus_len;
@@ -518,7 +518,7 @@ sec_parse_public_key(STREAM s, uint8_t * modulus, uint8_t * exponent)
 	{
 		logger(Protocol, Error, "sec_parse_public_key(), magic (0x%x) != SEC_RSA_MAGIC",
 		       magic);
-		return False;
+		return false;
 	}
 
 	in_uint32_le(s, modulus_len);
@@ -528,7 +528,7 @@ sec_parse_public_key(STREAM s, uint8_t * modulus, uint8_t * exponent)
 		logger(Protocol, Error,
 		       "sec_parse_public_key(), invalid public key size (%u bits) from server",
 		       modulus_len * 8);
-		return False;
+		return false;
 	}
 
 	in_uint8s(s, 8);	/* modulus_bits, unknown */
@@ -541,7 +541,7 @@ sec_parse_public_key(STREAM s, uint8_t * modulus, uint8_t * exponent)
 }
 
 /* Parse a public signature structure */
-static RD_BOOL
+static bool
 sec_parse_public_sig(STREAM s, uint32_t len, uint8_t * modulus, uint8_t * exponent)
 {
 	uint8_t signature[SEC_MAX_MODULUS_SIZE];
@@ -549,7 +549,7 @@ sec_parse_public_sig(STREAM s, uint32_t len, uint8_t * modulus, uint8_t * expone
 
 	if (len != 72)
 	{
-		return True;
+		return true;
 	}
 	memset(signature, 0, sizeof(signature));
 	sig_len = len - 8;
@@ -559,7 +559,7 @@ sec_parse_public_sig(STREAM s, uint32_t len, uint8_t * modulus, uint8_t * expone
 }
 
 /* Parse a crypto information structure */
-static RD_BOOL
+static bool
 sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 		     uint8_t ** server_random, uint8_t * modulus, uint8_t * exponent)
 {
@@ -576,7 +576,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 	{
 		/* no encryption */
 		logger(Protocol, Debug, "sec_parse_crypt_info(), got ENCRYPTION_LEVEL_NONE");
-		return False;
+		return false;
 	}
 
 	in_uint32_le(s, random_len);
@@ -586,7 +586,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 	{
 		logger(Protocol, Error, "sec_parse_crypt_info(), got random len %d, expected %d",
 		       random_len, SEC_RANDOM_SIZE);
-		return False;
+		return false;
 	}
 
 	in_uint8p(s, *server_random, random_len);
@@ -596,7 +596,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 	if (end > s->end)
 	{
 		logger(Protocol, Error, "sec_parse_crypt_info(), end > s->end");
-		return False;
+		return false;
 	}
 
 	in_uint32_le(s, flags);	/* 1 = RDP4-style, 0x80000002 = X.509 */
@@ -620,7 +620,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 					{
 						logger(Protocol, Error,
 						       "sec_parse_crypt_info(), invalid public key");
-						return False;
+						return false;
 					}
 					logger(Protocol, Debug,
 					       "sec_parse_crypt_info(), got public key");
@@ -632,7 +632,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 					{
 						logger(Protocol, Error,
 						       "sec_parse_crypt_info(), invalid public sig");
-						return False;
+						return false;
 					}
 					break;
 
@@ -656,7 +656,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 		{
 			logger(Protocol, Error,
 			       "sec_parse_crypt_info(), server didn't send enough x509 certificates");
-			return False;
+			return false;
 		}
 		for (; certcount > 2; certcount--)
 		{		/* ignore all the certificates between the root and the signing CA */
@@ -689,7 +689,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 		{
 			logger(Protocol, Error,
 			       "sec_parse_crypt_info(), couldn't load CA Certificate from server");
-			return False;
+			return false;
 		}
 		in_uint32_le(s, cert_len);
 		logger(Protocol, Debug, "sec_parse_crypt_info(), certificate length is %d",
@@ -701,7 +701,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 			rdssl_cert_free(cacert);
 			logger(Protocol, Error,
 			       "sec_parse_crypt_info(), couldn't load Certificate from server");
-			return False;
+			return false;
 		}
 		if (!rdssl_certs_ok(server_cert, cacert))
 		{
@@ -709,7 +709,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 			rdssl_cert_free(cacert);
 			logger(Protocol, Error,
 			       "sec_parse_crypt_info(), security error, CA Certificate invalid");
-			return False;
+			return false;
 		}
 		rdssl_cert_free(cacert);
 		in_uint8s(s, 16);	/* Padding */
@@ -719,7 +719,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 			logger(Protocol, Debug,
 			       "sec_parse_crypt_info(). failed to parse X509 correctly");
 			rdssl_cert_free(server_cert);
-			return False;
+			return false;
 		}
 		rdssl_cert_free(server_cert);
 		if ((g_server_public_key_len < SEC_MODULUS_SIZE) ||
@@ -729,7 +729,7 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 			       "sec_parse_crypt_info(), bad server public key size (%u bits)",
 			       g_server_public_key_len * 8);
 			rdssl_rkey_free(server_public_key);
-			return False;
+			return false;
 		}
 		if (rdssl_rkey_get_exp_mod(server_public_key, exponent, SEC_EXPONENT_SIZE,
 					   modulus, SEC_MAX_MODULUS_SIZE) != 0)
@@ -737,10 +737,10 @@ sec_parse_crypt_info(STREAM s, uint32_t * rc4_key_size,
 			logger(Protocol, Error,
 			       "sec_parse_crypt_info(), problem extracting RSA exponent, modulus");
 			rdssl_rkey_free(server_public_key);
-			return False;
+			return false;
 		}
 		rdssl_rkey_free(server_public_key);
-		return True;	/* There's some garbage here we don't care about */
+		return true;	/* There's some garbage here we don't care about */
 	}
 	return s_check_end(s);
 }
@@ -927,15 +927,15 @@ sec_recv(uint8_t * rdpver)
 }
 
 /* Establish a secure connection */
-RD_BOOL
-sec_connect(char *server, char *username, char *domain, char *password, RD_BOOL reconnect)
+bool
+sec_connect(char *server, char *username, char *domain, char *password, bool reconnect)
 {
 	uint32_t selected_proto;
 	struct stream mcs_data;
 
 	/* Start a MCS connect sequence */
 	if (!mcs_connect_start(server, username, domain, password, reconnect, &selected_proto))
-		return False;
+		return false;
 
 	/* We exchange some RDP data during the MCS-Connect */
 	mcs_data.size = 512;
@@ -944,13 +944,13 @@ sec_connect(char *server, char *username, char *domain, char *password, RD_BOOL 
 
 	/* finalize the MCS connect sequence */
 	if (!mcs_connect_finalize(&mcs_data))
-		return False;
+		return false;
 
 	/* sec_process_mcs_data(&mcs_data); */
 	if (g_encryption)
 		sec_establish_key();
 	xfree(mcs_data.data);
-	return True;
+	return true;
 }
 
 /* Disconnect a connection */

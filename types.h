@@ -23,16 +23,11 @@
 #define _TYPES_H
 
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "constants.h"
 #include "stream.h"
 
-typedef int RD_BOOL;
-
-#ifndef True
-#define True  (1)
-#define False (0)
-#endif
 
 #ifndef PATH_MAX
 #define PATH_MAX 256
@@ -275,7 +270,7 @@ typedef struct rdpdr_printer_info
 	char *driver, *printer;
 	uint32_t bloblen;
 	uint8_t *blob;
-	RD_BOOL default_printer;
+	bool default_printer;
 }
 PRINTER;
 
@@ -295,12 +290,12 @@ typedef struct fileinfo
 	DIR *pdir;
 	struct dirent *pdirent;
 	char pattern[PATH_MAX];
-	RD_BOOL delete_on_close;
+	bool delete_on_close;
 	NOTIFY notify;
 	uint32_t info_class;
 }
 FILEINFO;
 
-typedef RD_BOOL(*str_handle_lines_t) (const char *line, void *data);
+typedef bool(*str_handle_lines_t) (const char *line, void *data);
 
 #endif /* _TYPES_H */

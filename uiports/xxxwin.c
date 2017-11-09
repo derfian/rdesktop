@@ -20,27 +20,27 @@
 #include "../rdesktop.h"
 
 extern int g_tcp_port_rdp; /* in tcp.c */
-RD_BOOL g_use_rdp5 = False;
+bool g_use_rdp5 = false;
 char g_hostname[16];
 char g_username[64];
 int g_height = 600;
 int g_width = 800;
 int g_server_depth = 8;
-RD_BOOL g_encryption = True;
-RD_BOOL g_desktop_save = True;
-RD_BOOL g_polygon_ellipse_orders = False;
-RD_BOOL g_bitmap_cache = True;
-RD_BOOL g_bitmap_cache_persist_enable = False;
-RD_BOOL g_bitmap_cache_precache = True;
+bool g_encryption = true;
+bool g_desktop_save = true;
+bool g_polygon_ellipse_orders = false;
+bool g_bitmap_cache = true;
+bool g_bitmap_cache_persist_enable = false;
+bool g_bitmap_cache_precache = true;
 uint32_t g_rdp5_performanceflags = 0;
-RD_BOOL g_console_session = False;
+bool g_console_session = false;
 uint32_t g_keylayout = 0x409; /* Defaults to US keyboard layout */
 int g_keyboard_type = 0x4; /* Defaults to US keyboard layout */
 int g_keyboard_subtype = 0x0; /* Defaults to US keyboard layout */
 int g_keyboard_functionkeys = 0xc; /* Defaults to US keyboard layout */
 /* Session Directory redirection */
-RD_BOOL g_redirect = False;
-RD_BOOL g_numlock_sync = False;
+bool g_redirect = false;
+bool g_numlock_sync = false;
 char g_redirect_server[64];
 char g_redirect_domain[16];
 char g_redirect_password[64];
@@ -317,7 +317,7 @@ void error(char* format, ...)
 }
 
 /*****************************************************************************/
-RD_BOOL rd_pstcache_mkdir(void)
+bool rd_pstcache_mkdir(void)
 {
   return 0;
 }
@@ -353,9 +353,9 @@ int rd_lseek_file(int fd, int offset)
 }
 
 /*****************************************************************************/
-RD_BOOL rd_lock_file(int fd, int start, int len)
+bool rd_lock_file(int fd, int start, int len)
 {
-  return False;
+  return false;
 }
 
 /*****************************************************************************/

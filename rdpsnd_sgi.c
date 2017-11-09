@@ -60,7 +60,7 @@ sgi_check_fds(fd_set * rfds, fd_set * wfds)
 		sgi_play();
 }
 
-RD_BOOL
+bool
 sgi_open(void)
 {
 	ALparamInfo pinfo;
@@ -94,7 +94,7 @@ sgi_open(void)
 	{
 		logger(Sound, Error, "sgi_open(), alNewConfig failed: %s",
 		       alGetErrorString(oserror()));
-		return False;
+		return false;
 	}
 
 	output_port = alOpenPort("rdpsnd", "w", 0);
@@ -102,11 +102,11 @@ sgi_open(void)
 	{
 		logger(Sound, Error, "sgi_open(), alOpenPort failed: %s",
 		       alGetErrorString(oserror()));
-		return False;
+		return false;
 	}
 
 	logger(Sound, Debug, "sgi_open(), done");
-	return True;
+	return true;
 }
 
 void
@@ -126,20 +126,20 @@ sgi_close(void)
 	logger(Sound, Debug, "sgi_close(), done");
 }
 
-RD_BOOL
+bool
 sgi_format_supported(RD_WAVEFORMATEX * pwfx)
 {
 	if (pwfx->wFormatTag != WAVE_FORMAT_PCM)
-		return False;
+		return false;
 	if ((pwfx->nChannels != 1) && (pwfx->nChannels != 2))
-		return False;
+		return false;
 	if ((pwfx->wBitsPerSample != 8) && (pwfx->wBitsPerSample != 16))
-		return False;
+		return false;
 
-	return True;
+	return true;
 }
 
-RD_BOOL
+bool
 sgi_set_format(RD_WAVEFORMATEX * pwfx)
 {
 	int channels;
@@ -174,7 +174,7 @@ sgi_set_format(RD_WAVEFORMATEX * pwfx)
 		{
 			logger(Sound, Error, "sgi_set_format(), alOpenPort failed: %s",
 			       alGetErrorString(oserror()));
-			return False;
+			return false;
 		}
 
 	}
@@ -187,7 +187,7 @@ sgi_set_format(RD_WAVEFORMATEX * pwfx)
 	if (frameSize == 0 || channelCount == 0)
 	{
 		logger(Sound, Error, "sgi_set_format(), bad frameSize or channelCount");
-		return False;
+		return false;
 	}
 	combinedFrameSize = frameSize * channelCount;
 
@@ -198,17 +198,17 @@ sgi_set_format(RD_WAVEFORMATEX * pwfx)
 	{
 		logger(Sound, Error, "sgi_set_format(), alSetParams failed: %s",
 		       alGetErrorString(oserror()));
-		return False;
+		return false;
 	}
 	if (params.sizeOut < 0)
 	{
 		logger(Sound, Error, "sgi_set_format(), invalid rate %d", g_snd_rate);
-		return False;
+		return false;
 	}
 
 	logger(Sound, Debug, "sgi_set_format(), done");
 
-	return True;
+	return true;
 }
 
 void

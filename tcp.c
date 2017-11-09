@@ -58,20 +58,20 @@
 #define STREAM_COUNT 1
 #endif
 
-static RD_BOOL g_ssl_initialized = False;
+static bool g_ssl_initialized = false;
 static SSL *g_ssl = NULL;
 static SSL_CTX *g_ssl_ctx = NULL;
 static int g_sock;
-static RD_BOOL g_run_ui = False;
+static bool g_run_ui = false;
 static struct stream g_in;
 static struct stream g_out[STREAM_COUNT];
 int g_tcp_port_rdp = TCP_PORT_RDP;
-extern RD_BOOL g_user_quit;
-extern RD_BOOL g_network_error;
-extern RD_BOOL g_reconnect_loop;
+extern bool g_user_quit;
+extern bool g_network_error;
+extern bool g_reconnect_loop;
 
 /* wait till socket is ready to write or timeout */
-static RD_BOOL
+static bool
 tcp_can_send(int sck, int millis)
 {
 	fd_set wfds;
@@ -85,9 +85,9 @@ tcp_can_send(int sck, int millis)
 	sel_count = select(sck + 1, 0, &wfds, 0, &time);
 	if (sel_count > 0)
 	{
-		return True;
+		return true;
 	}
-	return False;
+	return false;
 }
 
 /* Initialise TCP transport data packet */
@@ -118,7 +118,7 @@ tcp_send(STREAM s)
 	int length = s->end - s->data;
 	int sent, total = 0;
 
-	if (g_network_error == True)
+	if (g_network_error == true)
 		return;
 
 #ifdef WITH_SCARD
@@ -146,7 +146,7 @@ tcp_send(STREAM s)
 					logger(Core, Error,
 					       "tcp_send(), SSL_write() failed with %d: %s",
 					       ssl_err, TCP_STRERROR);
-					g_network_error = True;
+					g_network_error = true;
 					return;
 				}
 			}
@@ -168,7 +168,7 @@ tcp_send(STREAM s)
 #endif
 					logger(Core, Error, "tcp_send(), send() failed: %s",
 					       TCP_STRERROR);
-					g_network_error = True;
+					g_network_error = true;
 					return;
 				}
 			}
@@ -187,7 +187,7 @@ tcp_recv(STREAM s, uint32_t length)
 	uint32_t new_length, end_offset, p_offset;
 	int rcvd = 0, ssl_err;
 
-	if (g_network_error == True)
+	if (g_network_error == true)
 		return NULL;
 
 	if (s == NULL)
@@ -223,7 +223,7 @@ tcp_recv(STREAM s, uint32_t length)
 			if (!ui_select(g_sock))
 			{
 				/* User quit */
-				g_user_quit = True;
+				g_user_quit = true;
 				return NULL;
 			}
 		}
@@ -243,7 +243,7 @@ tcp_recv(STREAM s, uint32_t length)
 				}
 
 				rdssl_log_ssl_errors("tcp_recv()");
-				g_network_error = True;
+				g_network_error = true;
 				return NULL;
 			}
 
@@ -255,7 +255,7 @@ tcp_recv(STREAM s, uint32_t length)
 			{
 				logger(Core, Error, "tcp_recv(), SSL_read() failed with %d: %s",
 				       ssl_err, TCP_STRERROR);
-				g_network_error = True;
+				g_network_error = true;
 				return NULL;
 			}
 
@@ -273,7 +273,7 @@ tcp_recv(STREAM s, uint32_t length)
 				{
 					logger(Core, Error, "tcp_recv(), recv() failed: %s",
 					       TCP_STRERROR);
-					g_network_error = True;
+					g_network_error = true;
 					return NULL;
 				}
 			}
@@ -292,7 +292,7 @@ tcp_recv(STREAM s, uint32_t length)
 }
 
 /* Establish a SSL/TLS 1.0 connection */
-RD_BOOL
+bool
 tcp_tls_connect(void)
 {
 	int err;
@@ -302,7 +302,7 @@ tcp_tls_connect(void)
 	{
 		SSL_load_error_strings();
 		SSL_library_init();
-		g_ssl_initialized = True;
+		g_ssl_initialized = true;
 	}
 
 	/* create process context */
@@ -354,7 +354,7 @@ tcp_tls_connect(void)
 		goto fail;
 	}
 
-	return True;
+	return true;
 
       fail:
 	if (g_ssl)
@@ -364,11 +364,11 @@ tcp_tls_connect(void)
 
 	g_ssl = NULL;
 	g_ssl_ctx = NULL;
-	return False;
+	return false;
 }
 
 /* Get public key from server of TLS 1.0 connection */
-RD_BOOL
+bool
 tcp_tls_get_server_pubkey(STREAM s)
 {
 	X509 *cert = NULL;
@@ -416,7 +416,7 @@ tcp_tls_get_server_pubkey(STREAM s)
 }
 
 /* Establish a connection on the TCP layer */
-RD_BOOL
+bool
 tcp_connect(char *server)
 {
 	socklen_t option_len;
@@ -438,7 +438,7 @@ tcp_connect(char *server)
 	if ((n = getaddrinfo(server, tcp_port_rdp_s, &hints, &res)))
 	{
 		logger(Core, Error, "tcp_connect(), getaddrinfo() failed: %s", gai_strerror(n));
-		return False;
+		return false;
 	}
 
 	ressave = res;
@@ -460,7 +460,7 @@ tcp_connect(char *server)
 	if (g_sock == -1)
 	{
 		logger(Core, Error, "tcp_connect(), unable to connect to %s", server);
-		return False;
+		return false;
 	}
 
 #else /* no IPv6 support */
@@ -475,13 +475,13 @@ tcp_connect(char *server)
 	else if ((servaddr.sin_addr.s_addr = inet_addr(server)) == INADDR_NONE)
 	{
 		logger(Core, Error, "tcp_connect(), unable to resolve host '%s'", server);
-		return False;
+		return false;
 	}
 
 	if ((g_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		logger(Core, Error, "tcp_connect(), socket() failed: %s", TCP_STRERROR);
-		return False;
+		return false;
 	}
 
 	servaddr.sin_family = AF_INET;
@@ -494,7 +494,7 @@ tcp_connect(char *server)
 
 		TCP_CLOSE(g_sock);
 		g_sock = -1;
-		return False;
+		return false;
 	}
 
 #endif /* IPv6 */
@@ -523,7 +523,7 @@ tcp_connect(char *server)
 		g_out[i].data = (uint8_t *) xmalloc(g_out[i].size);
 	}
 
-	return True;
+	return true;
 }
 
 /* Disconnect on the TCP layer */
@@ -560,14 +560,14 @@ tcp_get_address()
 	return ipaddr;
 }
 
-RD_BOOL
+bool
 tcp_is_connected()
 {
 	struct sockaddr_in sockaddr;
 	socklen_t len = sizeof(sockaddr);
 	if (getpeername(g_sock, (struct sockaddr *) &sockaddr, &len))
-		return True;
-	return False;
+		return true;
+	return false;
 }
 
 /* reset the state of the tcp layer */
@@ -588,7 +588,7 @@ tcp_reset_state(void)
 }
 
 void
-tcp_run_ui(RD_BOOL run)
+tcp_run_ui(bool run)
 {
 	g_run_ui = run;
 }

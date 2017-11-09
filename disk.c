@@ -144,7 +144,7 @@ dummy_statfs(struct dummy_statfs_t *buf)
 extern RDPDR_DEVICE g_rdpdr_device[];
 
 FILEINFO g_fileinfo[MAX_OPEN_FILES];
-RD_BOOL g_notify_stamp = False;
+bool g_notify_stamp = false;
 
 typedef struct
 {
@@ -519,10 +519,10 @@ disk_create(uint32_t device_id, uint32_t accessmask, uint32_t sharemode, uint32_
 	g_fileinfo[handle].flags_and_attributes = flags_and_attributes;
 	g_fileinfo[handle].accessmask = accessmask;
 	strncpy(g_fileinfo[handle].path, path, PATH_MAX - 1);
-	g_fileinfo[handle].delete_on_close = False;
+	g_fileinfo[handle].delete_on_close = false;
 
 	if (accessmask & GENERIC_ALL || accessmask & GENERIC_WRITE)
-		g_notify_stamp = True;
+		g_notify_stamp = true;
 
 	*phandle = handle;
 	return RD_STATUS_SUCCESS;
@@ -538,7 +538,7 @@ disk_close(RD_NTHANDLE handle)
 	pfinfo = &(g_fileinfo[handle]);
 
 	if (pfinfo->accessmask & GENERIC_ALL || pfinfo->accessmask & GENERIC_WRITE)
-		g_notify_stamp = True;
+		g_notify_stamp = true;
 
 	rdpdr_abort_io(handle, 0, RD_STATUS_CANCELLED);
 
@@ -557,7 +557,7 @@ disk_close(RD_NTHANDLE handle)
 				       strerror(errno));
 				return RD_STATUS_ACCESS_DENIED;
 			}
-		pfinfo->delete_on_close = False;
+		pfinfo->delete_on_close = false;
 	}
 	else
 	{
@@ -574,7 +574,7 @@ disk_close(RD_NTHANDLE handle)
 				return RD_STATUS_ACCESS_DENIED;
 			}
 
-		pfinfo->delete_on_close = False;
+		pfinfo->delete_on_close = false;
 	}
 
 	return RD_STATUS_SUCCESS;
@@ -753,7 +753,7 @@ disk_set_information(RD_NTHANDLE handle, uint32_t info_class, STREAM in, STREAM 
 	       info_class);
 
 	pfinfo = &(g_fileinfo[handle]);
-	g_notify_stamp = True;
+	g_notify_stamp = true;
 	newname = NULL;
 
 	switch (info_class)
@@ -911,7 +911,7 @@ disk_set_information(RD_NTHANDLE handle, uint32_t info_class, STREAM in, STREAM 
 					closedir(dp);
 				}
 
-				pfinfo->delete_on_close = True;
+				pfinfo->delete_on_close = true;
 			}
 
 			break;

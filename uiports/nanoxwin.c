@@ -82,7 +82,7 @@ struct key
 static struct key g_keys[256];
 
 /* Session Directory redirection */
-BOOL g_redirect = False;
+BOOL g_redirect = false;
 char g_redirect_server[64];
 char g_redirect_domain[16];
 char g_redirect_password[64];
@@ -1082,7 +1082,7 @@ int rd_lseek_file(int fd, int offset)
 /*****************************************************************************/
 int rd_lock_file(int fd, int start, int len)
 {
-  return False;
+  return false;
 }
 
 /*****************************************************************************/

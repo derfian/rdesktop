@@ -42,12 +42,12 @@ static int dsp_fd = -1;
 static int dsp_mode;
 static int dsp_refs;
 
-static RD_BOOL dsp_configured;
-static RD_BOOL dsp_broken;
-static RD_BOOL broken_2_channel_record = False;
+static bool dsp_configured;
+static bool dsp_broken;
+static bool broken_2_channel_record = false;
 
-static RD_BOOL dsp_out;
-static RD_BOOL dsp_in;
+static bool dsp_out;
+static bool dsp_in;
 
 static int stereo;
 static int format;
@@ -118,7 +118,7 @@ sun_check_fds(fd_set * rfds, fd_set * wfds)
 		sun_record();
 }
 
-RD_BOOL
+bool
 sun_open(int mode)
 {
 	audio_info_t info;
@@ -128,17 +128,17 @@ sun_open(int mode)
 		dsp_refs++;
 
 		if (dsp_mode == O_RDWR)
-			return True;
+			return true;
 
 		if (dsp_mode == mode)
-			return True;
+			return true;
 
 		dsp_refs--;
-		return False;
+		return false;
 	}
 
-	dsp_configured = False;
-	dsp_broken = False;
+	dsp_configured = false;
+	dsp_broken = false;
 
 	written_samples = 0;
 
@@ -164,7 +164,7 @@ sun_open(int mode)
 		if (dsp_fd == -1)
 		{
 			logger(Sound, Error, "sun_open(), open() failed: %s", strerror(errno));
-			return False;
+			return false;
 		}
 	}
 
@@ -177,13 +177,13 @@ sun_open(int mode)
 		{
 			close(dsp_fd);
 			dsp_fd = -1;
-			return False;
+			return false;
 		}
 	}
 
 	dsp_refs++;
 
-	return True;
+	return true;
 }
 
 void
@@ -198,15 +198,15 @@ sun_close(void)
 	dsp_fd = -1;
 }
 
-RD_BOOL
+bool
 sun_open_out(void)
 {
 	if (!sun_open(O_WRONLY))
-		return False;
+		return false;
 
-	dsp_out = True;
+	dsp_out = true;
 
-	return True;
+	return true;
 }
 
 void
@@ -226,10 +226,10 @@ sun_close_out(void)
 	while (!rdpsnd_queue_empty())
 		rdpsnd_queue_next(0);
 
-	dsp_out = False;
+	dsp_out = false;
 }
 
-RD_BOOL
+bool
 sun_open_in(void)
 {
 #if ! (defined I_FLUSH && defined FLUSHR)
@@ -237,17 +237,17 @@ sun_open_in(void)
 	 * It is not possible to reliably use the recording without
 	 * flush operations.
 	 */
-	return False;
+	return false;
 #endif
 
 	if (!sun_open(O_RDONLY))
-		return False;
+		return false;
 
 	/* 2 channel recording is known to be broken on Solaris x86
 	   Sun Ray systems */
 #ifdef L_ENDIAN
 	if (strstr(dsp_dev, "/utaudio/"))
-		broken_2_channel_record = True;
+		broken_2_channel_record = true;
 #endif
 
 	/*
@@ -256,12 +256,12 @@ sun_open_in(void)
 	if (sun_resume() == -1)
 	{
 		sun_close();
-		return False;
+		return false;
 	}
 
-	dsp_in = True;
+	dsp_in = true;
 
-	return True;
+	return true;
 }
 
 void
@@ -274,23 +274,23 @@ sun_close_in(void)
 
 	sun_close();
 
-	dsp_in = False;
+	dsp_in = false;
 }
 
-RD_BOOL
+bool
 sun_format_supported(RD_WAVEFORMATEX * pwfx)
 {
 	if (pwfx->wFormatTag != WAVE_FORMAT_PCM)
-		return False;
+		return false;
 	if ((pwfx->nChannels != 1) && (pwfx->nChannels != 2))
-		return False;
+		return false;
 	if ((pwfx->wBitsPerSample != 8) && (pwfx->wBitsPerSample != 16))
-		return False;
+		return false;
 
-	return True;
+	return true;
 }
 
-RD_BOOL
+bool
 sun_set_format(RD_WAVEFORMATEX * pwfx)
 {
 	audio_info_t info;
@@ -301,17 +301,17 @@ sun_set_format(RD_WAVEFORMATEX * pwfx)
 	if (dsp_configured)
 	{
 		if ((pwfx->wBitsPerSample == 8) && (format != AUDIO_ENCODING_LINEAR8))
-			return False;
+			return false;
 		if ((pwfx->wBitsPerSample == 16) && (format != AUDIO_ENCODING_LINEAR))
-			return False;
+			return false;
 
 		if ((pwfx->nChannels == 2) != ! !stereo)
-			return False;
+			return false;
 
 		if (pwfx->nSamplesPerSec != snd_rate)
-			return False;
+			return false;
 
-		return True;
+		return true;
 	}
 
 	sun_pause();
@@ -361,15 +361,15 @@ sun_set_format(RD_WAVEFORMATEX * pwfx)
 		logger(Sound, Error, "sun_set_format(), ioctl(AUDIO_SETINFO) failed: %s",
 		       strerror(errno));
 		sun_close();
-		return False;
+		return false;
 	}
 
-	dsp_configured = True;
+	dsp_configured = true;
 
 	if (dsp_in)
 		sun_resume();
 
-	return True;
+	return true;
 }
 
 void
@@ -429,7 +429,7 @@ sun_play(void)
 			if (!dsp_broken)
 				logger(Sound, Error, "sun_play(), write() failed: %s",
 				       strerror(errno));
-			dsp_broken = True;
+			dsp_broken = true;
 			rdpsnd_queue_next(0);
 		}
 		return;
@@ -437,7 +437,7 @@ sun_play(void)
 
 	written_samples += len / (samplewidth * (stereo ? 2 : 1));
 
-	dsp_broken = False;
+	dsp_broken = false;
 
 	out->p += len;
 

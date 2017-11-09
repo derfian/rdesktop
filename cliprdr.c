@@ -180,7 +180,7 @@ cliprdr_set_mode(const char *optarg)
 	ui_clip_set_mode(optarg);
 }
 
-RD_BOOL
+bool
 cliprdr_init(void)
 {
 	cliprdr_channel =

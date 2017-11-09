@@ -50,11 +50,11 @@ extern uint32_t g_windowed_height;
 extern int g_xpos;
 extern int g_ypos;
 extern int g_pos;
-extern RD_BOOL g_sendmotion;
-extern RD_BOOL g_fullscreen;
-extern RD_BOOL g_grab_keyboard;
-extern RD_BOOL g_hide_decorations;
-extern RD_BOOL g_pending_resize;
+extern bool g_sendmotion;
+extern bool g_fullscreen;
+extern bool g_grab_keyboard;
+extern bool g_hide_decorations;
+extern bool g_pending_resize;
 extern char g_title[];
 extern char g_seamless_spawn_cmd[];
 /* Color depth of the RDP session.
@@ -87,7 +87,7 @@ typedef struct _seamless_window
 	unsigned int desktop;
 	struct timeval *position_timer;
 
-	RD_BOOL outstanding_position;
+	bool outstanding_position;
 	unsigned int outpos_serial;
 	int outpos_xoffset, outpos_yoffset;
 	int outpos_width, outpos_height;
@@ -100,22 +100,22 @@ typedef struct _seamless_window
 } seamless_window;
 static seamless_window *g_seamless_windows = NULL;
 static unsigned long g_seamless_focused = 0;
-static RD_BOOL g_seamless_started = False;	/* Server end is up and running */
-static RD_BOOL g_seamless_active = False;	/* We are currently in seamless mode */
-static RD_BOOL g_seamless_hidden = False;	/* Desktop is hidden on server */
-static RD_BOOL g_seamless_broken_restack = False;	/* WM does not properly restack */
-extern RD_BOOL g_seamless_rdp;
-extern RD_BOOL g_seamless_persistent_mode;
+static bool g_seamless_started = false;	/* Server end is up and running */
+static bool g_seamless_active = false;	/* We are currently in seamless mode */
+static bool g_seamless_hidden = false;	/* Desktop is hidden on server */
+static bool g_seamless_broken_restack = false;	/* WM does not properly restack */
+extern bool g_seamless_rdp;
+extern bool g_seamless_persistent_mode;
 
 extern uint32_t g_embed_wnd;
-RD_BOOL g_enable_compose = False;
-RD_BOOL g_Unobscured;		/* used for screenblt */
+bool g_enable_compose = false;
+bool g_Unobscured;		/* used for screenblt */
 static GC g_gc = NULL;
 static GC g_create_bitmap_gc = NULL;
 static GC g_create_glyph_gc = NULL;
 static XRectangle g_clip_rectangle;
 static Visual *g_visual;
-/* Color depth of the X11 visual of our window (e.g. 24 for True Color R8G8B visual).
+/* Color depth of the X11 visual of our window (e.g. 24 for true Color R8G8B visual).
    This may be 32 for R8G8B8 visuals, and then the rest of the bits are undefined
    as far as we're concerned. */
 static int g_depth;
@@ -136,15 +136,15 @@ extern Atom g_net_wm_state_atom;
 extern Atom g_net_wm_desktop_atom;
 extern Atom g_net_wm_ping_atom;
 
-static RD_BOOL g_focused;
-static RD_BOOL g_mouse_in_wnd;
+static bool g_focused;
+static bool g_mouse_in_wnd;
 /* Indicates that:
    1) visual has 15, 16 or 24 depth and the same color channel masks
       as its RDP equivalent (implies X server is LE),
    2) host is LE
    This will trigger an optimization whose real value is questionable.
 */
-static RD_BOOL g_compatible_arch;
+static bool g_compatible_arch;
 /* Indicates whether RDP's bitmaps and our XImages have the same
    binary format. If so, we can avoid an expensive translation.
    Note that this can be true when g_compatible_arch is false,
@@ -155,26 +155,26 @@ static RD_BOOL g_compatible_arch;
    ('host' is the machine running rdesktop; the host simply memcpy's
     so its endianness doesn't matter)
  */
-static RD_BOOL g_no_translate_image = False;
+static bool g_no_translate_image = false;
 
 /* endianness */
-static RD_BOOL g_host_be;
-static RD_BOOL g_xserver_be;
+static bool g_host_be;
+static bool g_xserver_be;
 static int g_red_shift_r, g_blue_shift_r, g_green_shift_r;
 static int g_red_shift_l, g_blue_shift_l, g_green_shift_l;
 
 /* software backing store */
-extern RD_BOOL g_ownbackstore;
+extern bool g_ownbackstore;
 static Pixmap g_backstore = 0;
 
 /* Moving in single app mode */
-static RD_BOOL g_moving_wnd;
+static bool g_moving_wnd;
 static int g_move_x_offset = 0;
 static int g_move_y_offset = 0;
-static RD_BOOL g_using_full_workarea = False;
+static bool g_using_full_workarea = false;
 
 #ifdef WITH_RDPSND
-extern RD_BOOL g_rdpsnd;
+extern bool g_rdpsnd;
 #endif
 
 /* MWM decorations */
@@ -275,7 +275,7 @@ seamless_XDrawLines(Drawable d, XPoint * points, int npoints, int xoffset, int y
 }
 
 /* colour maps */
-extern RD_BOOL g_owncolmap;
+extern bool g_owncolmap;
 static Colormap g_xcolmap;
 static uint32_t *g_colmap = NULL;
 
@@ -389,7 +389,7 @@ sw_update_position(seamless_window * sw)
 
 	serial = seamless_send_position(sw->id, x, y, wa.width, wa.height, 0);
 
-	sw->outstanding_position = True;
+	sw->outstanding_position = true;
 	sw->outpos_serial = serial;
 
 	sw->outpos_xoffset = x;
@@ -499,7 +499,7 @@ sw_handle_restack(seamless_window * sw)
 
 
 static seamless_group *
-sw_find_group(unsigned long id, RD_BOOL dont_create)
+sw_find_group(unsigned long id, bool dont_create)
 {
 	seamless_window *sw;
 	seamless_group *sg;
@@ -539,7 +539,7 @@ mwm_hide_decorations(Window wnd)
 	motif_hints.decorations = 0;
 
 	/* get the atom for the property */
-	hintsatom = XInternAtom(g_display, "_MOTIF_WM_HINTS", False);
+	hintsatom = XInternAtom(g_display, "_MOTIF_WM_HINTS", false);
 	if (!hintsatom)
 	{
 		logger(GUI, Warning,
@@ -567,9 +567,9 @@ sw_configurenotify_p(Display * display, XEvent * xevent, XPointer arg)
 	if (xevent->xany.type == ConfigureNotify
 	    && xevent->xconfigure.window == context->window
 	    && xevent->xany.serial >= context->serial)
-		return True;
+		return true;
 
-	return False;
+	return false;
 }
 
 /* Wait for a ConfigureNotify, with a equal or larger serial, on the
@@ -591,7 +591,7 @@ sw_wait_configurenotify(Window wnd, unsigned long serial)
 	sw_configurenotify_context context;
 	struct timeval now;
 	struct timeval future;
-	RD_BOOL got = False;
+	bool got = false;
 
 	context.window = wnd;
 	context.serial = serial;
@@ -603,7 +603,7 @@ sw_wait_configurenotify(Window wnd, unsigned long serial)
 	{
 		if (XCheckIfEvent(g_display, &xevent, sw_configurenotify_p, (XPointer) & context))
 		{
-			got = True;
+			got = true;
 			break;
 		}
 		usleep(100000);
@@ -646,15 +646,15 @@ sw_get_toplevel(Window wnd)
 
 
 /* Check if wnd is already behind a window wrt stacking order */
-static RD_BOOL
+static bool
 sw_window_is_behind(Window wnd, Window behind)
 {
 	Window dummy1, dummy2;
 	Window *child_list;
 	unsigned int num_children;
 	int i;
-	RD_BOOL found_behind = False;
-	RD_BOOL found_wnd = False;
+	bool found_behind = false;
+	bool found_wnd = false;
 
 	wnd = sw_get_toplevel(wnd);
 	behind = sw_get_toplevel(behind);
@@ -666,11 +666,11 @@ sw_window_is_behind(Window wnd, Window behind)
 	{
 		if (child_list[i] == behind)
 		{
-			found_behind = True;
+			found_behind = true;
 		}
 		else if (child_list[i] == wnd)
 		{
-			found_wnd = True;
+			found_wnd = true;
 			break;
 		}
 	}
@@ -762,7 +762,7 @@ seamless_restack_test()
 	{
 		/* Ok, technically a WM is allowed to stack windows arbitrarily, but... */
 		logger(GUI, Warning, "Broken Window Manager: Unable to test window restacking");
-		g_seamless_broken_restack = True;
+		g_seamless_broken_restack = true;
 		for (i = 0; i < 3; i++)
 			XDestroyWindow(g_display, wnds[i]);
 		return;
@@ -783,13 +783,13 @@ seamless_restack_test()
 	{
 		logger(GUI, Warning,
 		       "Broken Window Manager: doesn't handle restack (restack request was ignored)");
-		g_seamless_broken_restack = True;
+		g_seamless_broken_restack = true;
 	}
 	else if (sw_window_is_behind(wnds[1], wnds[2]))
 	{
 		logger(GUI, Warning,
 		       "Broken Window Manager: doesn't handle restack (window was moved to bottom)");
-		g_seamless_broken_restack = True;
+		g_seamless_broken_restack = true;
 	}
 
 	/* Destroy windows */
@@ -1574,7 +1574,7 @@ xwin_refresh_pointer_map(void)
 	}
 }
 
-RD_BOOL
+bool
 get_key_state(unsigned int state, uint32_t keysym)
 {
 	int modifierpos, key, keysymMask = 0;
@@ -1583,7 +1583,7 @@ get_key_state(unsigned int state, uint32_t keysym)
 	KeyCode keycode = XKeysymToKeycode(g_display, keysym);
 
 	if (keycode == NoSymbol)
-		return False;
+		return false;
 
 	for (modifierpos = 0; modifierpos < 8; modifierpos++)
 	{
@@ -1596,7 +1596,7 @@ get_key_state(unsigned int state, uint32_t keysym)
 		}
 	}
 
-	return (state & keysymMask) ? True : False;
+	return (state & keysymMask) ? true : false;
 }
 
 static void
@@ -1622,7 +1622,7 @@ calculate_mask_weight(uint32_t mask)
 	return weight;
 }
 
-static RD_BOOL
+static bool
 select_visual(int screen_num)
 {
 	XPixmapFormatValues *pfm;
@@ -1644,7 +1644,7 @@ select_visual(int screen_num)
 	{
 		logger(GUI, Error, "Unable to get list of pixmap formats from display");
 		XCloseDisplay(g_display);
-		return False;
+		return false;
 	}
 
 	/* Search for best TrueColor visual */
@@ -1654,14 +1654,14 @@ select_visual(int screen_num)
 		XGetVisualInfo(g_display, VisualClassMask | VisualScreenMask, &template,
 			       &visuals_count);
 	g_visual = NULL;
-	g_no_translate_image = False;
-	g_compatible_arch = False;
+	g_no_translate_image = false;
+	g_compatible_arch = false;
 	if (vmatches != NULL)
 	{
 		for (i = 0; i < visuals_count; ++i)
 		{
 			XVisualInfo *visual_info = &vmatches[i];
-			RD_BOOL can_translate_to_bpp = False;
+			bool can_translate_to_bpp = false;
 			int j;
 
 			/* Try to find a no-translation visual that'll
@@ -1692,7 +1692,7 @@ select_visual(int screen_num)
 			}
 			else
 			{
-				g_compatible_arch = False;
+				g_compatible_arch = false;
 			}
 
 			if (visual_info->depth > 24)
@@ -1714,7 +1714,7 @@ select_visual(int screen_num)
 					    (pfm[j].bits_per_pixel == 24) ||
 					    (pfm[j].bits_per_pixel == 32))
 					{
-						can_translate_to_bpp = True;
+						can_translate_to_bpp = true;
 					}
 					break;
 				}
@@ -1748,7 +1748,7 @@ select_visual(int screen_num)
 
 	if (g_visual != NULL)
 	{
-		g_owncolmap = False;
+		g_owncolmap = false;
 		calculate_shifts(g_visual->red_mask, &g_red_shift_r, &g_red_shift_l);
 		calculate_shifts(g_visual->green_mask, &g_green_shift_r, &g_green_shift_l);
 		calculate_shifts(g_visual->blue_mask, &g_blue_shift_r, &g_blue_shift_l);
@@ -1768,11 +1768,11 @@ select_visual(int screen_num)
 			       "No usable TrueColor or PseudoColor visuals on this display");
 			XCloseDisplay(g_display);
 			XFree(pfm);
-			return False;
+			return false;
 		}
 
 		/* we use a colourmap, so the default visual should do */
-		g_owncolmap = True;
+		g_owncolmap = true;
 		g_visual = vmatches[0].visual;
 		g_depth = vmatches[0].depth;
 	}
@@ -1792,17 +1792,17 @@ select_visual(int screen_num)
 					case 15:
 					case 16:
 						if (g_bpp != 16)
-							g_no_translate_image = False;
+							g_no_translate_image = false;
 						break;
 					case 24:
 						/* Yes, this will force image translation
 						   on most modern servers which use 32 bits
 						   for R8G8B8. */
 						if (g_bpp != 24)
-							g_no_translate_image = False;
+							g_no_translate_image = false;
 						break;
 					default:
-						g_no_translate_image = False;
+						g_no_translate_image = false;
 						break;
 				}
 			}
@@ -1815,15 +1815,15 @@ select_visual(int screen_num)
 	}
 	XFree(pfm);
 	pfm = NULL;
-	return True;
+	return true;
 }
 
 static XErrorHandler g_old_error_handler;
-static RD_BOOL g_error_expected = False;
+static bool g_error_expected = false;
 
 /* Check if the X11 window corresponding to a seamless window with
    specified id exists. */
-RD_BOOL
+bool
 sw_window_exists(unsigned long id)
 {
 	seamless_window *sw;
@@ -1832,11 +1832,11 @@ sw_window_exists(unsigned long id)
 
 	sw = sw_get_window_by_id(id);
 	if (!sw)
-		return False;
+		return false;
 
-	g_error_expected = True;
+	g_error_expected = true;
 	sts = XFetchName(g_display, sw->wnd, &name);
-	g_error_expected = False;
+	g_error_expected = false;
 	if (sts)
 	{
 		XFree(name);
@@ -1872,7 +1872,7 @@ set_wm_client_machine(Display * dpy, Window win)
 }
 
 /* Initialize the UI. This is done once per process. */
-RD_BOOL
+bool
 ui_init(void)
 {
 	int screen_num;
@@ -1881,12 +1881,12 @@ ui_init(void)
 	if (g_display == NULL)
 	{
 		logger(GUI, Error, "ui_init(), failed to open X11 display: %s", XDisplayName(NULL));
-		return False;
+		return false;
 	}
 
 	{
 		uint16_t endianness_test = 1;
-		g_host_be = !(RD_BOOL) (*(uint8_t *) (&endianness_test));
+		g_host_be = !(bool) (*(uint8_t *) (&endianness_test));
 	}
 
 	g_old_error_handler = XSetErrorHandler(error_handler);
@@ -1897,7 +1897,7 @@ ui_init(void)
 	g_depth = DefaultDepthOfScreen(g_screen);
 
 	if (!select_visual(screen_num))
-		return False;
+		return false;
 
 	if (g_no_translate_image)
 	{
@@ -1930,7 +1930,7 @@ ui_init(void)
 	if ((!g_ownbackstore) && (DoesBackingStore(g_screen) != Always))
 	{
 		logger(GUI, Warning, "External BackingStore not available. Using internal");
-		g_ownbackstore = True;
+		g_ownbackstore = true;
 	}
 
 	g_mod_map = XGetModifierMapping(g_display);
@@ -1948,7 +1948,7 @@ ui_init(void)
 		seamless_init();
 	}
 
-	return True;
+	return true;
 }
 
 
@@ -1965,13 +1965,13 @@ ui_init_connection(void)
 	{
 		g_width = WidthOfScreen(g_screen);
 		g_height = HeightOfScreen(g_screen);
-		g_using_full_workarea = True;
+		g_using_full_workarea = true;
 	}
 	else if (g_sizeopt < 0)
 	{
 		/* Percent of screen */
 		if (-g_sizeopt >= 100)
-			g_using_full_workarea = True;
+			g_using_full_workarea = true;
 
 		if (g_width > 0)
 			g_width = g_sizeopt;
@@ -1990,7 +1990,7 @@ ui_init_connection(void)
 		{
 			g_width = cx;
 			g_height = cy;
-			g_using_full_workarea = True;
+			g_using_full_workarea = true;
 		}
 		else
 		{
@@ -2051,7 +2051,7 @@ get_input_mask(long *input_mask)
 		*input_mask |= LeaveWindowMask;
 }
 
-RD_BOOL
+bool
 ui_create_window(void)
 {
 	uint8_t null_pointer_mask[1] = { 0x80 };
@@ -2166,12 +2166,12 @@ ui_create_window(void)
 	while (xevent.type != VisibilityNotify);
 	g_Unobscured = xevent.xvisibility.state == VisibilityUnobscured;
 
-	g_focused = False;
-	g_mouse_in_wnd = False;
+	g_focused = false;
+	g_mouse_in_wnd = false;
 
 	/* handle the WM_DELETE_WINDOW protocol */
-	g_protocol_atom = XInternAtom(g_display, "WM_PROTOCOLS", True);
-	g_kill_atom = XInternAtom(g_display, "WM_DELETE_WINDOW", True);
+	g_protocol_atom = XInternAtom(g_display, "WM_PROTOCOLS", true);
+	g_kill_atom = XInternAtom(g_display, "WM_DELETE_WINDOW", true);
 
 	Atom supported[] = {
 		g_net_wm_ping_atom,
@@ -2193,7 +2193,7 @@ ui_create_window(void)
 
 	rdpedisp_set_session_size(g_width, g_height);
 
-	return True;
+	return true;
 }
 
 void
@@ -2230,10 +2230,10 @@ ui_resize_window()
 
 }
 
-RD_BOOL
+bool
 ui_have_window()
 {
-	return g_wnd ? True : False;
+	return g_wnd ? true : false;
 }
 
 void
@@ -2282,7 +2282,7 @@ xwin_toggle_fullscreen(void)
 }
 
 static void
-handle_button_event(XEvent xevent, RD_BOOL down)
+handle_button_event(XEvent xevent, bool down)
 {
 	uint16_t button, input_type, flags = 0;
 	g_last_gesturetime = xevent.xbutton.time;
@@ -2301,7 +2301,7 @@ handle_button_event(XEvent xevent, RD_BOOL down)
 
 	/* Stop moving window when button is released, regardless of cursor position */
 	if (g_moving_wnd && (xevent.type == ButtonRelease))
-		g_moving_wnd = False;
+		g_moving_wnd = false;
 
 	/* If win_button_size is nonzero, enable single app mode */
 	if (xevent.xbutton.y < g_win_button_size)
@@ -2346,7 +2346,7 @@ handle_button_event(XEvent xevent, RD_BOOL down)
 			{
 				if (!g_fullscreen && g_hide_decorations && !g_using_full_workarea)
 				{
-					g_moving_wnd = True;
+					g_moving_wnd = true;
 					g_move_x_offset = xevent.xbutton.x;
 					g_move_y_offset = xevent.xbutton.y;
 				}
@@ -2403,7 +2403,7 @@ xwin_process_events(void)
 		    && xevent.xany.window == DefaultRootWindow(g_display))
 			continue;
 
-		if ((g_IC != NULL) && (XFilterEvent(&xevent, None) == True))
+		if ((g_IC != NULL) && (XFilterEvent(&xevent, None) == true))
 		{
 			logger(GUI, Debug, "xwin_process_events(), filtering event");
 			continue;
@@ -2438,7 +2438,7 @@ xwin_process_events(void)
 						/* pass ping message further to root window */
 						xevent.xclient.window =
 							RootWindowOfScreen(g_screen);
-						XSendEvent(g_display, xevent.xclient.window, False,
+						XSendEvent(g_display, xevent.xclient.window, false,
 							   SubstructureRedirectMask |
 							   SubstructureNotifyMask, &xevent);
 						break;
@@ -2476,11 +2476,11 @@ xwin_process_events(void)
 
 				set_keypress_keysym(xevent.xkey.keycode, keysym);
 				ev_time = time(NULL);
-				if (handle_special_keys(keysym, xevent.xkey.state, ev_time, True))
+				if (handle_special_keys(keysym, xevent.xkey.state, ev_time, true))
 					break;
 
 				xkeymap_send_keys(keysym, xevent.xkey.keycode, xevent.xkey.state,
-						  ev_time, True, 0);
+						  ev_time, true, 0);
 				break;
 
 			case KeyRelease:
@@ -2493,19 +2493,19 @@ xwin_process_events(void)
 
 				keysym = reset_keypress_keysym(xevent.xkey.keycode, keysym);
 				ev_time = time(NULL);
-				if (handle_special_keys(keysym, xevent.xkey.state, ev_time, False))
+				if (handle_special_keys(keysym, xevent.xkey.state, ev_time, false))
 					break;
 
 				xkeymap_send_keys(keysym, xevent.xkey.keycode, xevent.xkey.state,
-						  ev_time, False, 0);
+						  ev_time, false, 0);
 				break;
 
 			case ButtonPress:
-				handle_button_event(xevent, True);
+				handle_button_event(xevent, true);
 				break;
 
 			case ButtonRelease:
-				handle_button_event(xevent, False);
+				handle_button_event(xevent, false);
 				break;
 
 			case MotionNotify:
@@ -2538,10 +2538,10 @@ xwin_process_events(void)
 			case FocusIn:
 				if (xevent.xfocus.mode == NotifyGrab)
 					break;
-				g_focused = True;
+				g_focused = true;
 				reset_modifier_keys();
 				if (g_grab_keyboard && g_mouse_in_wnd)
-					XGrabKeyboard(g_display, g_wnd, True,
+					XGrabKeyboard(g_display, g_wnd, true,
 						      GrabModeAsync, GrabModeAsync, CurrentTime);
 
 				sw = sw_get_window_by_wnd(xevent.xfocus.window);
@@ -2573,7 +2573,7 @@ xwin_process_events(void)
 			case FocusOut:
 				if (xevent.xfocus.mode == NotifyUngrab)
 					break;
-				g_focused = False;
+				g_focused = false;
 				if (xevent.xfocus.mode == NotifyWhileGrabbed)
 					XUngrabKeyboard(g_display, CurrentTime);
 				break;
@@ -2581,7 +2581,7 @@ xwin_process_events(void)
 			case EnterNotify:
 				/* we only register for this event when in fullscreen mode */
 				/* or grab_keyboard */
-				g_mouse_in_wnd = True;
+				g_mouse_in_wnd = true;
 				if (g_fullscreen)
 				{
 					XSetInputFocus(g_display, g_wnd, RevertToPointerRoot,
@@ -2589,13 +2589,13 @@ xwin_process_events(void)
 					break;
 				}
 				if (g_focused)
-					XGrabKeyboard(g_display, g_wnd, True,
+					XGrabKeyboard(g_display, g_wnd, true,
 						      GrabModeAsync, GrabModeAsync, CurrentTime);
 				break;
 
 			case LeaveNotify:
 				/* we only register for this event when grab_keyboard */
-				g_mouse_in_wnd = False;
+				g_mouse_in_wnd = false;
 				XUngrabKeyboard(g_display, CurrentTime);
 				break;
 
@@ -2698,8 +2698,8 @@ xwin_process_events(void)
 					    || xevent.xconfigure.height != HeightOfScreen(g_screen))
 					{
 						XRRUpdateConfiguration(&xevent);
-						XSync(g_display, False);
-						g_pending_resize = True;
+						XSync(g_display, false);
+						g_pending_resize = true;
 					}
 
 				}
@@ -2739,9 +2739,9 @@ ui_select(int rdp_socket)
 	int n;
 	fd_set rfds, wfds;
 	struct timeval tv;
-	RD_BOOL s_timeout = False;
+	bool s_timeout = false;
 
-	while (True)
+	while (true)
 	{
 		n = (rdp_socket > g_x_socket) ? rdp_socket : g_x_socket;
 		/* Process any events already waiting */
@@ -2790,7 +2790,7 @@ ui_select(int rdp_socket)
 
 				/* Abort serial read calls */
 				if (s_timeout)
-					rdpdr_check_fds(&rfds, &wfds, (RD_BOOL) True);
+					rdpdr_check_fds(&rfds, &wfds, (bool) true);
 				continue;
 		}
 
@@ -2798,7 +2798,7 @@ ui_select(int rdp_socket)
 		rdpsnd_check_fds(&rfds, &wfds);
 #endif
 
-		rdpdr_check_fds(&rfds, &wfds, (RD_BOOL) False);
+		rdpdr_check_fds(&rfds, &wfds, (bool) false);
 
 		ctrl_check_fds(&rfds, &wfds);
 
@@ -3101,7 +3101,7 @@ ui_create_cursor(unsigned int xhot, unsigned int yhot, uint32_t width,
 void
 ui_set_cursor(RD_HCURSOR cursor)
 {
-	extern RD_BOOL g_local_cursor;
+	extern bool g_local_cursor;
 	if (g_local_cursor) return ;
 	logger(GUI, Debug, "ui_set_cursor(): g_current_cursor = %p, new = %p",
 	       g_current_cursor, cursor);
@@ -3948,7 +3948,7 @@ ui_end_update(void)
 
 
 void
-ui_seamless_begin(RD_BOOL hidden)
+ui_seamless_begin(bool hidden)
 {
 	if (!g_seamless_rdp)
 		return;
@@ -3956,7 +3956,7 @@ ui_seamless_begin(RD_BOOL hidden)
 	if (g_seamless_started)
 		return;
 
-	g_seamless_started = True;
+	g_seamless_started = true;
 	g_seamless_hidden = hidden;
 
 	if (!hidden)
@@ -3982,9 +3982,9 @@ ui_seamless_end()
 		sw_remove_window(g_seamless_windows);
 	}
 
-	g_seamless_started = False;
-	g_seamless_active = False;
-	g_seamless_hidden = False;
+	g_seamless_started = false;
+	g_seamless_active = false;
+	g_seamless_hidden = false;
 }
 
 
@@ -4000,7 +4000,7 @@ ui_seamless_hide_desktop()
 	if (g_seamless_active)
 		ui_seamless_toggle();
 
-	g_seamless_hidden = True;
+	g_seamless_hidden = true;
 }
 
 
@@ -4013,7 +4013,7 @@ ui_seamless_unhide_desktop()
 	if (!g_seamless_started)
 		return;
 
-	g_seamless_hidden = False;
+	g_seamless_hidden = false;
 
 	ui_seamless_toggle();
 }
@@ -4157,14 +4157,14 @@ ui_seamless_create_window(unsigned long id, unsigned long group, unsigned long p
 
 	sw->wnd = wnd;
 	sw->id = id;
-	sw->group = sw_find_group(group, False);
+	sw->group = sw_find_group(group, false);
 	sw->group->refcnt++;
 	sw->state = SEAMLESSRDP_NOTYETMAPPED;
 	sw->desktop = 0;
 	sw->position_timer = xmalloc(sizeof(struct timeval));
 	timerclear(sw->position_timer);
 
-	sw->outstanding_position = False;
+	sw->outstanding_position = false;
 	sw->outpos_serial = 0;
 	sw->outpos_xoffset = sw->outpos_yoffset = 0;
 	sw->outpos_width = sw->outpos_height = 0;
@@ -4553,7 +4553,7 @@ ui_seamless_ack(unsigned int serial)
 			sw->yoffset = sw->outpos_yoffset;
 			sw->width = sw->outpos_width;
 			sw->height = sw->outpos_height;
-			sw->outstanding_position = False;
+			sw->outstanding_position = false;
 
 			/* Do a complete redraw of the window as part of the
 			   completion of the move. This is to remove any

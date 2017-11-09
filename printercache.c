@@ -37,7 +37,7 @@
 #include <string.h>
 #include "rdesktop.h"
 
-static RD_BOOL
+static bool
 printercache_mkdir(char *base, char *printer)
 {
 	char *path;
@@ -49,7 +49,7 @@ printercache_mkdir(char *base, char *printer)
 	{
 		logger(Core, Error, "printercache_mkdir(), mkdir() failed: %s", strerror(errno));
 		xfree(path);
-		return False;
+		return false;
 	}
 
 	strcat(path, "/rdpdr");
@@ -57,7 +57,7 @@ printercache_mkdir(char *base, char *printer)
 	{
 		logger(Core, Error, "printercache_mkdir(), mkdir() failed: %s", strerror(errno));
 		xfree(path);
-		return False;
+		return false;
 	}
 
 	strcat(path, "/");
@@ -66,25 +66,25 @@ printercache_mkdir(char *base, char *printer)
 	{
 		logger(Core, Error, "printercache_mkdir(), mkdir() failed: %s", strerror(errno));
 		xfree(path);
-		return False;
+		return false;
 	}
 
 	xfree(path);
-	return True;
+	return true;
 }
 
-static RD_BOOL
+static bool
 printercache_unlink_blob(char *printer)
 {
 	char *path;
 	char *home;
 
 	if (printer == NULL)
-		return False;
+		return false;
 
 	home = getenv("HOME");
 	if (home == NULL)
-		return False;
+		return false;
 
 	path = (char *) xmalloc(strlen(home) + sizeof("/.rdesktop/rdpdr/") + strlen(printer) +
 				sizeof("/AutoPrinterCacheData") + 1);
@@ -94,7 +94,7 @@ printercache_unlink_blob(char *printer)
 	if (unlink(path) < 0)
 	{
 		xfree(path);
-		return False;
+		return false;
 	}
 
 	sprintf(path, "%s/.rdesktop/rdpdr/%s", home, printer);
@@ -102,15 +102,15 @@ printercache_unlink_blob(char *printer)
 	if (rmdir(path) < 0)
 	{
 		xfree(path);
-		return False;
+		return false;
 	}
 
 	xfree(path);
-	return True;
+	return true;
 }
 
 
-static RD_BOOL
+static bool
 printercache_rename_blob(char *printer, char *new_printer)
 {
 	char *printer_path;
@@ -120,11 +120,11 @@ printercache_rename_blob(char *printer, char *new_printer)
 	char *home;
 
 	if (printer == NULL)
-		return False;
+		return false;
 
 	home = getenv("HOME");
 	if (home == NULL)
-		return False;
+		return false;
 
 	printer_maxlen =
 		(strlen(printer) >
@@ -145,12 +145,12 @@ printercache_rename_blob(char *printer, char *new_printer)
 		       strerror(errno));
 		xfree(printer_path);
 		xfree(new_printer_path);
-		return False;
+		return false;
 	}
 
 	xfree(printer_path);
 	xfree(new_printer_path);
-	return True;
+	return true;
 }
 
 

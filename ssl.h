@@ -55,12 +55,12 @@ void rdssl_rsa_encrypt(uint8_t * out, uint8_t * in, int len, uint32_t modulus_si
 RDSSL_CERT *rdssl_cert_read(uint8_t * data, uint32_t len);
 void rdssl_cert_free(RDSSL_CERT * cert);
 RDSSL_RKEY *rdssl_cert_to_rkey(RDSSL_CERT * cert, uint32_t * key_len);
-RD_BOOL rdssl_certs_ok(RDSSL_CERT * server_cert, RDSSL_CERT * cacert);
+bool rdssl_certs_ok(RDSSL_CERT * server_cert, RDSSL_CERT * cacert);
 int rdssl_cert_print_fp(FILE * fp, RDSSL_CERT * cert);
 void rdssl_rkey_free(RDSSL_RKEY * rkey);
 int rdssl_rkey_get_exp_mod(RDSSL_RKEY * rkey, uint8_t * exponent, uint32_t max_exp_len, uint8_t * modulus,
 			   uint32_t max_mod_len);
-RD_BOOL rdssl_sig_ok(uint8_t * exponent, uint32_t exp_len, uint8_t * modulus, uint32_t mod_len,
+bool rdssl_sig_ok(uint8_t * exponent, uint32_t exp_len, uint8_t * modulus, uint32_t mod_len,
 		     uint8_t * signature, uint32_t sig_len);
 
 void rdssl_hmac_md5(const void *key, int key_len,

@@ -54,7 +54,7 @@ static dvc_channel_t channels[MAX_DVC_CHANNELS];
 
 static uint32_t dvc_in_channelid(STREAM s, dvc_hdr_t hdr);
 
-static RD_BOOL
+static bool
 dvc_channels_exists(const char *name)
 {
 	int i;
@@ -63,10 +63,10 @@ dvc_channels_exists(const char *name)
 	for (i = 0; i < MAX_DVC_CHANNELS; i++)
 	{
 		if (channels[i].hash == hash)
-			return True;
+			return true;
 	}
 
-	return False;
+	return false;
 }
 
 static const dvc_channel_t *
@@ -103,7 +103,7 @@ dvc_channels_get_id(const char *name)
 	return INVALID_CHANNEL;
 }
 
-static RD_BOOL
+static bool
 dvc_channels_remove_by_id(uint32_t channelid)
 {
 	int i;
@@ -113,23 +113,23 @@ dvc_channels_remove_by_id(uint32_t channelid)
 		if (channels[i].channel_id == channelid)
 		{
 			memset(&channels[i], 0, sizeof(dvc_channel_t));
-			return True;
+			return true;
 		}
 	}
-	return False;
+	return false;
 }
 
-static RD_BOOL
+static bool
 dvc_channels_add(const char *name, dvc_channel_process_fn handler, uint32_t channel_id)
 {
 	int i;
 	uint32_t hash;
 
-	if (dvc_channels_exists(name) == True)
+	if (dvc_channels_exists(name) == true)
 	{
 		logger(Core, Warning, "dvc_channels_add(), channel with name '%s' already exists",
 		       name);
-		return False;
+		return false;
 	}
 
 	for (i = 0; i < MAX_DVC_CHANNELS; i++)
@@ -143,12 +143,12 @@ dvc_channels_add(const char *name, dvc_channel_process_fn handler, uint32_t chan
 			logger(Core, Debug,
 			       "dvc_channels_add(), Added hash=%x, channel_id=%d, name=%s, handler=%p",
 			       hash, channel_id, name, handler);
-			return True;
+			return true;
 		}
 	}
 
 	logger(Core, Warning, "dvc_channels_add(), Failed to add channel, maximum number of channels are being used");
-	return False;
+	return false;
 }
 
 static int
@@ -173,7 +173,7 @@ dvc_channels_set_id(const char *name, uint32_t channel_id)
 	return -1;
 }
 
-RD_BOOL
+bool
 dvc_channels_is_available(const char *name)
 {
 	int i;
@@ -188,10 +188,10 @@ dvc_channels_is_available(const char *name)
 		}
 	}
 
-	return False;
+	return false;
 }
 
-RD_BOOL
+bool
 dvc_channels_register(const char *name, dvc_channel_process_fn handler)
 {
 	return dvc_channels_add(name, handler, INVALID_CHANNEL);
@@ -306,7 +306,7 @@ dvc_process_caps_pdu(STREAM s)
 }
 
 static void
-dvc_send_create_response(RD_BOOL success, dvc_hdr_t hdr, uint32_t channelid)
+dvc_send_create_response(bool success, dvc_hdr_t hdr, uint32_t channelid)
 {
 	STREAM s;
 
@@ -337,11 +337,11 @@ dvc_process_create_pdu(STREAM s, dvc_hdr_t hdr)
 		logger(Core, Verbose, "Established dynamic virtual channel '%s'", name);
 
 		dvc_channels_set_id(name, channelid);
-		dvc_send_create_response(True, hdr, channelid);
+		dvc_send_create_response(true, hdr, channelid);
 	}
 	else
 	{
-		dvc_send_create_response(False, hdr, channelid);
+		dvc_send_create_response(false, hdr, channelid);
 	}
 
 }
@@ -451,7 +451,7 @@ dvc_process_pdu(STREAM s)
 	}
 }
 
-RD_BOOL
+bool
 dvc_init()
 {
 	memset(channels, 0, sizeof(channels));

@@ -43,7 +43,7 @@
 
 /* rdesktop globals */
 extern int g_tcp_port_rdp;
-RD_BOOL g_use_rdp5 = True;
+bool g_use_rdp5 = True;
 char g_hostname[16];
 char g_username[64];
 int g_height = 600;
@@ -120,7 +120,7 @@ static Qt::RasterOp g_OpCodes[16] = {
     Qt::SetROP};         // WHITENESS     1
 
 /* Session Directory redirection */
-RD_BOOL g_redirect = False;
+bool g_redirect = False;
 char g_redirect_server[64];
 char g_redirect_domain[16];
 char g_redirect_password[64];

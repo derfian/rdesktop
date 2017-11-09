@@ -66,7 +66,7 @@ extern DEVICE_FNS disk_fns;
 extern DEVICE_FNS scard_fns;
 #endif
 extern FILEINFO g_fileinfo[];
-extern RD_BOOL g_notify_stamp;
+extern bool g_notify_stamp;
 
 static VCHANNEL *rdpdr_channel;
 static uint32_t g_epoch;
@@ -122,7 +122,7 @@ convert_to_unix_filename(char *filename)
 	}
 }
 
-static RD_BOOL
+static bool
 rdpdr_handle_ok(uint32_t device, RD_NTHANDLE handle)
 {
 	switch (g_rdpdr_device[device].device_type)
@@ -132,18 +132,18 @@ rdpdr_handle_ok(uint32_t device, RD_NTHANDLE handle)
 		case DEVICE_TYPE_PRINTER:
 		case DEVICE_TYPE_SCARD:
 			if (g_rdpdr_device[device].handle != handle)
-				return False;
+				return false;
 			break;
 		case DEVICE_TYPE_DISK:
 			if (g_fileinfo[handle].device_id != device)
-				return False;
+				return false;
 			break;
 	}
-	return True;
+	return true;
 }
 
 /* Add a new io request to the table containing pending io requests so it won't block rdesktop */
-static RD_BOOL
+static bool
 add_async_iorequest(uint32_t device, uint32_t file, uint32_t id, uint32_t major, uint32_t length,
 		    DEVICE_FNS * fns, uint32_t total_timeout, uint32_t interval_timeout, uint8_t * buffer,
 		    uint32_t offset)
@@ -154,7 +154,7 @@ add_async_iorequest(uint32_t device, uint32_t file, uint32_t id, uint32_t major,
 	{
 		g_iorequest = (struct async_iorequest *) xmalloc(sizeof(struct async_iorequest));
 		if (!g_iorequest)
-			return False;
+			return false;
 		g_iorequest->fd = 0;
 		g_iorequest->next = NULL;
 	}
@@ -169,7 +169,7 @@ add_async_iorequest(uint32_t device, uint32_t file, uint32_t id, uint32_t major,
 			iorq->next =
 				(struct async_iorequest *) xmalloc(sizeof(struct async_iorequest));
 			if (!iorq->next)
-				return False;
+				return false;
 			iorq->next->fd = 0;
 			iorq->next->next = NULL;
 		}
@@ -186,7 +186,7 @@ add_async_iorequest(uint32_t device, uint32_t file, uint32_t id, uint32_t major,
 	iorq->itv_timeout = interval_timeout;
 	iorq->buffer = buffer;
 	iorq->offset = offset;
-	return True;
+	return true;
 }
 
 static void
@@ -407,7 +407,7 @@ rdpdr_process_irp(STREAM s)
 	uint8_t *buffer, *pst_buf;
 	struct stream out;
 	DEVICE_FNS *fns;
-	RD_BOOL rw_blocking = True;
+	bool rw_blocking = true;
 	RD_NTSTATUS status = RD_STATUS_INVALID_DEVICE_REQUEST;
 
 	in_uint32_le(s, device);
@@ -436,13 +436,13 @@ rdpdr_process_irp(STREAM s)
 		case DEVICE_TYPE_SERIAL:
 
 			fns = &serial_fns;
-			rw_blocking = False;
+			rw_blocking = false;
 			break;
 
 		case DEVICE_TYPE_PARALLEL:
 
 			fns = &parallel_fns;
-			rw_blocking = False;
+			rw_blocking = false;
 			break;
 
 		case DEVICE_TYPE_PRINTER:
@@ -453,13 +453,13 @@ rdpdr_process_irp(STREAM s)
 		case DEVICE_TYPE_DISK:
 
 			fns = &disk_fns;
-			rw_blocking = False;
+			rw_blocking = false;
 			break;
 
 		case DEVICE_TYPE_SCARD:
 #ifdef WITH_SCARD
 			fns = &scard_fns;
-			rw_blocking = False;
+			rw_blocking = false;
 			break;
 #endif
 		default:
@@ -914,7 +914,7 @@ rdpdr_process(STREAM s)
 		logger(Protocol, Warning, "rdpdr_process(), unhandled component 0x%x", component);
 }
 
-RD_BOOL
+bool
 rdpdr_init()
 {
 	rdpdr_channel =
@@ -927,7 +927,7 @@ rdpdr_init()
 
 /* Add file descriptors of pending io request to select() */
 void
-rdpdr_add_fds(int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RD_BOOL * timeout)
+rdpdr_add_fds(int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, bool * timeout)
 {
 	uint32_t select_timeout = 0;	/* Timeout value to be used for select() (in milliseconds). */
 	struct async_iorequest *iorq;
@@ -959,7 +959,7 @@ rdpdr_add_fds(int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RD_BOOL 
 						g_min_timeout_fd = iorq->fd;	/* Remember fd */
 						tv->tv_sec = select_timeout / 1000;
 						tv->tv_usec = (select_timeout % 1000) * 1000;
-						*timeout = True;
+						*timeout = true;
 						break;
 					}
 					if (iorq->itv_timeout && iorq->partial_len > 0
@@ -971,7 +971,7 @@ rdpdr_add_fds(int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RD_BOOL 
 						g_min_timeout_fd = iorq->fd;	/* Remember fd */
 						tv->tv_sec = select_timeout / 1000;
 						tv->tv_usec = (select_timeout % 1000) * 1000;
-						*timeout = True;
+						*timeout = true;
 						break;
 					}
 					break;
@@ -1024,7 +1024,7 @@ rdpdr_remove_iorequest(struct async_iorequest *prev, struct async_iorequest *ior
 
 /* Check if select() returned with one of the rdpdr file descriptors, and complete io if it did */
 static void
-_rdpdr_check_fds(fd_set * rfds, fd_set * wfds, RD_BOOL timed_out)
+_rdpdr_check_fds(fd_set * rfds, fd_set * wfds, bool timed_out)
 {
 	RD_NTSTATUS status;
 	uint32_t result = 0;
@@ -1219,7 +1219,7 @@ _rdpdr_check_fds(fd_set * rfds, fd_set * wfds, RD_BOOL timed_out)
 
 						if (g_notify_stamp)
 						{
-							g_notify_stamp = False;
+							g_notify_stamp = false;
 							status = disk_check_notify(iorq->fd);
 							if (status != RD_STATUS_PENDING)
 							{
@@ -1247,7 +1247,7 @@ _rdpdr_check_fds(fd_set * rfds, fd_set * wfds, RD_BOOL timed_out)
 }
 
 void
-rdpdr_check_fds(fd_set * rfds, fd_set * wfds, RD_BOOL timed_out)
+rdpdr_check_fds(fd_set * rfds, fd_set * wfds, bool timed_out)
 {
 	fd_set dummy;
 
@@ -1259,13 +1259,13 @@ rdpdr_check_fds(fd_set * rfds, fd_set * wfds, RD_BOOL timed_out)
 	   any serial wait event must be done before read block will be sent
 	 */
 
-	_rdpdr_check_fds(&dummy, &dummy, False);
+	_rdpdr_check_fds(&dummy, &dummy, false);
 	_rdpdr_check_fds(rfds, wfds, timed_out);
 }
 
 
 /* Abort a pending io request for a given handle and major */
-RD_BOOL
+bool
 rdpdr_abort_io(uint32_t fd, uint32_t major, RD_NTSTATUS status)
 {
 	uint32_t result;
@@ -1285,12 +1285,12 @@ rdpdr_abort_io(uint32_t fd, uint32_t major, RD_NTSTATUS status)
 					      1);
 
 			iorq = rdpdr_remove_iorequest(prev, iorq);
-			return True;
+			return true;
 		}
 
 		prev = iorq;
 		iorq = iorq->next;
 	}
 
-	return False;
+	return false;
 }

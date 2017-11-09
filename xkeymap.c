@@ -43,18 +43,18 @@ extern int g_keyboard_type;
 extern int g_keyboard_subtype;
 extern int g_keyboard_functionkeys;
 extern int g_win_button_size;
-extern RD_BOOL g_enable_compose;
+extern bool g_enable_compose;
 extern RDP_VERSION g_rdp_version;
-extern RD_BOOL g_numlock_sync;
+extern bool g_numlock_sync;
 
-static RD_BOOL keymap_loaded;
+static bool keymap_loaded;
 static key_translation_entry *keymap[KEYMAP_SIZE];
 static KeySym keypress_keysyms[256];
 static int min_keycode;
 static uint16_t remote_modifier_state = 0;
 static uint16_t saved_remote_modifier_state = 0;
 
-static void update_modifier_state(uint8_t scancode, RD_BOOL pressed);
+static void update_modifier_state(uint8_t scancode, bool pressed);
 
 /* Free key_translation structure, including linked list */
 static void
@@ -253,7 +253,7 @@ add_sequence(char *rest, char *mapname)
 	}
 }
 
-RD_BOOL
+bool
 xkeymap_from_locale(const char *locale)
 {
 	char *str, *ptr;
@@ -301,11 +301,11 @@ xkeymap_from_locale(const char *locale)
 		fclose(fp);
 		STRNCPY(g_keymapname, str, sizeof(g_keymapname));
 		xfree(str);
-		return True;
+		return true;
 	}
 
 	xfree(str);
-	return False;
+	return false;
 }
 
 
@@ -369,7 +369,7 @@ xkeymap_open(const char *filename)
 	return NULL;
 }
 
-static RD_BOOL
+static bool
 xkeymap_read(char *mapname)
 {
 	FILE *fp;
@@ -385,7 +385,7 @@ xkeymap_read(char *mapname)
 	if (fp == NULL)
 	{
 		logger(Keyboard, Error, "xkeymap_read(), failed to open keymap %s", mapname);
-		return False;
+		return false;
 	}
 
 	/* FIXME: More tolerant on white space */
@@ -410,7 +410,7 @@ xkeymap_read(char *mapname)
 		if (str_startswith(line, "include "))
 		{
 			if (!xkeymap_read(line + sizeof("include ") - 1))
-				return False;
+				return false;
 			continue;
 		}
 
@@ -426,7 +426,7 @@ xkeymap_read(char *mapname)
 		if (str_startswith(line, "enable_compose"))
 		{
 			logger(Keyboard, Debug, "xkeymap_read(), enabling compose handling");
-			g_enable_compose = True;
+			g_enable_compose = true;
 			continue;
 		}
 
@@ -533,7 +533,7 @@ xkeymap_read(char *mapname)
 	}
 
 	fclose(fp);
-	return True;
+	return true;
 }
 
 
@@ -546,14 +546,14 @@ xkeymap_init(void)
 	if (strcmp(g_keymapname, "none"))
 	{
 		if (xkeymap_read(g_keymapname))
-			keymap_loaded = True;
+			keymap_loaded = true;
 	}
 
 	XDisplayKeycodes(g_display, &min_keycode, (int *) &max_keycode);
 }
 
 static void
-send_winkey(uint32_t ev_time, RD_BOOL pressed, RD_BOOL leftkey)
+send_winkey(uint32_t ev_time, bool pressed, bool leftkey)
 {
 	uint8_t winkey;
 
@@ -632,8 +632,8 @@ reset_keypress_keysym(unsigned int keycode, KeySym keysym)
 
 
 /* Handle special key combinations */
-RD_BOOL
-handle_special_keys(uint32_t keysym, unsigned int state, uint32_t ev_time, RD_BOOL pressed)
+bool
+handle_special_keys(uint32_t keysym, unsigned int state, uint32_t ev_time, bool pressed)
 {
 	switch (keysym)
 	{
@@ -645,7 +645,7 @@ handle_special_keys(uint32_t keysym, unsigned int state, uint32_t ev_time, RD_BO
 				/* Ctrl-Alt-Enter: toggle full screen */
 				if (pressed)
 					xwin_toggle_fullscreen();
-				return True;
+				return true;
 			}
 			break;
 
@@ -659,7 +659,7 @@ handle_special_keys(uint32_t keysym, unsigned int state, uint32_t ev_time, RD_BO
 						  (SCANCODE_EXTENDED | 0xc6));
 			}
 			/* No release sequence */
-			return True;
+			return true;
 			break;
 
 		case XK_Pause:
@@ -680,28 +680,28 @@ handle_special_keys(uint32_t keysym, unsigned int state, uint32_t ev_time, RD_BO
 				rdp_send_input(ev_time, RDP_INPUT_SCANCODE, RDP_KEYRELEASE, 0x45,
 					       0);
 			}
-			return True;
+			return true;
 			break;
 
 		case XK_Meta_L:	/* Windows keys */
 		case XK_Super_L:
 		case XK_Hyper_L:
-			send_winkey(ev_time, pressed, True);
-			return True;
+			send_winkey(ev_time, pressed, true);
+			return true;
 			break;
 
 		case XK_Meta_R:
 		case XK_Super_R:
 		case XK_Hyper_R:
-			send_winkey(ev_time, pressed, False);
-			return True;
+			send_winkey(ev_time, pressed, false);
+			return true;
 			break;
 
 		case XK_space:
 			/* Prevent access to the Windows system menu in single app mode */
 			if (g_win_button_size
 			    && (get_key_state(state, XK_Alt_L) || get_key_state(state, XK_Alt_R)))
-				return True;
+				return true;
 			break;
 
 		case XK_Num_Lock:
@@ -711,7 +711,7 @@ handle_special_keys(uint32_t keysym, unsigned int state, uint32_t ev_time, RD_BO
 					       ui_get_numlock_state(read_keyboard_state()), 0);
 
 			/* Inhibit */
-			return True;
+			return true;
 			break;
 		case XK_Overlay1_Enable:
 			/* Toggle SeamlessRDP */
@@ -720,7 +720,7 @@ handle_special_keys(uint32_t keysym, unsigned int state, uint32_t ev_time, RD_BO
 			break;
 
 	}
-	return False;
+	return false;
 }
 
 
@@ -806,7 +806,7 @@ xkeymap_translate_key(uint32_t keysym, unsigned int keycode, unsigned int state)
 	return tr;
 }
 
-static RD_BOOL
+static bool
 is_modifier(uint8_t scancode)
 {
 	switch (scancode)
@@ -820,17 +820,17 @@ is_modifier(uint8_t scancode)
 		case SCANCODE_CHAR_LWIN:
 		case SCANCODE_CHAR_RWIN:
 		case SCANCODE_CHAR_NUMLOCK:
-			return True;
+			return true;
 		default:
 			break;
 	}
-	return False;
+	return false;
 }
 
 
 void
 xkeymap_send_keys(uint32_t keysym, unsigned int keycode, unsigned int state, uint32_t ev_time,
-		  RD_BOOL pressed, uint8_t nesting)
+		  bool pressed, uint8_t nesting)
 {
 	key_translation tr, *ptr;
 	tr = xkeymap_translate_key(keysym, keycode, state);
@@ -864,8 +864,8 @@ xkeymap_send_keys(uint32_t keysym, unsigned int keycode, unsigned int state, uin
 				return;
 			}
 
-			xkeymap_send_keys(ptr->seq_keysym, keycode, state, ev_time, True, nesting);
-			xkeymap_send_keys(ptr->seq_keysym, keycode, state, ev_time, False, nesting);
+			xkeymap_send_keys(ptr->seq_keysym, keycode, state, ev_time, true, nesting);
+			xkeymap_send_keys(ptr->seq_keysym, keycode, state, ev_time, false, nesting);
 			ptr = ptr->next;
 		}
 		while (ptr);
@@ -1084,7 +1084,7 @@ reset_modifier_keys()
 
 
 static void
-update_modifier_state(uint8_t scancode, RD_BOOL pressed)
+update_modifier_state(uint8_t scancode, bool pressed)
 {
 	uint16_t old_modifier_state;
 
@@ -1121,10 +1121,10 @@ update_modifier_state(uint8_t scancode, RD_BOOL pressed)
 			   modifier state only on Keypress */
 			if (pressed && !g_numlock_sync)
 			{
-				RD_BOOL newNumLockState;
+				bool newNumLockState;
 				newNumLockState =
 					(MASK_HAS_BITS
-					 (remote_modifier_state, MapNumLockMask) == False);
+					 (remote_modifier_state, MapNumLockMask) == false);
 				MASK_CHANGE_BIT(remote_modifier_state,
 						MapNumLockMask, newNumLockState);
 			}

@@ -20,7 +20,7 @@
 #include <gssapi/gssapi.h>
 #include "rdesktop.h"
 
-extern RD_BOOL g_use_password_as_pin;
+extern bool g_use_password_as_pin;
 
 extern char *g_sc_csp_name;
 extern char *g_sc_reader_name;
@@ -76,7 +76,7 @@ cssp_gss_report_error(OM_uint32 code, char *str, OM_uint32 major_status, OM_uint
 }
 
 
-static RD_BOOL
+static bool
 cssp_gss_mech_available(gss_OID mech)
 {
 	int mech_found;
@@ -86,17 +86,17 @@ cssp_gss_mech_available(gss_OID mech)
 	mech_found = 0;
 
 	if (mech == GSS_C_NO_OID)
-		return True;
+		return true;
 
 	major_status = gss_indicate_mechs(&minor_status, &mech_set);
 	if (!mech_set)
-		return False;
+		return false;
 
 	if (GSS_ERROR(major_status))
 	{
 		cssp_gss_report_error(GSS_C_GSS_CODE, "Failed to get available mechs on system",
 				      major_status, minor_status);
-		return False;
+		return false;
 	}
 
 	gss_test_oid_set_member(&minor_status, mech, mech_set, &mech_found);
@@ -105,16 +105,16 @@ cssp_gss_mech_available(gss_OID mech)
 	{
 		cssp_gss_report_error(GSS_C_GSS_CODE, "Failed to match mechanism in set",
 				      major_status, minor_status);
-		return False;
+		return false;
 	}
 
 	if (!mech_found)
-		return False;
+		return false;
 
-	return True;
+	return true;
 }
 
-static RD_BOOL
+static bool
 cssp_gss_get_service_name(char *server, gss_name_t * name)
 {
 	gss_buffer_desc output;
@@ -135,16 +135,16 @@ cssp_gss_get_service_name(char *server, gss_name_t * name)
 	{
 		cssp_gss_report_error(GSS_C_GSS_CODE, "Failed to create service principal name",
 				      major_status, minor_status);
-		return False;
+		return false;
 	}
 
 	gss_release_buffer(&minor_status, &output);
 
-	return True;
+	return true;
 
 }
 
-static RD_BOOL
+static bool
 cssp_gss_wrap(gss_ctx_id_t ctx, STREAM in, STREAM out)
 {
 	int conf_state;
@@ -155,21 +155,21 @@ cssp_gss_wrap(gss_ctx_id_t ctx, STREAM in, STREAM out)
 	inbuf.value = in->data;
 	inbuf.length = s_length(in);
 
-	major_status = gss_wrap(&minor_status, ctx, True,
+	major_status = gss_wrap(&minor_status, ctx, true,
 				GSS_C_QOP_DEFAULT, &inbuf, &conf_state, &outbuf);
 
 	if (major_status != GSS_S_COMPLETE)
 	{
 		cssp_gss_report_error(GSS_C_GSS_CODE, "Failed to encrypt and sign message",
 				      major_status, minor_status);
-		return False;
+		return false;
 	}
 
 	if (!conf_state)
 	{
 		logger(Core, Error,
 		       "cssp_gss_wrap(), GSS Confidentiality failed, no encryption of message performed.");
-		return False;
+		return false;
 	}
 
 	// write enc data to out stream
@@ -180,10 +180,10 @@ cssp_gss_wrap(gss_ctx_id_t ctx, STREAM in, STREAM out)
 
 	gss_release_buffer(&minor_status, &outbuf);
 
-	return True;
+	return true;
 }
 
-static RD_BOOL
+static bool
 cssp_gss_unwrap(gss_ctx_id_t ctx, STREAM in, STREAM out)
 {
 	OM_uint32 major_status;
@@ -201,7 +201,7 @@ cssp_gss_unwrap(gss_ctx_id_t ctx, STREAM in, STREAM out)
 	{
 		cssp_gss_report_error(GSS_C_GSS_CODE, "Failed to decrypt message",
 				      major_status, minor_status);
-		return False;
+		return false;
 	}
 
 	out->data = out->p = xmalloc(outbuf.length);
@@ -211,7 +211,7 @@ cssp_gss_unwrap(gss_ctx_id_t ctx, STREAM in, STREAM out)
 
 	gss_release_buffer(&minor_status, &outbuf);
 
-	return True;
+	return true;
 }
 
 
@@ -454,7 +454,7 @@ cssp_encode_tscredentials(char *username, char *password, char *domain)
 	// credType [0]
 	s_realloc(&tmp, sizeof(uint8_t));
 	s_reset(&tmp);
-	if (g_use_password_as_pin == False)
+	if (g_use_password_as_pin == false)
 	{
 		out_uint8(&tmp, 1);	// TSPasswordCreds
 	}
@@ -473,7 +473,7 @@ cssp_encode_tscredentials(char *username, char *password, char *domain)
 	s_free(h1);
 
 	// credentials [1]
-	if (g_use_password_as_pin == False)
+	if (g_use_password_as_pin == false)
 	{
 		h3 = cssp_encode_tspasswordcreds(username, password, domain);
 	}
@@ -501,7 +501,7 @@ cssp_encode_tscredentials(char *username, char *password, char *domain)
 	return out;
 }
 
-RD_BOOL
+bool
 cssp_send_tsrequest(STREAM token, STREAM auth, STREAM pubkey)
 {
 	STREAM s;
@@ -585,11 +585,11 @@ cssp_send_tsrequest(STREAM token, STREAM auth, STREAM pubkey)
 	xfree(message.data);
 	xfree(tmp.data);
 
-	return True;
+	return true;
 }
 
 
-RD_BOOL
+bool
 cssp_read_tsrequest(STREAM token, STREAM pubkey)
 {
 	STREAM s;
@@ -599,7 +599,7 @@ cssp_read_tsrequest(STREAM token, STREAM pubkey)
 	s = tcp_recv(NULL, 4);
 
 	if (s == NULL)
-		return False;
+		return false;
 
 	// verify ASN.1 header
 	if (s->p[0] != (BER_TAG_SEQUENCE | BER_TAG_CONSTRUCTED))
@@ -607,7 +607,7 @@ cssp_read_tsrequest(STREAM token, STREAM pubkey)
 		logger(Protocol, Error,
 		       "cssp_read_tsrequest(), expected BER_TAG_SEQUENCE|BER_TAG_CONSTRUCTED, got %x",
 		       s->p[0]);
-		return False;
+		return false;
 	}
 
 	// peek at first 4 bytes to get full message length
@@ -618,7 +618,7 @@ cssp_read_tsrequest(STREAM token, STREAM pubkey)
 	else if (s->p[1] == 0x82)
 		length = (s->p[2] << 8) | s->p[3];
 	else
-		return False;
+		return false;
 
 	// receive the remainings of message
 	s = tcp_recv(s, length);
@@ -626,12 +626,12 @@ cssp_read_tsrequest(STREAM token, STREAM pubkey)
 	// parse the response and into nego token
 	if (!ber_in_header(s, &tagval, &length) ||
 	    tagval != (BER_TAG_SEQUENCE | BER_TAG_CONSTRUCTED))
-		return False;
+		return false;
 
 	// version [0]
 	if (!ber_in_header(s, &tagval, &length) ||
 	    tagval != (BER_TAG_CTXT_SPECIFIC | BER_TAG_CONSTRUCTED | 0))
-		return False;
+		return false;
 	in_uint8s(s, length);
 
 	// negoToken [1]
@@ -639,19 +639,19 @@ cssp_read_tsrequest(STREAM token, STREAM pubkey)
 	{
 		if (!ber_in_header(s, &tagval, &length)
 		    || tagval != (BER_TAG_CTXT_SPECIFIC | BER_TAG_CONSTRUCTED | 1))
-			return False;
+			return false;
 		if (!ber_in_header(s, &tagval, &length)
 		    || tagval != (BER_TAG_SEQUENCE | BER_TAG_CONSTRUCTED))
-			return False;
+			return false;
 		if (!ber_in_header(s, &tagval, &length)
 		    || tagval != (BER_TAG_SEQUENCE | BER_TAG_CONSTRUCTED))
-			return False;
+			return false;
 		if (!ber_in_header(s, &tagval, &length)
 		    || tagval != (BER_TAG_CTXT_SPECIFIC | BER_TAG_CONSTRUCTED | 0))
-			return False;
+			return false;
 
 		if (!ber_in_header(s, &tagval, &length) || tagval != BER_TAG_OCTET_STRING)
-			return False;
+			return false;
 
 		token->end = token->p = token->data;
 		out_uint8p(token, s->p, length);
@@ -663,10 +663,10 @@ cssp_read_tsrequest(STREAM token, STREAM pubkey)
 	{
 		if (!ber_in_header(s, &tagval, &length)
 		    || tagval != (BER_TAG_CTXT_SPECIFIC | BER_TAG_CONSTRUCTED | 3))
-			return False;
+			return false;
 
 		if (!ber_in_header(s, &tagval, &length) || tagval != BER_TAG_OCTET_STRING)
-			return False;
+			return false;
 
 		pubkey->data = pubkey->p = s->p;
 		pubkey->end = pubkey->data + length;
@@ -674,10 +674,10 @@ cssp_read_tsrequest(STREAM token, STREAM pubkey)
 	}
 
 
-	return True;
+	return true;
 }
 
-RD_BOOL
+bool
 cssp_connect(char *server, char *user, char *domain, char *password, STREAM s)
 {
 	UNUSED(s);
@@ -700,21 +700,21 @@ cssp_connect(char *server, char *user, char *domain, char *password, STREAM s)
 	{
 		logger(Core, Debug,
 		       "cssp_connect(), system doesn't have support for desired authentication mechanism");
-		return False;
+		return false;
 	}
 
 	// Get service name
 	if (!cssp_gss_get_service_name(server, &target_name))
 	{
 		logger(Core, Debug, "cssp_connect(), failed to get target service name");
-		return False;
+		return false;
 	}
 
 	// Establish TLS connection to server
 	if (!tcp_tls_connect())
 	{
 		logger(Core, Debug, "cssp_connect(), failed to establish TLS connection");
-		return False;
+		return false;
 	}
 
 	tcp_tls_get_server_pubkey(&pubkey);
@@ -842,9 +842,9 @@ cssp_connect(char *server, char *user, char *domain, char *password, STREAM s)
 	if (!cssp_send_tsrequest(NULL, &blob, NULL))
 		goto bail_out;
 
-	return True;
+	return true;
 
       bail_out:
 	xfree(token.data);
-	return False;
+	return false;
 }

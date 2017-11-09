@@ -51,22 +51,22 @@
 static int dsp_fd = -1;
 static int dsp_mode;
 
-static RD_BOOL dsp_configured;
-static RD_BOOL dsp_broken;
+static bool dsp_configured;
+static bool dsp_broken;
 
 static int stereo;
 static int format;
 static uint32_t snd_rate;
 static short samplewidth;
 static char *dsp_dev;
-static RD_BOOL in_esddsp;
+static bool in_esddsp;
 
 /* This is a just a forward declaration */
 static struct audio_driver oss_driver;
 
 static void oss_play(void);
 static void oss_record(void);
-static RD_BOOL oss_set_format(RD_WAVEFORMATEX * pwfx);
+static bool oss_set_format(RD_WAVEFORMATEX * pwfx);
 
 static void
 oss_add_fds(int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv)
@@ -92,26 +92,26 @@ oss_check_fds(fd_set * rfds, fd_set * wfds)
 		oss_record();
 }
 
-static RD_BOOL
+static bool
 detect_esddsp(void)
 {
 	struct stat s;
 	char *preload;
 
 	if (fstat(dsp_fd, &s) == -1)
-		return False;
+		return false;
 
 	if (S_ISCHR(s.st_mode) || S_ISBLK(s.st_mode))
-		return False;
+		return false;
 
 	preload = getenv("LD_PRELOAD");
 	if (preload == NULL)
-		return False;
+		return false;
 
 	if (strstr(preload, "esddsp") == NULL)
-		return False;
+		return false;
 
-	return True;
+	return true;
 }
 
 
@@ -137,7 +137,7 @@ oss_restore_format()
 }
 
 
-static RD_BOOL
+static bool
 oss_open(int wanted)
 {
 	if (dsp_fd != -1)
@@ -145,7 +145,7 @@ oss_open(int wanted)
 		if (wanted == dsp_mode)
 		{
 			/* should probably not happen */
-			return True;
+			return true;
 		}
 		else
 		{
@@ -159,7 +159,7 @@ oss_open(int wanted)
 			{
 				logger(Sound, Warning,
 				       "this OSS device is not capable of full duplex operation");
-				return False;
+				return false;
 			}
 			close(dsp_fd);
 			dsp_mode = O_RDWR;
@@ -170,20 +170,20 @@ oss_open(int wanted)
 		dsp_mode = wanted;
 	}
 
-	dsp_configured = False;
-	dsp_broken = False;
+	dsp_configured = false;
+	dsp_broken = false;
 
 	dsp_fd = open(dsp_dev, dsp_mode | O_NONBLOCK);
 
 	if (dsp_fd == -1)
 	{
 		logger(Sound, Error, "oss_open(), open() failed: %s", strerror(errno));
-		return False;
+		return false;
 	}
 
 	in_esddsp = detect_esddsp();
 
-	return True;
+	return true;
 }
 
 static void
@@ -193,13 +193,13 @@ oss_close(void)
 	dsp_fd = -1;
 }
 
-static RD_BOOL
+static bool
 oss_open_out(void)
 {
 	if (!oss_open(O_WRONLY))
-		return False;
+		return false;
 
-	return True;
+	return true;
 }
 
 static void
@@ -217,13 +217,13 @@ oss_close_out(void)
 		rdpsnd_queue_next(0);
 }
 
-static RD_BOOL
+static bool
 oss_open_in(void)
 {
 	if (!oss_open(O_RDONLY))
-		return False;
+		return false;
 
-	return True;
+	return true;
 }
 
 static void
@@ -237,41 +237,41 @@ oss_close_in(void)
 	}
 }
 
-static RD_BOOL
+static bool
 oss_format_supported(RD_WAVEFORMATEX * pwfx)
 {
 	if (pwfx->wFormatTag != WAVE_FORMAT_PCM)
-		return False;
+		return false;
 	if ((pwfx->nChannels != 1) && (pwfx->nChannels != 2))
-		return False;
+		return false;
 	if ((pwfx->wBitsPerSample != 8) && (pwfx->wBitsPerSample != 16))
-		return False;
+		return false;
 
-	return True;
+	return true;
 }
 
-static RD_BOOL
+static bool
 oss_set_format(RD_WAVEFORMATEX * pwfx)
 {
 	int fragments;
-	static RD_BOOL driver_broken = False;
+	static bool driver_broken = false;
 
 	assert(dsp_fd != -1);
 
 	if (dsp_configured)
 	{
 		if ((pwfx->wBitsPerSample == 8) && (format != AFMT_U8))
-			return False;
+			return false;
 		if ((pwfx->wBitsPerSample == 16) && (format != AFMT_S16_LE))
-			return False;
+			return false;
 
 		if ((pwfx->nChannels == 2) != ! !stereo)
-			return False;
+			return false;
 
 		if (pwfx->nSamplesPerSec != snd_rate)
-			return False;
+			return false;
 
-		return True;
+		return true;
 	}
 
 	ioctl(dsp_fd, SNDCTL_DSP_RESET, NULL);
@@ -289,7 +289,7 @@ oss_set_format(RD_WAVEFORMATEX * pwfx)
 		logger(Sound, Error, "oss_set_format(), ioctl(SNDCTL_DSP_SETFMT) failed: %s",
 		       strerror(errno));
 		oss_close();
-		return False;
+		return false;
 	}
 
 	if (pwfx->nChannels == 2)
@@ -307,7 +307,7 @@ oss_set_format(RD_WAVEFORMATEX * pwfx)
 		logger(Sound, Error, "oss_set_format(), ioctl(SNDCTL_DSP_CHANNELS) failed: %s",
 		       strerror(errno));
 		oss_close();
-		return False;
+		return false;
 	}
 
 	oss_driver.need_resampling = 0;
@@ -325,12 +325,12 @@ oss_set_format(RD_WAVEFORMATEX * pwfx)
 				oss_driver.need_resampling = 1;
 				snd_rate = *prates;
 				if (rdpsnd_dsp_resample_set
-				    (snd_rate, pwfx->wBitsPerSample, pwfx->nChannels) == False)
+				    (snd_rate, pwfx->wBitsPerSample, pwfx->nChannels) == false)
 				{
 					logger(Sound, Error,
 					       "oss_set_format(), rdpsnd_dsp_resample_set() failed");
 					oss_close();
-					return False;
+					return false;
 				}
 
 				break;
@@ -343,7 +343,7 @@ oss_set_format(RD_WAVEFORMATEX * pwfx)
 			logger(Sound, Error, "oss_set_format(), SNDCTL_DSP_SPEED failed: %s",
 			       strerror(errno));
 			oss_close();
-			return False;
+			return false;
 		}
 	}
 
@@ -361,7 +361,7 @@ oss_set_format(RD_WAVEFORMATEX * pwfx)
 			logger(Sound, Error, "SNDCTL_DSP_GETOSPACE ioctl failed: %s",
 			       strerror(errno));
 			oss_close();
-			return False;
+			return false;
 		}
 
 		if (info.fragments == 0 || info.fragstotal == 0 || info.fragsize == 0)
@@ -369,13 +369,13 @@ oss_set_format(RD_WAVEFORMATEX * pwfx)
 			logger(Sound, Error,
 			       "broken OSS-driver detected: fragments: %d, fragstotal: %d, fragsize: %d\n",
 			       info.fragments, info.fragstotal, info.fragsize);
-			driver_broken = True;
+			driver_broken = true;
 		}
 	}
 
-	dsp_configured = True;
+	dsp_configured = true;
 
-	return True;
+	return true;
 }
 
 static void
@@ -421,13 +421,13 @@ oss_play(void)
 		{
 			if (!dsp_broken)
 				logger(Sound, Error, "failed to write buffer: %s", strerror(errno));
-			dsp_broken = True;
+			dsp_broken = true;
 			rdpsnd_queue_next(0);
 		}
 		return;
 	}
 
-	dsp_broken = False;
+	dsp_broken = false;
 
 	out->p += len;
 
@@ -482,13 +482,13 @@ oss_record(void)
 		{
 			if (!dsp_broken)
 				logger(Sound, Error, "failed to read samples: %s", strerror(errno));
-			dsp_broken = True;
+			dsp_broken = true;
 			rdpsnd_queue_next(0);
 		}
 		return;
 	}
 
-	dsp_broken = False;
+	dsp_broken = false;
 
 	rdpsnd_record(buffer, len);
 }

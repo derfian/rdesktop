@@ -568,7 +568,7 @@ outForceAlignment(STREAM out, unsigned int seed)
 }
 
 static unsigned int
-inString(PMEM_HANDLE * handle, STREAM in, char **destination, SERVER_DWORD dataLength, RD_BOOL wide)
+inString(PMEM_HANDLE * handle, STREAM in, char **destination, SERVER_DWORD dataLength, bool wide)
 {
 	unsigned int Result = (wide) ? (2 * dataLength) : (dataLength);
 	PMEM_HANDLE lcHandle = NULL;
@@ -602,7 +602,7 @@ inString(PMEM_HANDLE * handle, STREAM in, char **destination, SERVER_DWORD dataL
 }
 
 static unsigned int
-outString(STREAM out, char *source, RD_BOOL wide)
+outString(STREAM out, char *source, bool wide)
 {
 	PMEM_HANDLE lcHandle = NULL;
 	char *reader = getAlias(source);
@@ -636,7 +636,7 @@ outString(STREAM out, char *source, RD_BOOL wide)
 }
 
 static void
-inReaderName(PMEM_HANDLE * handle, STREAM in, char **destination, RD_BOOL wide)
+inReaderName(PMEM_HANDLE * handle, STREAM in, char **destination, bool wide)
 {
 	SERVER_DWORD dataLength;
 	in->p += 0x08;
@@ -818,7 +818,7 @@ TS_SCardIsValidContext(STREAM in, STREAM out)
 
 
 static MYPCSC_DWORD
-TS_SCardListReaders(STREAM in, STREAM out, RD_BOOL wide)
+TS_SCardListReaders(STREAM in, STREAM out, bool wide)
 {
 #define readerArraySize 1024
 	MYPCSC_DWORD rv;
@@ -904,7 +904,7 @@ TS_SCardListReaders(STREAM in, STREAM out, RD_BOOL wide)
 
 
 static MYPCSC_DWORD
-TS_SCardConnect(STREAM in, STREAM out, RD_BOOL wide)
+TS_SCardConnect(STREAM in, STREAM out, bool wide)
 {
 	MYPCSC_DWORD rv;
 	SCARDCONTEXT myHContext;
@@ -1127,7 +1127,7 @@ needStatusRecheck(MYPCSC_DWORD rv, MYPCSC_LPSCARD_READERSTATE_A rsArray, SERVER_
 	return recall;
 }
 
-static RD_BOOL
+static bool
 mappedStatus(MYPCSC_DWORD code)
 {
 	code >>= 16;
@@ -1176,7 +1176,7 @@ copyReaderState_ServerToMyPCSC(SERVER_LPSCARD_READERSTATE_A src, MYPCSC_LPSCARD_
 
 
 static MYPCSC_DWORD
-TS_SCardGetStatusChange(STREAM in, STREAM out, RD_BOOL wide)
+TS_SCardGetStatusChange(STREAM in, STREAM out, bool wide)
 {
 	MYPCSC_DWORD rv;
 	SERVER_SCARDCONTEXT hContext;
@@ -1318,7 +1318,7 @@ TS_SCardCancel(STREAM in, STREAM out)
 }
 
 static MYPCSC_DWORD
-TS_SCardLocateCardsByATR(STREAM in, STREAM out, RD_BOOL wide)
+TS_SCardLocateCardsByATR(STREAM in, STREAM out, bool wide)
 {
 	unsigned int i, j, k;
 	MYPCSC_DWORD rv;
@@ -1408,7 +1408,7 @@ TS_SCardLocateCardsByATR(STREAM in, STREAM out, RD_BOOL wide)
 		{
 			for (j = 0, rsCur = rsArray; j < readerCount; j++, rsCur++)
 			{
-				RD_BOOL equal = 1;
+				bool equal = 1;
 				for (k = 0; k < cur->cbAtr; k++)
 				{
 					if ((cur->rgbAtr[k] & cur->rgbMask[k]) !=
@@ -1729,7 +1729,7 @@ TS_SCardTransmit(STREAM in, STREAM out)
 }
 
 static MYPCSC_DWORD
-TS_SCardStatus(STREAM in, STREAM out, RD_BOOL wide)
+TS_SCardStatus(STREAM in, STREAM out, bool wide)
 {
 	MYPCSC_DWORD rv;
 	SERVER_SCARDCONTEXT hCard;
@@ -2320,7 +2320,7 @@ scard_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out
 		case SC_LIST_READERS:	/* SCardListReadersA */
 		case SC_LIST_READERS + 4:	/* SCardListReadersW */
 			{
-				RD_BOOL wide = request != SC_LIST_READERS;
+				bool wide = request != SC_LIST_READERS;
 				Result = (SERVER_DWORD) TS_SCardListReaders(in, out, wide);
 				break;
 			}
@@ -2328,7 +2328,7 @@ scard_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out
 		case SC_CONNECT:	/* ScardConnectA */
 		case SC_CONNECT + 4:	/* SCardConnectW */
 			{
-				RD_BOOL wide = request != SC_CONNECT;
+				bool wide = request != SC_CONNECT;
 				Result = (SERVER_DWORD) TS_SCardConnect(in, out, wide);
 				break;
 			}
@@ -2348,7 +2348,7 @@ scard_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out
 		case SC_GET_STATUS_CHANGE:	/* SCardGetStatusChangeA */
 		case SC_GET_STATUS_CHANGE + 4:	/* SCardGetStatusChangeW */
 			{
-				RD_BOOL wide = request != SC_GET_STATUS_CHANGE;
+				bool wide = request != SC_GET_STATUS_CHANGE;
 				Result = (SERVER_DWORD) TS_SCardGetStatusChange(in, out, wide);
 				break;
 			}
@@ -2362,7 +2362,7 @@ scard_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out
 		case SC_LOCATE_CARDS_BY_ATR:	/* SCardLocateCardsByATRA */
 		case SC_LOCATE_CARDS_BY_ATR + 4:	/* SCardLocateCardsByATRW */
 			{
-				RD_BOOL wide = request != SC_LOCATE_CARDS_BY_ATR;
+				bool wide = request != SC_LOCATE_CARDS_BY_ATR;
 				Result = (SERVER_DWORD) TS_SCardLocateCardsByATR(in, out, wide);
 				break;
 			}
@@ -2406,7 +2406,7 @@ scard_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out
 		case SC_STATUS:	/* SCardStatusA */
 		case SC_STATUS + 4:	/* SCardStatusW */
 			{
-				RD_BOOL wide = request != SC_STATUS;
+				bool wide = request != SC_STATUS;
 				Result = (SERVER_DWORD) TS_SCardStatus(in, out, wide);
 				break;
 			}
@@ -2452,7 +2452,7 @@ scard_device_control(RD_NTHANDLE handle, uint32_t request, STREAM in, STREAM out
 /* Thread functions */
 
 static STREAM
-duplicateStream(PMEM_HANDLE * handle, STREAM s, uint32_t buffer_size, RD_BOOL isInputStream)
+duplicateStream(PMEM_HANDLE * handle, STREAM s, uint32_t buffer_size, bool isInputStream)
 {
 	STREAM d = SC_xmalloc(handle, sizeof(struct stream));
 	if (d != NULL)
